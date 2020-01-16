@@ -1,0 +1,21 @@
+---
+output: html_notebook
+---
+<br />
+<br />
+<br />
+***Q: How does landscape and diet affect NOGO occupancy and productivity?***
+
+### 1: Obtain data
+1. Use diet data from chapter one.
+2. Use landscape data from chapter one.
+3. Compile occupancy data...
+    1. from South Coast
+    2. from Vancouver Island
+4. Obtain reproductive success from nest cameras.
+
+### 2: BEC gradient
+1. Examine variation in home range size, occupancy, and productivity across precipitation gradient.
+
+### 3: Model reproductive success
+1. Model landscape & diet as predictors of RS (occupancy & productivity).
