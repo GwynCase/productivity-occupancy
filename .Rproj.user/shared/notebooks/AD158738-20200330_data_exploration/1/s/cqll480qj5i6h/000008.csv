@@ -1,0 +1,5 @@
+"0","# By hour."
+"0","ggplot(df, aes(x=hour(datetime), color=site)) +"
+"0","  geom_freqpoly(binwidth=1, size=1) +"
+"0","  scale_color_brewer(palette='Set1') +"
+"0","  theme_classic()"

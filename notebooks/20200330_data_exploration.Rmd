@@ -1,0 +1,141 @@
+---
+title: "Data"
+output: html_notebook
+---
+
+Now that I have my preliminary data nice and clean, I need to see what the data actually consist of.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+# Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+
+# Import the squeaky clean data.
+df <- read.csv('../data/interim/camera_data.csv', stringsAsFactors=FALSE)
+```
+
+Let's start with:
+
+* How many photos/per site
+* Number of days for which there are useful photos
+* What schedule the photos were taken on
+* How many prey items recorded
+* How many deliveries recorded & how many presumably missed
+
+```{r}
+# How many photos, period?
+df %>% group_by(site) %>% summarize(photos=n())
+```
+
+Obviously Turbid Creek was overactive! But otherwise around 3000 photos seems pretty typical. Of course, most of these photos don't show anything useful, just ugly raptor babies hopping around. So how many of them actually record prey or a delivery?
+
+```{r}
+n.prey <- df %>% filter(interest %in% c('delivery', 'newprey')) %>% group_by(site) %>% summarize(prey=n())
+
+n.prey
+```
+
+Well, those are depressingly smaller numbers. Additionally, the cameras were recording for a different number of days. On the front end, that depends on when we were able to install the camera. On the back end, that depends on when the chicks fledged, since although the cameras stayed up until the fall activitiy obviously dropped off rapidly after the chicks left the nest. However, the chicks continued to return to the nest for some time and the adults often continued to deliver food.
+
+```{r}
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+
+# Calculate days.
+timespan <- df %>% filter(interest %in% c('delivery', 'newprey')) %>% group_by(site) %>% 
+  summarize(first=min(datetime), last=max(datetime)) %>%
+  mutate(first=date(first), last=date(last)) %>%
+  mutate(days=difftime(last, first))
+
+timespan
+```
+
+It's important to note that at this points there is still a week or two missing from both Mt. Ford (MTF) and Turbid Creek (TCR). So those last dates aren't quite accurate--but they'll do for now. Now, I can do a little more digging, here.
+
+```{r}
+# Photos per day?
+bind_cols(timespan, n.prey) %>%
+  mutate(days=as.numeric(days), per.day=prey/days)
+```
+
+So Twenty-mile Creek was the best at capturing prey, and Ruby Lake the worst--which makes sense, because TMC had by far the best camera angle and RLK by far the worst. Which really highlights how important a good view into the nest is.
+
+Now let's look at when and how often the photos themselves were taken.
+
+```{r}
+diff <- df %>%
+  arrange(site, datetime) %>%
+  group_by(site) %>%
+  mutate(diff=datetime-lag(datetime), diff.min=as.numeric(diff, units='mins')) %>%
+  mutate(diff.min=replace_na(diff.min, 0)) %>%
+  summarize(m.diff=mean(diff.min))
+
+diff
+```
+
+Obviously some of them were mostly just taking timed photos--MTC, for examble, is just under 30 minutes, which means it was only triggering occasionally to drag down the average. On the flip side, TCR and UTZ were triggering like mad.
+
+Maybe a few graphs to help illustrate:
+
+```{r}
+library('RColorBrewer')
+
+# By day.
+ggplot(df, aes(x=datetime, color=site)) +
+  geom_freqpoly(binwidth=86400, size=1) +
+  scale_color_brewer(palette='Set1') +
+  theme_classic()
+
+# By hour.
+ggplot(df, aes(x=hour(datetime), color=site)) +
+  geom_freqpoly(binwidth=1, size=1) +
+  scale_color_brewer(palette='Set1') +
+  theme_classic()
+```
+
+I think that's enough about the photo triggering itself. Now let's move on to the captures. To start with, I already saw how many captures there are for each site. How many were deliveries, and how many were missed deliveries?
+
+```{r}
+df %>% filter(interest %in% c('delivery', 'newprey')) %>%
+  group_by(site, interest) %>%
+  summarize(n=n()) %>%
+  ggplot(aes(fill=interest, x=site, y=n)) +
+  geom_bar(position='dodge', stat='identity') +
+  theme_classic()
+```
+
+"Delivery" refers to a delivery that was "caught in the act", where the bird was actually observed as it arrived at the nest. "Newprey," on the other hand, refers to a delivery that happened between camera triggers and was inferred by the presence of a new prey item in the nest. So it looks like Mt. Ford actually triggered most accurately. Mt. Currie, unsuprisingly, was most inaccurate, which makes sense since it was essentially just going off its timer.
+
+Is there a way to figure out how many deliveries I'm missing? The obvious thing to do is calculate deliveries/total captures (or, inversely, new prey/total captures). But that assumes that total captures accurately represents total deliveries--a big assumption, when you look at the different numbers of captures/day. But it's a starting point and honestly the best thing I can think of right now.
+
+```{r}
+success <- df %>% filter(interest %in% c('delivery', 'newprey')) %>%
+  group_by(site, interest) %>%
+  summarize(n=n()) %>%
+  spread(interest, n) %>%
+  mutate(total=delivery+newprey, success=delivery/total*100)
+
+success
+```
+
+So the accuracy of catching deliveries looks not bad (average is `r mean(success$success)`) but with quite a lot of variation (SD is `r sd(success$success)`).
+
+Is there a relationship between mean time between photos (in other words, how often the camera triggered) and what proportion of deliveries were successfully captured?
+
+```{r}
+bind_cols(success, diff) %>%
+  ggplot(aes(x=m.diff, y=success, label=site)) +
+  geom_point() +
+  geom_text(hjust='inward', nudge_y = 0.5) +
+  theme_classic()
+```
+
+Sure doesn't look like it. Which is odd, because I really would have thought a camera that triggered more often would catch more deliveries! I wonder if it's something different, like trigger sensitivity or speed or something (or some combination of both).

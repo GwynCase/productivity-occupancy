@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1585588696164.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "1769462753",
+    "id" : "24CACAFE",
+    "lastKnownWriteTime" : 1585607471,
+    "last_content_update" : 1585607471735,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200330_data_exploration.Rmd",
+    "project_path" : "notebooks/20200330_data_exploration.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "2,21",
+        "last_setup_crc32" : "D1D16832df6655cb",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

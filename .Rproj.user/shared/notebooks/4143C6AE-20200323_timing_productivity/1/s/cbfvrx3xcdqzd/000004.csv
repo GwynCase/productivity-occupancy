@@ -1,0 +1,3 @@
+"0","med.hatch <- as.POSIXct(cameras$hatch) %>% floor_date(unit='day') %>% median()"
+"0","branched <- cameras %>% filter(site != 'TMC')"
+"0","med.branch <- as.POSIXct(branched$branch) %>% floor_date(unit='day') %>% median()"

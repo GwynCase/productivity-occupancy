@@ -1,0 +1,163 @@
+---
+title: "Data cleaning"
+output: html_notebook
+---
+
+There's only a few weeks-worth of photos that haven't been analyzed yet, so it's time to set up a workflow for processing the data sheets.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+# Load some libraries.
+library('tidyverse')
+
+# Find all the files.
+files <- list.files('../data/raw', pattern='photos*', full.names=TRUE)
+
+# Check how they should be imported.
+files %>% map(~spec_csv(.))
+```
+
+Well, that explains why I'm having so much trouble importing them! What a mess!
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+df <- list.files('../data/raw', pattern='photos*', full.names=TRUE) %>%
+  map_df(~read_csv(., col_types=cols(
+  filename = col_character(),
+  datetime = col_character(),
+  serial = col_character(),
+  site = col_character(),
+  interest = col_character(),
+  live.chicks = col_integer(),
+  class = col_character(),
+  order = col_character(),
+  family = col_character(),
+  genus = col_character(),
+  species = col_character(),
+  common = col_character(),
+  size = col_character(),
+  comments = col_character(),
+  sex = col_character()
+)))
+
+str(df)
+```
+
+The "interest" column is to designate photos thaat have something interesting going on, specifically deliveries and new prey.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+distinct(df, interest)
+```
+
+Looks like there aren't any typos in that column to clean up. Let's check for typos in the other columns.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+distinct(df, class)
+distinct(df, order)
+distinct(df, family)
+distinct(df, genus)
+distinct(df, species)
+distinct(df, common)
+distinct(df, size)
+```
+
+So Tamiasciurus is mispelled Tamasciurus, Sciuridae is mispelled Sciruidae, and I'd like to clean up the species and common names.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+# Fix genus.
+df <- df %>% 
+  mutate(genus = replace(genus, genus=='Tamasciurus', 'Tamiasciurus')) %>%
+  mutate(genus = replace(genus, genus=='U', 'Unknown'))
+
+# Fix family.
+df <- df %>% 
+  mutate(family = replace(family, family=='Sciruidae', 'Sciuridae')) %>%
+  mutate(family = replace(family, family=='U', 'Unknown'))
+
+# Let's do order, too.
+df <- df %>% 
+  mutate(order = replace(order, order=='U', 'Unknown'))
+
+# Also class.
+df <- df %>% 
+  mutate(class = replace(class, class=='U', 'Unknown'))
+
+# Make sizes prettier.
+df <- df %>% mutate(size=
+  case_when(size == 'S' ~ 'Small',
+            size == 'M' ~ 'Medium',
+            size == 'L' ~ 'Large',
+            size == 'U' ~ 'Unknown',
+            TRUE ~ NA_character_))
+
+# Species names.
+df <- df %>% mutate(species=
+  case_when(species == 'spp' ~ 'sp',
+            species == 'U' ~ 'unknown',
+            TRUE ~ species))
+
+# And finally common names.
+df <- df %>% mutate(common=
+  case_when(common == 'American.robin' ~ 'American robin',
+            common == 'american.robin' ~ 'American robin',
+            common == 'Swainsons.thrush' ~ 'Swainson\'s thrush',
+            common == 'swainsons.thrush' ~ 'Swainson\'s thrush',
+            common == 'varied.thrush' ~ 'varied thrush',
+            common == 'Varied.thrush' ~ 'varied thrush',
+            common == 'stellers.jay' ~ 'Steller\'s jay',
+            common == 'gray.jay' ~ 'gray jay',
+            common == 'band-tailed.pigeon' ~ 'band-tailed pigeon',
+            common == 'bad-tailed.pigeon' ~ 'band-tailed pigeon',
+            common == 'U' ~ 'unknown',
+            common == 'Unknown' ~ 'unknown',
+            common == 'Douglas.squirrel' ~ 'Douglas squirrel',
+            common == 'douglas.squirrel' ~ 'Douglas squirrel',
+            common == 'bushy-tailed.woodrat' ~ 'bushy-tailed woodrat',
+            common == 'chimpunk' ~ 'chipmunk',
+            common == 'sooty.grouse' ~ 'sooty grouse',
+            common == 'ruffed.grouse' ~ 'ruffed grouse',
+            common == 'northern.flying.squirrel' ~ 'flying squirrel',
+            common == 'Rat' ~ 'rat',
+            common == 'red.squirrel' ~ 'red squirrel',
+            common == 'snowshoe.hare' ~ 'snowshoe hare',
+            TRUE ~ common))
+```
+
+Ok, so now that it's pretty, I'll check for missing data. In particular, I suspect some items may be missing size.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+# Filter out only observations of prey.
+prey <- df %>% filter(!is.na(class))
+
+# Check if any are missing size values.
+prey %>% filter(is.na(size))
+```
+
+Only one! And it's a snowshoe hare, so it's super easy to fix.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+# Make the correction.
+df$size[df$genus=='Lepus'] <- 'Large'
+
+# And check.
+df %>% filter(!is.na(class)) %>%
+  filter(is.na(size))
+```
+
+Yes! It worked! The last thing I need to check is whether there are any deliveries that have no data at all.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+# Number of prey deliveried to nest.
+df %>% filter(interest %in% c('newprey', 'delivery')) %>%
+  summarize(n())
+
+# Number of prey identified.
+df %>% filter(!is.na(class)) %>%
+  summarize(n())
+```
+
+That's a difference of 8... I'm not sure I can be bothered with that, given how much trouble it would be to track them down... and I can almost guarantee that they'll be "unknown" all the way across. So I think I'll just leave it at that.
+
+Then my last step is to write this out as a csv.
+
+```{r echo=TRUE, warning=FALSE, message=FALSE}
+write.csv(df, '../data/interim/camera_data.csv')
+```

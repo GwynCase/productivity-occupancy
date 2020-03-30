@@ -1,0 +1,4 @@
+"0","ggplot(cameras, aes(x=hatch, y=to.branch, label=site)) +"
+"0","  geom_point() +"
+"0","  geom_text(hjust='inward', nudge_y = 0.5) +"
+"0","  theme_classic()"

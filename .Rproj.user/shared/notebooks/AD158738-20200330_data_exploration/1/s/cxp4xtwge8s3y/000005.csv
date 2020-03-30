@@ -1,0 +1,2 @@
+"0","# How many photos, period?"
+"0","df %>% group_by(site) %>% summarize(photos=n())"
