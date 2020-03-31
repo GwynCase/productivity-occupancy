@@ -1,6 +1,6 @@
 ---
 title: "Timing & productivity"
-output: github_document
+output: html_notebook
 always_allow_html: true
 ---
 

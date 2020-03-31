@@ -1,0 +1,21 @@
+"0","```r
+# UGLIEST CODE EVER!
+prey.size <- prey %>%  
+  mutate(class=replace(class, class=='U', 'Unknown'),
+         genus=replace(genus, genus=='U', 'Unknown'))
+prey.size$size <- case_when(prey.size$size == 'S' ~ 'Small',
+                            prey.size$size == 'M' ~ 'Medium',
+                            prey.size$size == 'L' ~ 'Large',
+                            TRUE ~ 'Unknown')
+prey.size <- prey.size %>%
+  group_by(class, size) %>%
+  summarize(n())
+prey.size <- prey.size %>%
+  rename(count=3)
+ggplot(prey.size, aes(fill=size, y=count, x=class)) + 
+  geom_bar(position='stack', stat='identity') +
+  scale_fill_brewer(palette='Set1') +
+  theme_classic() +
+  ggtitle('Prey deliveries at 20 Mile Creek') +
+  xlab('Class') + ylab('No. of individuals delivered')
+```"

@@ -1,0 +1,20 @@
+"0","```r
+# Load some libraries.
+library('tidyverse')
+library('lubridate')
+# Read in the csv. This is the short one.
+df <- read.csv('../data/processed/TMC_photos_short.csv', header=TRUE, stringsAsFactors=FALSE)
+# Sort out just the deliveries.
+delivery <- df %>% 
+  filter(interest == 'newprey' | interest == 'delivery')
+# Get first and last deliveries.
+del.first <- delivery %>% 
+  summarize(first(datetime)) %>% 
+  ymd_hms()
+del.last <- delivery %>% 
+  summarize(last(datetime)) %>% 
+  ymd_hms()
+# A quick summary.
+delivery %>% group_by(interest) %>% 
+  summarize(n())
+```"
