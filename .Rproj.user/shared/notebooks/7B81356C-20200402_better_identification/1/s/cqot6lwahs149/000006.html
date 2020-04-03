@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Prey category </th>
+   <th style="text-align:left;">  </th>
+   <th style="text-align:right;"> Mass (g) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="3"><td colspan="3" style="border-bottom: 1px solid;"><strong>Large birds (&gt; 150 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> ruffed grouse </td>
+   <td style="text-align:left;"> Bonasa umbellus </td>
+   <td style="text-align:right;"> 600.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> sooty grouse </td>
+   <td style="text-align:left;"> Dendragapus fulignosus </td>
+   <td style="text-align:right;"> 600.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> band-tailed pigeon </td>
+   <td style="text-align:left;"> Patagoienas fasciata </td>
+   <td style="text-align:right;"> 392.0 </td>
+  </tr>
+  <tr grouplength="5"><td colspan="3" style="border-bottom: 1px solid;"><strong>Medium birds (60-150 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> Steller's jay </td>
+   <td style="text-align:left;"> Cyanocitta stelleri </td>
+   <td style="text-align:right;"> 120.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> varied thrush </td>
+   <td style="text-align:left;"> Ixoreus naevius </td>
+   <td style="text-align:right;"> 82.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> gray jay </td>
+   <td style="text-align:left;"> Perisoreus canadensis </td>
+   <td style="text-align:right;"> 67.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> American robin </td>
+   <td style="text-align:left;"> Turdus migratorius </td>
+   <td style="text-align:right;"> 77.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average medium bird </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>Small birds (&lt; 40 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> Swainson's thrush </td>
+   <td style="text-align:left;"> Catharus ustulatus </td>
+   <td style="text-align:right;"> 34.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average small bird </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>Large mammals (&gt; 600 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> snowshoe hare </td>
+   <td style="text-align:left;"> Lepus americanus </td>
+   <td style="text-align:right;"> 1340.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average large mammal </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr grouplength="6"><td colspan="3" style="border-bottom: 1px solid;"><strong>Medium mammals (200-600 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> bushy-tailed woodrat </td>
+   <td style="text-align:left;"> Cricetidae cinerea </td>
+   <td style="text-align:right;"> 374.7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> rat </td>
+   <td style="text-align:left;"> Rattus sp </td>
+   <td style="text-align:right;"> 269.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> Douglas squirrel </td>
+   <td style="text-align:left;"> Tamiasciurus douglasii </td>
+   <td style="text-align:right;"> 203.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> red squirrel </td>
+   <td style="text-align:left;"> Tamiasciurus hudsonicus </td>
+   <td style="text-align:right;"> 224.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> tree squirrel </td>
+   <td style="text-align:left;"> Tamiasciurus sp </td>
+   <td style="text-align:right;"> 214.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average medium mammal </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr grouplength="4"><td colspan="3" style="border-bottom: 1px solid;"><strong>Small mammals (&lt; 200 g)</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> flying squirrel </td>
+   <td style="text-align:left;"> Glaucomys sabrinus </td>
+   <td style="text-align:right;"> 155.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> bat </td>
+   <td style="text-align:left;"> Myotis sp </td>
+   <td style="text-align:right;"> 5.8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> chipmunk </td>
+   <td style="text-align:left;"> Neotamias sp </td>
+   <td style="text-align:right;"> 66.4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average small mammal </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr grouplength="2"><td colspan="3" style="border-bottom: 1px solid;"><strong>Unidentified items</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average medium item </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> average small item </td>
+   <td style="text-align:left;">  </td>
+   <td style="text-align:right;"> 0.0 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

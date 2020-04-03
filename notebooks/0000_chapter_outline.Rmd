@@ -19,3 +19,25 @@ output: html_notebook
 
 ### 3: Model reproductive success
 1. Model landscape & diet as predictors of RS (occupancy & productivity).
+
+## Outline
+
+### Introduction
+
+### Methods
+
+* Identification & counting of images/collections, biomass
+    * Lewis et al. 2004
+    * Rogers et al 2006
+* Statistics (summary of items)
+    * Lewis et al. 2006
+* Statistics (comparison between nests/groups)  
+    * Lewis et al. 2006
+
+### Results
+* Summary of deliveries
+    * Rogers et al. 2006
+* Delivery rate
+    * Rogers et al. 2006
+
+### Conclusions

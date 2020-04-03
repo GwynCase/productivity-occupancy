@@ -1,0 +1,199 @@
+---
+title: "Prey identification"
+output: html_notebook
+---
+
+We quantified the diet of breeding goshawks using digital trail cameras placed at 6 nests during 2019. Nest were selected for camera installation based on timing of discovery, ease of access, and the presence of suitable trees. Each camera was mounted in a tree adjacent to the nest tree, roughly five meters away and slightly above the nest itself. Cameras (Reconyx, UltraFire and HyperFire models) were programmed to take three photos when triggered by motion, and an additional single photo ever 30 minutes. Installation took place during the nestling period (early May) and cameras were left in place until after fledging (September).
+
+Chicks were aged using a pictoral guide (Boal 1994) from photos taken shortly after cameras were installed. Each nest was assigned a single hatch date based on median chick age. Due to the camera's limited field of view, fledge date was defined as the first day all chicks voluntarily left the nest. Productivity was defined as the number of chicks to successfully fledge.
+
+We identified each prey item delivered to the nest following Lewis et al. (2004). We identified items to species when possible, using a combination of study skins, field guides, and photographs. When identification to species was not possible, items were identified to the lowest possible taxonomic level. Items that could not be identifed even to family were assigned to a size category (small, medium, or large). As very few items could be successfully aged, we did not include prey age in our analysis.
+
+Goshawks are known to cache prey items for re-delivery to the nest at a later time. Due to the discrete nature of our data, we were not able to identify previously cached items. However, we feel there was a low risk of double-counting items because most intact prey remained visible in the nest until mostly or entirely consumed. Partial items could rarely be identified beyond class and so were not included in analyises of counts. 
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Rogers et al. (2006) truncates all data at 40 days of age. Why? and is this something I should do, too??
+
+So my next step is to calculate biomass.
+
+```{r}
+# Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+
+# Import the data.
+df <- read.csv('../data/interim/camera_data.csv', stringsAsFactors=FALSE)
+
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+
+# Get a list of all kinds of prey items recorded.
+prey <- df %>% filter(class != '') %>%
+  group_by(class, order, family, genus, species) %>% 
+  summarise(n=n())
+
+# Looks like there's a typo I missed...
+df <- df %>% replace_na(list(order='unknown'))
+
+# And another...
+df <- df %>% mutate(genus=case_when(
+  species == 'fulignosus' ~ 'Dendragapus',
+  TRUE ~ genus),
+  family=case_when(
+    species == 'fulignosus' ~ 'Phasianidae',
+    TRUE ~ family
+  )
+)
+
+# Remake the prey table.
+prey <- df %>% filter(class != '') %>%
+  group_by(class, order, family, genus, species, common, size) %>% 
+  summarise(n=n())
+
+# Check it out.
+prey
+```
+
+Looks good so far. I think I got all the typos out. I do have a problem with all of those items down at the end which are entirely Us all the way across--not even a class, not even a size. These are primarily items that aren't even seen on camera--you can see the adult arrive and feed the chicks, but the birds' bodies completely block all view of the item.
+
+Rogers et al. (2006) doesn't address this at all--apparently all of their items could at least be identified down to size. Lucky them. They do note that they "excluded all questionable prey items delivered to the nest," questionable items being those that were presumed to be cached. But they seem to have at least been able to identify which items were pieces of things that had been delivered previously.
+
+Miller et al. (2014) seems to have done something fancy involving handling time, where an item requiring a long time to be consumed was given a large mass and a short time to be consumed a small mass. Which is alright for some, but I don't have continuous video so that doesn't work for me.
+
+Lewis et al. (2004 & 2006) make no mention of this problem, either. Apparently it's just me. I don't see any option except to drop them... I can use them for delivery rate and count, maybe, but I simply can't use them in any calculations regarding biomass. I don't see why this should bias my data, both large and small items could easily be obscured in this way.
+
+So I guess I'll just... start at the top and work my way down.
+
+**Size categories**
+
+Everyone else bases their size categories based on weight, which seems ridiculous to me because you can't tell how much something weighs by looking at it. I mean, if you ID something as a red squirrel then you can look up how much a red squirrel weighs and decide whether or not that's medium or large or whatever. But if you have an unknown mammel, I think it's mor reliable to look at a furry lump of meat and estimate its size than its weight.
+
+* Small = wren/mouse sized
+    * Nat Geo says PAWR is ~10 cm
+    * Nagorsen says house mouse is 16.3 cm
+    * so small < 20
+* Medium = Jay/squirrel sized
+    * Nat Geo says Steller's jay is 29 cm
+    * Nagorsen says tree squirrel 30.8 cm (Douglas) or 31.8 (red)
+    * so medium 20-30
+* Large = grouse/hare sized
+    * Nat Geo Sooty grouse 51 cm
+    * Nagorsen Snowshoe hare 44.3 cm
+    * so large > 30
+    
+And there are a few more bits of missing data...
+
+```{r}
+df %>% filter(family == 'Turdidae' & size == 'Unknown')
+```
+
+So maybe a juvenile, unknown species. And the other...
+
+```{r}
+df %>% filter(family == 'Turdidae' & species=='unknown' & size == 'Small')
+```
+
+Also a juvenile. I'll make the first 'unknown' a 'small'. And another typo...
+
+```{r}
+df <- df %>% mutate(size=case_when(
+  family == 'Turdidae' & size == 'Unknown' ~ 'Small',
+  TRUE ~ size))
+
+# And refresh the prey.
+prey <- df %>% filter(class != '') %>%
+  group_by(class, order, family, genus, species, size) %>% 
+  summarise(n=n())
+```
+
+Start by filling in the easy, known birds.
+
+```{r}
+# Assign each bird item to a size group.
+df2 <- df %>% mutate(group=case_when(
+    species == 'fasciata' ~ 'Large bird',
+    species == 'umbellus' ~ 'Large bird',
+    species == 'fulignosus' ~ 'Large bird',
+    species == 'stelleri' ~ 'Medium bird',
+    species == 'canadensis' ~ 'Medium bird',
+    species == 'ustulatus' ~ 'Small bird',
+    species == 'naevius' ~ 'Medium bird',
+    species == 'migratorius' ~ 'Medium bird',
+    class == 'Aves' & species == 'unknown' & size == 'Small' ~ 'Small bird',
+    class == 'Aves' & species == 'unknown' & size == 'Medium' ~ 'Medium bird',
+    class == 'Aves' & species == 'unknown' & size == 'Large' ~ 'Large bird',
+    TRUE ~ 'group'))
+
+# Group the unknown bird species by size.
+df2 <- df2 %>% mutate(common=case_when(
+  class == 'Aves' & species == 'unknown' & size == 'Small' ~ 'average small bird',
+  class == 'Aves' & species == 'unknown' & size == 'Medium' ~ 'average medium bird',
+   class == 'Aves' & species == 'unknown' & size == 'Large' ~ 'average large bird',
+  TRUE ~ common))
+
+# Fil in mass for known bird species.
+df2 <- df2 %>% mutate(mass=case_when(
+    species == 'fasciata' ~ 392,
+    species == 'umbellus' ~ 600,
+    species == 'fulignosus' ~ 600,
+    species == 'stelleri' ~ 120,
+    species == 'canadensis' ~ 67.5,
+    species == 'ustulatus' ~ 34,
+    species == 'naevius' ~ 82.5,
+    species == 'migratorius' ~ 77,
+    TRUE ~ 0))
+
+# Check...
+df2 %>% filter(class != '') %>%
+  group_by(class, family, genus, species, common, group, mass) %>% 
+  summarise(n=n())
+```
+
+Looks good so far. Now on to the mammals.
+
+```{r}
+# Assign each mammal to a size group.
+df2 <- df2 %>% mutate(group=case_when(
+    species == 'americanus' ~ 'Large mammal',
+    genus == 'Rattus' ~ 'Medium mammal',
+    species == 'cinerea' ~ 'Small mammal',
+    species == 'sabrinus' ~ 'Small mammal',
+    genus == 'Neotamias' ~ 'Medium mammal',
+    genus == 'Tamiasciurus' ~ 'Medium mammal',
+    class == 'Mammalia' & species == 'unknown' & size == 'Small' ~ 'Small mammal',
+    class == 'Mammalia' & species == 'unknown' & size == 'Medium' ~ 'Medium mammal',
+    class == 'Mammalia' & species == 'unknown' & size == 'Large' ~ 'Large mammal',
+    TRUE ~ group))
+
+# Group the unknown mammal species by size.
+df2 <- df2 %>% mutate(common=case_when(
+  class == 'Mammalia' & species == 'unknown' & size == 'Small' ~ 'average small mammal',
+  class == 'Mammalia' & species == 'unknown' & size == 'Medium' ~ 'average medium mammal',
+   class == 'Mammalia' & species == 'unknown' & size == 'Large' ~ 'average large mammal',
+  TRUE ~ common))
+
+# Fil in mass for known bird species.
+df2 <- df2 %>% mutate(mass=case_when(
+    species == 'americanus' ~ 1340,
+    genus == 'Rattus' ~ 269.8,
+    species == 'cinerea' ~ 374.7,
+    species == 'sabrinus' ~ 155.5,
+    genus == 'Neotamias' ~ 66.4,
+    species == 'hudsonicus' ~ 224.5,
+    species == 'douglasii' ~ 203.5,
+    genus == 'Tamiasciurus' & species == 'sp' ~ 214,
+    TRUE ~ mass))
+
+df2 %>% filter(class != '') %>%
+  group_by(class, family, genus, species, common, group, mass) %>% 
+  summarise(n=n())
+```
+
+And now

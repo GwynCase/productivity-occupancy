@@ -1,0 +1,24 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1585930878796.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "9A4BB4DC",
+    "lastKnownWriteTime" : 1585931557,
+    "last_content_update" : 1585931557947,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200401_prey_identification.Rmd",
+    "project_path" : "notebooks/20200401_prey_identification.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "27,21",
+        "scrollLine" : "18",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
