@@ -123,10 +123,10 @@ top.table <- top.items %>% spread(common, p.biomass) %>%
 # And make a pretty table.
 top.table %>%
   mutate_if(is.numeric, function(x) {
-    cell_spec(x, bold = T, 
+    cell_spec(x,  
               color = spec_color(x, end=0.9, direction=-1, scale_from=range(0, 55)))
   }) %>%
   kable(escape=F) %>%
-  kable_styling(full_width = F)
+  kable_styling(full_width = T)
 ```
 
