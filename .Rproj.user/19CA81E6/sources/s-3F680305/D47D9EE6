@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1586193975172.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D47D9EE6",
+    "lastKnownWriteTime" : 1586199234,
+    "last_content_update" : 1586199234392,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200403_biomass.Rmd",
+    "project_path" : "notebooks/20200403_biomass.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "2,21",
+        "last_setup_crc32" : "3F680305df6655cb",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}
