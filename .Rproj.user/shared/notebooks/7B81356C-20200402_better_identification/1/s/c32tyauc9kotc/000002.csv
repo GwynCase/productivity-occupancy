@@ -1,0 +1,3 @@
+"0","items <- left_join(items, m.mass, by='group') %>%"
+"0","  mutate(mass = ifelse(mass > 1, mass, mean)) %>%"
+"0","  dplyr::select(-mean)"

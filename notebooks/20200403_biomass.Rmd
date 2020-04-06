@@ -1,0 +1,48 @@
+---
+title: "Biomass"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+>We assigned mass to mammal species from Nagorsen (2002) and birds from ????. When unable to differentiate between species within a single, very homogenous genus (such as *Tamiasciurus*, *Eutamius*, or *Myotis*), we assigned mass by averaging the masses of all possible species, based on range maps.
+
+Ongoing problem with calculations regarding biomass: goshawks cache items, or partially consume items elsewhere. So sometimes the adult brings an entire squirrel to the nest, and sometime it brings half a squirrel. Lewis et al. matched partial deliveries and then counted only complete animals (supposedly). So they would cound 0.5 squirrels + 0.5 squirrels as 1 squirrel. On the other hand, Rogers et al. counted partial items. So they would count 0.5 squirrel + 0.75 squirrel as 1.25 squirrels.
+
+But because my cameras are taking photos, not videos, it's really impossible for me to tell if an item was delivered, taken away, and then re-delivered, or if an item was delivered, consumed, and then a new item delivered. Items just appear and disappear. Because the patial items are generally unidentified, I'm ok with using their size category and say 0.5 medium mammal = 1 small mammal. That should work fine for biomass, at any rate. But there is a possibility that a whole item is partially eaten and then re-delivered, so what I'm counting as 1 small mammal is actually half of the medium mammal I've already counted. This will lead to overestimates of biomass. Plus, this is useless for counts, because 0.5 medium mammal may be equivalent in biomass to 1 small mammal, but it shouldn't be counted as 1 small mammal. But I can't count it any other because I can't tell whether it's 0.5 medium mammal or 0.25 large mammal.
+
+So that sucks.
+
+Ok, I can deal with the count issue by just being very clear about what I'm counting: I'm not counting the number of *animals* delivered, I'm counting the number of *items*. Rogers et al. has a line for "Unknown mammals" with a N=144, which implies 144 whole, intact, individuals were delivered... except there's no line for parts, and they definitely counted parts! So if I do it this way, at least I'm not the only one.
+
+With regards to double-counting cached biomass, I just don't think there's anything I can do about it. I don't have enough photos, and the images arent' of high enough quality, for me to match up pieces the way Rogers and Lewis did. But based on the images I do have, I don't think the risk is very large. Intact items tended to arrive intact and be visibly eaten in the nest, often lingering as bits of skeleton long after all of the flesh had been consumed. So it seems likely that most of the partial items were not parts of intact items that were delivered and then re-delivered, but rather items that were cached or partially consumed elsewhere.
+
+```{r libraries}
+# Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+
+# Import the data.
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+```
+
+I put all that cleaning and naming and mass-inserting into an external .R code, so I can more easily apply it as my data accumulates in the future.
+
+```{r code, include=FALSE, cache=FALSE}
+knitr::read_chunk('../src/prey_attributes.R')
+```
+
+```{r, what_sp}
+
+```
+
+Let's hope this works.
