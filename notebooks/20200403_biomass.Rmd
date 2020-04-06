@@ -8,7 +8,7 @@ always_allow_html: true
 knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
 ```
 
->We assigned mass to mammal species from Nagorsen (2002) and birds from ????. When unable to differentiate between species within a single, very homogenous genus (such as *Tamiasciurus*, *Eutamius*, or *Myotis*), we assigned mass by averaging the masses of all possible species, based on range maps.
+>We assigned mass to mammal species from Nagorsen (2002) and birds from ????. When unable to differentiate between species within a single, relatively homogenous genus (such as *Tamiasciurus*, *Eutamius*, or *Myotis*), we assigned mass by averaging the masses of all possible species, based on range maps.
 
 Ongoing problem with calculations regarding biomass: goshawks cache items, or partially consume items elsewhere. So sometimes the adult brings an entire squirrel to the nest, and sometime it brings half a squirrel. Lewis et al. matched partial deliveries and then counted only complete animals (supposedly). So they would cound 0.5 squirrels + 0.5 squirrels as 1 squirrel. On the other hand, Rogers et al. counted partial items. So they would count 0.5 squirrel + 0.75 squirrel as 1.25 squirrels.
 
@@ -59,7 +59,7 @@ mass.table <- items %>% mutate(mass=as.numeric(mass)) %>%
 
 # Make a pretty table.
 prey.table <- mass.table %>% arrange(class, group, genus) %>% 
-  unite(name, 3:4, sep=' ', remove=FALSE) %>% 
+  unite(name, 4:5, sep=' ', remove=FALSE) %>% 
   mutate(name=case_when(
     name == 'Unknown unknown' ~ ' ',
     TRUE ~ name
@@ -84,3 +84,49 @@ prey.table %>%
 That was... suspiciously easy. Of course it's completely useless because the sample size is so damn small. Only 225 items... and Rogers had 670! And so many of these items are only present once, I'm not sure I can do any kind of analysis at all.
 
 Well, let's give it a shot... how about look at the most common items, by biomass, and see how they break down by site?
+
+```{r}
+# What are the most common prey items, identified to species, by biomass?
+top.prey <- prey.table %>% 
+  ungroup() %>% 
+  filter(name != ' ') %>% 
+  top_n(10, p.biomass)
+
+top.prey
+
+# Redo the biomass calculation on a per-site basis.
+site.mass <- items %>% 
+  mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(s.mass=sum(mass)) %>% 
+  ungroup() %>% 
+  group_by(site, common) %>% 
+  mutate(biomass=sum(mass), p.biomass=(biomass/s.mass*100)) %>% 
+  mutate(p.biomass=round(p.biomass, digits=2)) %>% 
+  ungroup()
+
+# Pull out prey all prey items which match these criteria.
+top.items <- semi_join(site.mass, top.prey, by='common') %>% 
+  unite(name, 4:5, sep=' ', remove=FALSE) %>% 
+  mutate(name=case_when(
+    name == 'Unknown unknown' ~ ' ',
+    TRUE ~ name
+  )) %>% 
+  dplyr::select(site, common, p.biomass) %>% 
+  distinct()
+
+# Reorganize the data.
+top.table <- top.items %>% spread(common, p.biomass) %>% 
+  replace(is.na(.), 0) %>% 
+  mutate(total = rowSums(.[2:11]))
+
+# And make a pretty table.
+top.table %>%
+  mutate_if(is.numeric, function(x) {
+    cell_spec(x, bold = T, 
+              color = spec_color(x, end=0.9, direction=-1, scale_from=range(0, 55)))
+  }) %>%
+  kable(escape=F) %>%
+  kable_styling(full_width = F)
+```
+

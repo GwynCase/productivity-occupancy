@@ -1,0 +1,6 @@
+"0","# What are the most common prey items, identified to species, by biomass?"
+"0","top.prey <- prey.table %>% "
+"0","  ungroup() %>% "
+"0","  filter(name != ' ') %>% "
+"0","  top_n(10, p.biomass)"
+"0","top.prey"

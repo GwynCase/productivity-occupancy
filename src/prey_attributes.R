@@ -5,13 +5,11 @@
 
 #df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
 
-## @knitr what_sp
-
 # Filter out just the prey items delivered.
 # Remove complete unknowns (ie, no class or size).
 items <- df %>% filter(class != '') %>%
   filter(size != 'Unknown') %>%
-  dplyr::select(class, family, genus, species, common, size) %>% 
+  dplyr::select(site, class, family, genus, species, common, size) %>% 
   arrange(class, family, genus, species, size)
 
 # prey_attributes
