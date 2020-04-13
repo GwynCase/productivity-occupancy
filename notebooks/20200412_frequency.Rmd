@@ -1,0 +1,181 @@
+---
+title: "Prey frequency"
+output: html_notebook
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+I want to quantify the percent of prey items that were identified to genus, species, and class to each nest, by count and by biomass.
+
+```{r}
+# Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('questionr')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+
+# Import the data.
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+source('../src/prey_attributes.R')
+```
+
+Start by winnowing down to items IDed to certain levels.
+
+```{r}
+to.genus <- items %>% filter(genus != 'Unknown')
+to.family <- items %>% filter(family != 'Unknown')
+to.class <- items %>% filter(class != 'Unknown')
+```
+
+Look at proportion of counts.
+
+```{r}
+count.by.genus <- to.genus %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=n()) %>% 
+  group_by(site, genus, species) %>% 
+  mutate(count=n()) %>% 
+  distinct() %>% 
+  ungroup() %>% 
+  mutate(prop=count/total) %>% 
+  dplyr::select(site, class, family, genus, species, count, total, prop) %>% 
+  arrange(site, class)
+
+count.by.genus %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 7) %>% 
+  pack_rows('Mount Ford', 8, 14) %>% 
+  pack_rows('Ruby Lake', 15, 16) %>% 
+  pack_rows('Turbid Creek', 17, 22) %>% 
+  pack_rows('Twenty-Mile Creek', 23, 25) %>% 
+  pack_rows('Utziletz', 26, 33)
+
+count.by.family <- to.family %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=n()) %>% 
+  group_by(site, family) %>% 
+  mutate(count=n()) %>% 
+  ungroup() %>% 
+  mutate(prop=count/total) %>% 
+  dplyr::select(site, class, family, count, total, prop) %>% 
+  arrange(site, class) %>% 
+  distinct()
+
+count.by.family %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 4) %>% 
+  pack_rows('Mount Ford', 5, 9) %>% 
+  pack_rows('Ruby Lake', 10, 12) %>% 
+  pack_rows('Turbid Creek', 13, 18) %>% 
+  pack_rows('Twenty-Mile Creek', 19, 22) %>% 
+  pack_rows('Utziletz', 23, 27)
+
+count.by.class <- to.class %>%
+  group_by(site) %>% 
+  mutate(total=n()) %>% 
+  group_by(site, class) %>% 
+  mutate(count=n()) %>% 
+  ungroup() %>% 
+  mutate(prop=count/total) %>% 
+  dplyr::select(site, class, count, total, prop) %>% 
+  arrange(site, class) %>% 
+  distinct()
+
+count.by.class %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 2) %>% 
+  pack_rows('Mount Ford', 3, 4) %>% 
+  pack_rows('Ruby Lake', 5, 6) %>% 
+  pack_rows('Turbid Creek', 7, 8) %>% 
+  pack_rows('Twenty-Mile Creek', 9, 10) %>% 
+  pack_rows('Utziletz', 11, 12)
+```
+
+And then do it all again for biomass. First for items identfied to genus/species.
+
+```{r}
+mass.by.genus <- to.genus %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  group_by(site, genus, species) %>% 
+  mutate(amount=sum(mass)) %>% 
+  ungroup() %>% 
+  mutate(prop=amount/total) %>% 
+  dplyr::select(site, class, family, genus, species, amount, total, prop) %>% 
+  arrange(site, class) %>% 
+  distinct()
+
+mass.by.genus %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 7) %>% 
+  pack_rows('Mount Ford', 8, 14) %>% 
+  pack_rows('Ruby Lake', 15, 16) %>% 
+  pack_rows('Turbid Creek', 17, 22) %>% 
+  pack_rows('Twenty-Mile Creek', 23, 25) %>% 
+  pack_rows('Utziletz', 26, 33)
+```
+
+Then items identified to family.
+
+```{r}
+mass.by.family <- to.family %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  group_by(site, family) %>% 
+  mutate(amount=sum(mass)) %>% 
+  ungroup() %>% 
+  mutate(prop=amount/total) %>% 
+  dplyr::select(site, class, family, amount, total, prop) %>% 
+  arrange(site, class) %>% 
+  distinct()
+
+mass.by.family %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 4) %>% 
+  pack_rows('Mount Ford', 5, 9) %>% 
+  pack_rows('Ruby Lake', 10, 12) %>% 
+  pack_rows('Turbid Creek', 13, 18) %>% 
+  pack_rows('Twenty-Mile Creek', 19, 22) %>% 
+  pack_rows('Utziletz', 23, 27)
+```
+
+And finally to class only.
+
+```{r}
+mass.by.class <- to.class %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  group_by(site, class) %>% 
+  mutate(amount=sum(mass)) %>% 
+  ungroup() %>% 
+  mutate(prop=amount/total) %>% 
+  dplyr::select(site, class, amount, total, prop) %>% 
+  arrange(site, class) %>% 
+  distinct()
+
+mass.by.class %>% dplyr::select(-site, -total) %>% 
+  kable(digits=2) %>% 
+  kable_styling(full_width=TRUE) %>% 
+  pack_rows('Mount Currie', 1, 2) %>% 
+  pack_rows('Mount Ford', 3, 4) %>% 
+  pack_rows('Ruby Lake', 5, 6) %>% 
+  pack_rows('Turbid Creek', 7, 8) %>% 
+  pack_rows('Twenty-Mile Creek', 9, 10) %>% 
+  pack_rows('Utziletz', 11, 12)
+```
+
+Lewis says they found no difference between frequency by count and frequency by biomass. Let's see if that's true for me, too.

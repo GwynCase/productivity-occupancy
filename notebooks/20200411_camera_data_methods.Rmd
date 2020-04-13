@@ -1,0 +1,59 @@
+---
+title: "Canera data collection methods"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+# Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+
+# Import the data.
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+
+n.nests <- df %>% distinct(site) %>% summarize(n()) %>% as.numeric()
+
+install.date <- df %>% group_by(site) %>% summarize(d=min(datetime)) %>% 
+  mutate(day=day(d), m=month(d))
+```
+
+**Nest Cameras**
+
+We quantified the diet of breeding goshawks using digital trail cameras at `r n.nests` nests during 2019. Nest were selected for camera instllation based on timing of discovery, ease of access, and the presence of suitable trees. Each camera was installed in a tree adjacent to the nest tree, approximately five meters away from and slightly above the nest itself. Cameras (Reconyx, UltraFire and HyperFire models) were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. Installation took place during the early nestling phase
+(between `r install.date %>% filter(d==min(d)) %>% dplyr::select(day) %>% as.numeric()` 
+`r install.date %>% filter(d==min(d)) %>% dplyr::select(m) %>% as.numeric() %>% month(label=TRUE, abbr=FALSE)`
+and `r install.date %>% filter(d==max(d)) %>% dplyr::select(day) %>% as.numeric()` `r install.date %>% filter(d==min(d)) %>% dplyr::select(m) %>% as.numeric() %>% month(label=TRUE, abbr=FALSE)`) and cameras were left in place until after fledging (approximately September).
+
+Chicks were aged from photos taken shortly after camera installation using a pictoral guide (Boal 1994) and each nest was assigned a hatch date based on median chick age. Nest productivity was defined as the number of chicks per nest that survived to 35 days of age (Woodbridge and Hargis 2006). <!-- Check that citation! -->
+
+**Prey Identification**
+
+We identified prey items delivered to the nest following Lewis et al. (2004). Nest camera photos were reviewed and each new prey item was recorded and identified to species when possible, using a combination of study skins, field guides, and researcher knowledge. When identification to species was not possible, items were identified to the lowest possible taxonomic level. Items were additionally categorized by size (small, medium, or large) following Miller et al. (2014). As very few items could be successfully aged, we did not include prey age in our analysis.
+
+Prey items identified to species were assigned mass using Nagorsen (2002; mammals) and ???? (birds). When unable to differentiate between species within a single genus (such as *Eutamias* and *Myotis*), we assigned mass by averaging the masses of all possible species based on range maps. Unidentified items and partial items were assigned mass by averaging the masses of the identfied species in that size and taxonomic group. For example, an unidentified sciurid would receive the average mass of all identified sciurid species, while a small portion of an unidentified bird would receive the average mass of all identified small bird species. A small number of deliveries were completely blocked from the camera by the adult goshawks or chicks and could not be identified to any level. These deliveries were not included in the analysis.
+
+Goshawks are known to cache prey items for re-delivery to the nest at a later time. Due to the nature of our data, we were not able to identify previously cached items. To reduce the risk of double-counting prey items, we...?
+
+<!-- something coherent about cached items -->
+
+<!-- Frequency of prey items, measured by percent count and biomass, for each of genus, family, and order, per nest -->
+
+<!-- Number of items and biomass delivered to each nest per hour, per day, per nestling per day, per hour per age, per brood size. Control for variable detection? -->
+
+<!-- Morisita & Simpson with grouped prey categories -->
+<!-- Morisita & Simpson by zone -->
+
+We calculated prey species diversity using items identified to the genus or species level using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
+
+<!-- model biomass/chick, biomass/hour (or day?), mammal:bird biomass ~ brood size, chick age -->
