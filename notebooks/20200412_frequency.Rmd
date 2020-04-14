@@ -59,7 +59,9 @@ count.by.genus %>% dplyr::select(-site, -total) %>%
   pack_rows('Turbid Creek', 17, 22) %>% 
   pack_rows('Twenty-Mile Creek', 23, 25) %>% 
   pack_rows('Utziletz', 26, 33)
+```
 
+```{r}
 count.by.family <- to.family %>% mutate(mass=as.numeric(mass)) %>% 
   group_by(site) %>% 
   mutate(total=n()) %>% 
@@ -80,7 +82,9 @@ count.by.family %>% dplyr::select(-site, -total) %>%
   pack_rows('Turbid Creek', 13, 18) %>% 
   pack_rows('Twenty-Mile Creek', 19, 22) %>% 
   pack_rows('Utziletz', 23, 27)
+```
 
+```{r}
 count.by.class <- to.class %>%
   group_by(site) %>% 
   mutate(total=n()) %>% 
@@ -178,4 +182,3 @@ mass.by.class %>% dplyr::select(-site, -total) %>%
   pack_rows('Utziletz', 11, 12)
 ```
 
-Lewis says they found no difference between frequency by count and frequency by biomass. Let's see if that's true for me, too.
