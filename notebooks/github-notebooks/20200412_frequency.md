@@ -2821,4 +2821,3 @@ Mammalia
 </tr>
 </tbody>
 </table>
-Lewis says they found no difference between frequency by count and frequency by biomass. Let's see if that's true for me, too.
