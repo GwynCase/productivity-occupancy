@@ -770,6 +770,8 @@ sp
 </tr>
 </tbody>
 </table>
+Then proportion of counts of items identified to family.
+
 ``` r
 count.by.family <- to.family %>% mutate(mass=as.numeric(mass)) %>% 
   group_by(site) %>% 
@@ -1221,6 +1223,8 @@ Sciuridae
 </tr>
 </tbody>
 </table>
+Then proportion of counts identified only to class.
+
 ``` r
 count.by.class <- to.class %>%
   group_by(site) %>% 
