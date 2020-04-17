@@ -1,9 +1,7 @@
 # This code is for filling in a table of all prey items observed
 # with their group, mass, etc.
 
-# load
-
-#df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+# Updated 17 Apr 2020 with bird mass from BNA database.
 
 # Filter out just the prey items delivered.
 # Remove complete unknowns (ie, no class or size).
@@ -49,22 +47,22 @@ items <- items %>% mutate(common=case_when(
 
 # Fil in mass for known bird species.
 items <- items %>% mutate(mass=case_when(
-  # Band-tailed pigeon
-  species == 'fasciata' ~ 392,
-  # Ruffed grouse
-  species == 'umbellus' ~ 600,
-  # Sooty grouse
-  species == 'fulignosus' ~ 600,
-  # Steller's jay
-  species == 'stelleri' ~ 120,
-  # Gray jay
-  species == 'canadensis' ~ 67.5,
-  # Swainson's thrush
-  species == 'ustulatus' ~ 34,
-  # Varied thrush
-  species == 'naevius' ~ 82.5,
+  # Band-tailed pigeon (# from S. BC)
+  species == 'fasciata' ~ 379.4,
+  # Ruffed grouse (# from Alberta)
+  species == 'umbellus' ~ 523.4,
+  # Sooty grouse (from Vancouver & Harwicke Islands)
+  species == 'fulignosus' ~ 1055.5,
+  # Steller's jay (W. Canada)
+  species == 'stelleri' ~ 128,
+  # Gray jay (P. c. pacificus, Alaska)
+  species == 'canadensis' ~ 70.2,
+  # Swainson's thrush (Idaho)
+  species == 'ustulatus' ~ 29.8,
+  # Varied thrush ("breeding grounds")
+  species == 'naevius' ~ 79.35,
   # American robin
-  species == 'migratorius' ~ 77,
+  species == 'migratorius' ~ 79.9,
   TRUE ~ 0))
 
 # Assign each mammal to a size group.

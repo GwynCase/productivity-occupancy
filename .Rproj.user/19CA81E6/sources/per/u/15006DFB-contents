@@ -1,10 +1,5 @@
-mass.by.all <- items %>% mutate(mass=as.numeric(mass)) %>% 
-  group_by(site) %>% 
-  mutate(total=sum(mass)) %>% 
-  group_by(site, class) %>% 
-  mutate(amount=sum(mass)) %>% 
-  ungroup() %>% 
-  mutate(prop=amount/total) %>% 
-  dplyr::select(site, class, amount, total, prop) %>% 
-  arrange(site, class) %>% 
-  distinct()
+items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(sq.mass=sum(mass), p.mass.sq=(sq.mass/t.mass)*100) %>% 
+  dplyr::select(p.mass.sq) %>% distinct() %>% as.numeric() %>% 
+  round()

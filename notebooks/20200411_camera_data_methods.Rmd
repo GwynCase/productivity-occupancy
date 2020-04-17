@@ -30,7 +30,7 @@ install.date <- df %>% group_by(site) %>% summarize(d=min(datetime)) %>%
 
 **Nest Cameras**
 
-We quantified the diet of breeding goshawks using digital trail cameras at `r n.nests` nests during 2019. Nest were selected for camera instllation based on timing of discovery, ease of access, and the presence of suitable trees. Each camera was installed in a tree adjacent to the nest tree, approximately five meters away from and slightly above the nest itself. Cameras (Reconyx, UltraFire and HyperFire models) were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. Installation took place during the early nestling phase
+We quantified the diet of breeding goshawks using digital trail cameras at `r n.nests` nests during 2019. Nests were selected for camera instllation based on timing of discovery, ease of access, and the presence of suitable trees. Each camera was attached to the trunk of a tree adjacent to the nest tree, approximately five meters away from and slightly above the nest itself. Cameras (Reconyx, UltraFire and HyperFire models) were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. Installation took place during the early nestling phase
 (between `r install.date %>% filter(d==min(d)) %>% dplyr::select(day) %>% as.numeric()` 
 `r install.date %>% filter(d==min(d)) %>% dplyr::select(m) %>% as.numeric() %>% month(label=TRUE, abbr=FALSE)`
 and `r install.date %>% filter(d==max(d)) %>% dplyr::select(day) %>% as.numeric()` `r install.date %>% filter(d==min(d)) %>% dplyr::select(m) %>% as.numeric() %>% month(label=TRUE, abbr=FALSE)`) and cameras were left in place until after fledging (approximately September).
@@ -41,19 +41,58 @@ Chicks were aged from photos taken shortly after camera installation using a pic
 
 We identified prey items delivered to the nest following Lewis et al. (2004). Nest camera photos were reviewed and each new prey item was recorded and identified to species when possible, using a combination of study skins, field guides, and researcher knowledge. When identification to species was not possible, items were identified to the lowest possible taxonomic level. Items were additionally categorized by size (small, medium, or large) following Miller et al. (2014). As very few items could be successfully aged, we did not include prey age in our analysis.
 
-Prey items identified to species were assigned mass using Nagorsen (2002; mammals) and ???? (birds). When unable to differentiate between species within a single genus (such as *Eutamias* and *Myotis*), we assigned mass by averaging the masses of all possible species based on range maps. Unidentified items and partial items were assigned mass by averaging the masses of the identfied species in that size and taxonomic group. For example, an unidentified sciurid would receive the average mass of all identified sciurid species, while a small portion of an unidentified bird would receive the average mass of all identified small bird species. A small number of deliveries were completely blocked from the camera by the adult goshawks or chicks and could not be identified to any level. These deliveries were not included in the analysis.
+```{r}
+# Import prey items data
+source('../src/prey_attributes.R')
+```
 
-Goshawks are known to cache prey items for re-delivery to the nest at a later time. Due to the nature of our data, we were not able to identify previously cached items. To reduce the risk of double-counting prey items, we...?
-
-<!-- something coherent about cached items -->
+Prey items identified to species were assigned mass using Nagorsen (2002; mammals) and Billerman et al. (2020; birds). When unable to differentiate between species within a single genus (such as *Eutamias* and *Myotis*), we assigned mass by averaging the masses of all possible species based on range maps. Unidentified items and partial items were assigned mass by averaging the masses of the identfied species in that size and taxonomic group. For example, an unidentified sciurid would receive the average mass of all identified sciurid species, while a small portion of an unidentified bird would receive the average mass of all identified small bird species.
 
 <!-- Frequency of prey items, measured by percent count and biomass, for each of genus, family, and order, per nest -->
 
-<!-- Number of items and biomass delivered to each nest per hour, per day, per nestling per day, per hour per age, per brood size. Control for variable detection? -->
+For each nest, we quantified the number of items 
 
-<!-- Morisita & Simpson with grouped prey categories -->
 <!-- Morisita & Simpson by zone -->
 
-We calculated prey species diversity using items identified to the genus or species level using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
+We calculated prey species diversity for each nest using items identified to the genus or species level using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
 
 <!-- model biomass/chick, biomass/hour (or day?), mammal:bird biomass ~ brood size, chick age -->
+
+## Results
+
+```{r}
+# Import basic camera nest data
+cameras <- read.csv('../data/raw/productivity_2019.csv', stringsAsFactors=FALSE)
+
+# Do the date conversion thing.
+cameras <- cameras %>% mutate(date=ymd(date), branch=ymd(branch), fledge=ymd(fledge))
+
+# How many fledged?
+n.fledge <- cameras %>% group_by(n_fledge) %>% 
+  summarize(n=n())
+
+# How many deliveries?
+n.del <- df %>% filter(interest %in% c('newprey', 'delivery')) %>% nrow()
+
+# How many identified to class?
+n.to.class <- items %>% filter(class != 'Unknown') %>% nrow()
+
+# How many idetnified to genus?
+n.to.genus <- items %>% filter(genus != 'Unknown') %>% nrow()
+```
+
+We observed no nest abandonment following camera installation. One nest failed 9 days following camera install, while the other five nest successfully fledged at least one chick. Successfully nests fledged 1 (n=`r as.numeric(n.fledge[2, 2])`), 2 (n=`r as.numeric(n.fledge[3, 2])`), or 3 (n=`r as.numeric(n.fledge[4, 2])`) chicks. The unsuccessful nest failed after two chicks succumbed to siblicide and the third appeared to fledge prematurely, though the exact cause of failure is unknown. Two other nests were observed to lose a single chick each due to apparent siblicide. <!-- Include site names? -->
+
+<!-- Fledge dates? -->
+
+**Prey deliveries**
+
+We obtained `r nrow(df)` photos from `r nrow(cameras)` nests during the 2019 breeding season. A total of `r n.del` prey item deliveries were recorded. `r round((n.del-nrow(items))/n.del*100, digits=0)`% of items were obscured from the camera during delivery and consumption and were removed from the analysis. Out of the `r nrow(items)` visible items, `r round(n.to.class/nrow(items)*100, digits=0)`% were identified to class and `r round(n.to.genus/nrow(items)*100, digits=0)`% to genus or species. Small and medium birds were disproportionately represented among unidentified items, frequently arriving at the nest already plucked and decapitated.
+
+Across the entire study area, we observed `r items %>% filter(genus != 'Unknown') %>% dplyr::select(genus, species) %>% distinct() %>% summarize(n()) %>% as.numeric()` different species. By biomass, mammals made up the largest proportion of deliveries (`r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(m.mass=sum(mass), p.mass.m=(m.mass/t.mass)*100) %>% dplyr::select(p.mass.m) %>% distinct() %>% as.numeric() %>% round()`%). This was due to the overwhelming number of tree squirrels (*Tamiasciurus* spp.) delivered to nests, which provided `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% mutate(sq.mass=sum(mass), p.mass.sq=(sq.mass/t.mass)*100) %>% dplyr::select(p.mass.sq) %>% distinct() %>% as.numeric() %>% round()`% of biomass. Birds made up `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Aves') %>% mutate(a.mass=sum(mass), p.mass.a=(a.mass/t.mass)*100) %>% dplyr::select(p.mass.a) %>% distinct() %>% as.numeric() %>% round()`% of the diet, with the final `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Unknown') %>% mutate(u.mass=sum(mass), p.mass.u=(u.mass/t.mass)*100) %>% dplyr::select(p.mass.u) %>% distinct() %>% as.numeric() %>% round()`% of prey biomass unable to be identifed as either bird or mammal.
+
+<!-- Prey delivery rates averaged x deliveries/day, although all nests observed occasionally went at least one day without any deliveries. Average biomass/delivery was x, making the average biomass delivered to each nest x/day. Brood size did not affect delivery rates, with large broods receiving the same daily biomass per chick as smaller broods. Brood age did affect delivery rates, with broods receiving larger, but not more frequent, deliveries as they aged. At age x chicks received an average of x/chick/day, increasing to maximum of x/chich/day at age x. -->
+
+<!-- The proportion of prey biomass made of mammalian prey increased with brood age until age x, and then slowly decreased. Brood size also had an affect on the proportion of mammalian prey, with larger broods receiving a greater proportion of mammalian biomass. -->
+
+<!-- The overall index of diversity for the diet of all x nests was x. For individual nests, diversity ranged from x to x (mean=x). Overlap was consistently low, ranging from x to x (mean=x). There was a slight but non-significant difference in diversity between transition zone and coastal zone nests. Overlap was higher within zones than between zones. -->
