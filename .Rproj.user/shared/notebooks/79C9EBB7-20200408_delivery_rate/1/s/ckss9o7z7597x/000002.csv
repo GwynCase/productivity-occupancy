@@ -1,0 +1,3 @@
+"0","del.per.day %>% group_by(site) %>% "
+"0","  summarize(mean=mean(n.del)) %>% "
+"0","  summarize(mean(mean), sd(mean))"

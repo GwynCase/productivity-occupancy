@@ -1,3 +1,0 @@
-"0","to.genus <- items %>% filter(genus != 'Unknown')"
-"0","to.family <- items %>% filter(family != 'Unknown')"
-"0","to.class <- items %>% filter(class != 'Unknown')"

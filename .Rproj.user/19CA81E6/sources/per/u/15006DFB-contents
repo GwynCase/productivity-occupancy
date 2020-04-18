@@ -1,5 +1,0 @@
-items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% 
-  filter(genus == 'Tamiasciurus') %>% 
-  mutate(sq.mass=sum(mass), p.mass.sq=(sq.mass/t.mass)*100) %>% 
-  dplyr::select(p.mass.sq) %>% distinct() %>% as.numeric() %>% 
-  round()

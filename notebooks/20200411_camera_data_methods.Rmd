@@ -48,15 +48,18 @@ source('../src/prey_attributes.R')
 
 Prey items identified to species were assigned mass using Nagorsen (2002; mammals) and Billerman et al. (2020; birds). When unable to differentiate between species within a single genus (such as *Eutamias* and *Myotis*), we assigned mass by averaging the masses of all possible species based on range maps. Unidentified items and partial items were assigned mass by averaging the masses of the identfied species in that size and taxonomic group. For example, an unidentified sciurid would receive the average mass of all identified sciurid species, while a small portion of an unidentified bird would receive the average mass of all identified small bird species.
 
-<!-- Frequency of prey items, measured by percent count and biomass, for each of genus, family, and order, per nest -->
+We calculated the relative proportions of avian and mammalian biomass delivered to the nests during the study period.
 
-For each nest, we quantified the number of items 
+For each nest, we calculated the mean prey deliveries per day by count and by biomass.
+<!-- Is it clear that this is the average of an average? -->
 
 <!-- Morisita & Simpson by zone -->
 
 We calculated prey species diversity for each nest using items identified to the genus or species level using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
 
 <!-- model biomass/chick, biomass/hour (or day?), mammal:bird biomass ~ brood size, chick age -->
+
+We report all means with $\pm$ SD.
 
 ## Results
 
@@ -81,7 +84,7 @@ n.to.class <- items %>% filter(class != 'Unknown') %>% nrow()
 n.to.genus <- items %>% filter(genus != 'Unknown') %>% nrow()
 ```
 
-We observed no nest abandonment following camera installation. One nest failed 9 days following camera install, while the other five nest successfully fledged at least one chick. Successfully nests fledged 1 (n=`r as.numeric(n.fledge[2, 2])`), 2 (n=`r as.numeric(n.fledge[3, 2])`), or 3 (n=`r as.numeric(n.fledge[4, 2])`) chicks. The unsuccessful nest failed after two chicks succumbed to siblicide and the third appeared to fledge prematurely, though the exact cause of failure is unknown. Two other nests were observed to lose a single chick each due to apparent siblicide. <!-- Include site names? -->
+We observed no nest abandonment following camera installation. One nest failed 9 days following camera install, while the other five nest successfully fledged at least one chick. Successfully nests fledged 1 (n=`r as.numeric(n.fledge[2, 2])`), 2 (n=`r as.numeric(n.fledge[3, 2])`), or 3 (n=`r as.numeric(n.fledge[4, 2])`) chicks. The unsuccessful nest failed after two chicks succumbed to siblicide and the third appeared to fledge prematurely, though the exact cause of failure is unknown. Two other nests were observed to lose a single chick each due to apparent siblicide. <!-- Include site names? --> <!-- Include chick ages -->
 
 <!-- Fledge dates? -->
 
@@ -89,9 +92,24 @@ We observed no nest abandonment following camera installation. One nest failed 9
 
 We obtained `r nrow(df)` photos from `r nrow(cameras)` nests during the 2019 breeding season. A total of `r n.del` prey item deliveries were recorded. `r round((n.del-nrow(items))/n.del*100, digits=0)`% of items were obscured from the camera during delivery and consumption and were removed from the analysis. Out of the `r nrow(items)` visible items, `r round(n.to.class/nrow(items)*100, digits=0)`% were identified to class and `r round(n.to.genus/nrow(items)*100, digits=0)`% to genus or species. Small and medium birds were disproportionately represented among unidentified items, frequently arriving at the nest already plucked and decapitated.
 
-Across the entire study area, we observed `r items %>% filter(genus != 'Unknown') %>% dplyr::select(genus, species) %>% distinct() %>% summarize(n()) %>% as.numeric()` different species. By biomass, mammals made up the largest proportion of deliveries (`r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(m.mass=sum(mass), p.mass.m=(m.mass/t.mass)*100) %>% dplyr::select(p.mass.m) %>% distinct() %>% as.numeric() %>% round()`%). This was due to the overwhelming number of tree squirrels (*Tamiasciurus* spp.) delivered to nests, which provided `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% mutate(sq.mass=sum(mass), p.mass.sq=(sq.mass/t.mass)*100) %>% dplyr::select(p.mass.sq) %>% distinct() %>% as.numeric() %>% round()`% of biomass. Birds made up `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Aves') %>% mutate(a.mass=sum(mass), p.mass.a=(a.mass/t.mass)*100) %>% dplyr::select(p.mass.a) %>% distinct() %>% as.numeric() %>% round()`% of the diet, with the final `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Unknown') %>% mutate(u.mass=sum(mass), p.mass.u=(u.mass/t.mass)*100) %>% dplyr::select(p.mass.u) %>% distinct() %>% as.numeric() %>% round()`% of prey biomass unable to be identifed as either bird or mammal.
+Across the entire study area, we observed `r items %>% filter(genus != 'Unknown') %>% dplyr::select(genus, species) %>% distinct() %>% summarize(n()) %>% as.numeric()` different prey species delivered to nests. By biomass, mammals made up the largest proportion of deliveries (`r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(m.mass=sum(mass), p.mass.m=(m.mass/t.mass)*100) %>% dplyr::select(p.mass.m) %>% distinct() %>% as.numeric() %>% round()`%). This was due to the overwhelming number of tree squirrels (*Tamiasciurus* spp.) delivered to nests, which provided `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% mutate(sq.mass=sum(mass), p.mass.sq=(sq.mass/t.mass)*100) %>% dplyr::select(p.mass.sq) %>% distinct() %>% as.numeric() %>% round()`% of biomass. Birds made up `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Aves') %>% mutate(a.mass=sum(mass), p.mass.a=(a.mass/t.mass)*100) %>% dplyr::select(p.mass.a) %>% distinct() %>% as.numeric() %>% round()`% of the diet, with the final `r items %>% mutate(mass=as.numeric(mass), t.mass=sum(mass)) %>% filter(class == 'Unknown') %>% mutate(u.mass=sum(mass), p.mass.u=(u.mass/t.mass)*100) %>% dplyr::select(p.mass.u) %>% distinct() %>% as.numeric() %>% round()`% of prey biomass unable to be identifed as either bird or mammal.
 
-<!-- Prey delivery rates averaged x deliveries/day, although all nests observed occasionally went at least one day without any deliveries. Average biomass/delivery was x, making the average biomass delivered to each nest x/day. Brood size did not affect delivery rates, with large broods receiving the same daily biomass per chick as smaller broods. Brood age did affect delivery rates, with broods receiving larger, but not more frequent, deliveries as they aged. At age x chicks received an average of x/chick/day, increasing to maximum of x/chich/day at age x. -->
+```{r}
+del.per.day <- df %>% filter(interest %in% c('delivery', 'newprey')) %>% 
+  mutate(day=date(datetime)) %>% 
+  group_by(site) %>% 
+  mutate(first=min(day), last=max(day), n.day=last-first) %>% 
+  add_count(site, day, name='n.del') %>% 
+  add_count(site, name='t.del') %>% 
+  mutate(n.day=as.numeric(n.day), per.day=t.del/n.day) %>% 
+  dplyr::select(site, day, n.day, n.del, t.del) %>% 
+  distinct() %>% 
+  complete(nesting(site), day=seq(min(day), max(day), by='day')) %>% 
+  fill(n.day, t.del) %>% 
+  mutate(n.del=replace_na(n.del, 0))
+```
+
+Prey delivery rates averaged `r del.per.day %>% group_by(site) %>% summarize(mean=mean(n.del)) %>% summarize(mean(mean)) %>% as.numeric() %>% round(digits=2)` $\pm$ `r del.per.day %>% group_by(site) %>% summarize(mean=mean(n.del)) %>% summarize(sd(mean)) %>% as.numeric() %>% round(digits=2)` deliveries/day, although all nests observed occasionally went at least one day without any deliveries. Average biomass/delivery was x, making the average biomass delivered to each nest x/day. Brood size did not affect delivery rates, with large broods receiving the same daily biomass per chick as smaller broods. Brood age did affect delivery rates, with broods receiving larger, but not more frequent, deliveries as they aged. At age x chicks received an average of x/chick/day, increasing to maximum of x/chich/day at age x.
 
 <!-- The proportion of prey biomass made of mammalian prey increased with brood age until age x, and then slowly decreased. Brood size also had an affect on the proportion of mammalian prey, with larger broods receiving a greater proportion of mammalian biomass. -->
 
