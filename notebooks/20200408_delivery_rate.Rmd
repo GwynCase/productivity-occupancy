@@ -94,8 +94,8 @@ mass.by.day <- items %>% mutate(date=date(datetime), mass=as.numeric(mass)) %>%
   complete(nesting(site), date=seq(min(date), max(date), by='day')) %>% 
   mutate(d.mass=replace_na(d.mass, 0))
 
-mass.by.day %>% group_by(site) %>% 
-  summarize(mean=mean(d.mass))
+  mass.by.day %>% group_by(site) %>% 
+    summarize(mean=mean(d.mass))
 ```
 
 That looks slightly different. And when I look at them combined?

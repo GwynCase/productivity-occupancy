@@ -1,0 +1,63 @@
+---
+title: "Time Series Problem"
+output: html_notebook
+---
+
+Here's my problem: I have a series of photographs from some nest cameras. The point of the photographs is to document what food it being delivered to the nest, but we also count how many chicks are in the nest at a given time (this is the `live.chicks` variable.)
+
+The `live.chicks` variable is usually not updated unless it changes. This results in wide gaps between data points. It's also updated based on what the observer sees at that time, which may prove to be incorrect.
+
+For example,
+
+`2 NA NA NA NA 1 NA NA NA`
+
+means two chicks were seen in a photo, that didn't change for four photos, then only one chick was seen, which remained unchanged for three photos. In this scenario, the chick probably died. On the other hand,
+
+`2 NA NA 1 NA NA 2 NA NA`
+
+means two chicks were seen, unchanged for 2 photos, then only 1 chick was seen, but two photos later there were 2 chicks. In this scenario, there were two chicks the whole time, one was just out of view of the camera for a little while.
+
+These two scenarios are obviously very different biologically. I'm trying to create a table with a line for each day of observation for each nest (`site`) and the *true* number of chicks at the nest. So given the example data of:
+
+```{r}
+day <- c(1, 1, 2, 2, 4, 4)
+n.chicks <- c(2, NA, 1, NA, 2, 1)
+data.frame(day, n.chicks)
+```
+
+I would like to get
+
+```{r}
+day <- c(1, 2, 3, 4)
+n.chicks <- c(2, 2, 2, 1)
+data.frame(day, n.chicks)
+```
+
+Basically, the number of chicks on a given day can never be lower than the number of chicks on a later day. But the number of chicks on a given day *can* be lower than the number of chicks on an earlier day.
+
+Note that the cameras were recording for different days at each site. So the first and last date will be different for each site.
+
+Here's what I've got so far:
+
+```{r}
+library('tidyverse')
+library('lubridate')
+
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+chicks <- df %>% mutate(date=date(datetime)) %>% 
+  dplyr::select(site, date, live.chicks) %>% 
+  drop_na() %>%
+  group_by(site, date) %>% 
+  summarize(max(live.chicks)) %>% 
+  ungroup() %>% group_by(site) %>% 
+  complete(nesting(site), date=seq(min(date), max(date), by='day'))
+
+head(chicks)
+```
+
+Easy enough, so far, but I'm not sure where to go from here!
+
+(Also I feel like I must be using `complete` wrong?? It only seems to work properly if I ungroup and regroup first.)
+
+Thank you!!!

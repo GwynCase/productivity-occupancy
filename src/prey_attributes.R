@@ -152,4 +152,5 @@ md <- items %>% filter(group %in% c('Medium mammal', 'Medium bird')) %>%
 
 # Insert into table.
 items <- items %>% mutate(mass=replace(mass, group=='Small item', sm), 
-                          mass=replace(mass, group=='Medium item', md))
+                          mass=replace(mass, group=='Medium item', md),
+                          mass=as.numeric(mass))

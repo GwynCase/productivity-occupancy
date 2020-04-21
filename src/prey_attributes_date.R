@@ -5,15 +5,13 @@
 
 # Filter out just the prey items delivered.
 # Remove complete unknowns (ie, no class or size).
-items <- df %>% filter(class != '') %>%
+items.alt <- df %>% filter(class != '') %>%
   filter(size != 'Unknown') %>%
   dplyr::select(site, datetime, class, family, genus, species, common, size) %>% 
   arrange(class, family, genus, species, size)
 
-# prey_attributes
-
 # Classify each avian item into a size class.
-items <- items %>% mutate(group=case_when(
+items.alt <- items.alt %>% mutate(group=case_when(
   # Band-tailed pigeon
   species == 'fasciata' ~ 'Large bird',
   # Ruffed grouse
@@ -39,14 +37,14 @@ items <- items %>% mutate(group=case_when(
   TRUE ~ 'group'))
 
 # Add a common name for items not IDed to species.
-items <- items %>% mutate(common=case_when(
+items.alt <- items.alt %>% mutate(common=case_when(
   class == 'Aves' & species == 'unknown' & size == 'Small' ~ 'average small bird',
   class == 'Aves' & species == 'unknown' & size == 'Medium' ~ 'average medium bird',
   class == 'Aves' & species == 'unknown' & size == 'Large' ~ 'average large bird',
   TRUE ~ common))
 
 # Fil in mass for known bird species.
-items <- items %>% mutate(mass=case_when(
+items.alt <- items.alt %>% mutate(mass=case_when(
   # Band-tailed pigeon (# from S. BC)
   species == 'fasciata' ~ 379.4,
   # Ruffed grouse (# from Alberta)
@@ -66,7 +64,7 @@ items <- items %>% mutate(mass=case_when(
   TRUE ~ 0))
 
 # Assign each mammal to a size group.
-items <- items %>% mutate(group=case_when(
+items.alt <- items.alt %>% mutate(group=case_when(
   # Snowshoe hare
   species == 'americanus' ~ 'Large mammal',
   # Rat sp.
@@ -90,14 +88,14 @@ items <- items %>% mutate(group=case_when(
   TRUE ~ group))
 
 # Add common name for mammals not IDed to species.
-items <- items %>% mutate(common=case_when(
+items.alt <- items.alt %>% mutate(common=case_when(
   class == 'Mammalia' & species == 'unknown' & size == 'Small' ~ 'average small mammal',
   class == 'Mammalia' & species == 'unknown' & size == 'Medium' ~ 'average medium mammal',
   class == 'Mammalia' & species == 'unknown' & size == 'Large' ~ 'average large mammal',
   TRUE ~ common))
 
 # Fil in mass for known mammal species.
-items <- items %>% mutate(mass=case_when(
+items.alt <- items.alt %>% mutate(mass=case_when(
   # Snowshoe hare
   species == 'americanus' ~ 1340,
   # Rat
@@ -119,37 +117,38 @@ items <- items %>% mutate(mass=case_when(
   TRUE ~ mass))
 
 # Assign a group for items of unknown class.
-items <- items %>% mutate(group=case_when(
+items.alt <- items.alt %>% mutate(group=case_when(
   class == 'Unknown' & size == 'Medium' ~ 'Medium item',
   class == 'Unknown' & size == 'Small' ~ 'Small item',
   TRUE ~ group))
 
 # Add a common name for items of unknown class.
-items <- items %>% mutate(common=case_when(
+items.alt <- items.alt %>% mutate(common=case_when(
   class == 'Unknown' & size == 'Medium' ~ 'average medium item',
   class == 'Unknown' & size == 'Small' ~ 'average small item',
   TRUE ~ common))
 
 # Calculate the mean mass of each class/size.
-m.mass <- items %>% filter(mass != 0) %>%
+m.mass <- items.alt %>% filter(mass != 0) %>%
   group_by(group) %>%
   summarise(mean=mean(mass))
 
 # Add to the list of prey items.
-items <- left_join(items, m.mass, by='group') %>%
-  mutate(mass = ifelse(mass > 1, mass, mean)) %>%
+items.alt <- left_join(items.alt, m.mass, by='group') %>%
+  mutate(mass = ifelse(mass > 1, mass, mean), mass=as.numeric(mass)) %>%
   dplyr::select(-mean)
 
 # Calculate average small item.
-sm <- items %>% filter(group %in% c('Small mammal', 'Small bird')) %>%
+sm <- items.alt %>% filter(group %in% c('Small mammal', 'Small bird')) %>%
   distinct(mass) %>%
   summarize(mean(mass))
 
 # Calculate average medium item.
-md <- items %>% filter(group %in% c('Medium mammal', 'Medium bird')) %>%
+md <- items.alt %>% filter(group %in% c('Medium mammal', 'Medium bird')) %>%
   distinct(mass) %>%
-  summarize(mean(mass))
+  summarize(mean(mass)) 
 
 # Insert into table.
-items <- items %>% mutate(mass=replace(mass, group=='Small item', sm), 
-                          mass=replace(mass, group=='Medium item', md))
+items.alt <- items.alt %>% mutate(mass=replace(mass, group=='Small item', sm), 
+                          mass=replace(mass, group=='Medium item', md),
+                          mass=as.numeric(mass))
