@@ -1,0 +1,202 @@
+---
+title: "2019 Project Summary"
+output:
+  bookdown::pdf_document2:
+    latex_engine: xelatex
+    toc: no
+header-includes:
+  \usepackage{fontspec}
+  \setmainfont{Sitka Display}
+  \newfontfamily\ssf{Lato}
+  \newenvironment{ctable}{\ssf }{}
+  \newenvironment{capctable}[1][t]{\begin{table}[#1]\centering\ssf}{\end{table}}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r}
+library('knitr')
+library('kableExtra')
+library('tidyverse')
+library('lubridate')
+```
+# Abstract
+
+Abstract/exectuive summary: what is this document.
+
+# Diet
+
+Introductory paragraph.
+
+## Physical specimens
+
+Physical remains were collected using two different methodologies. Opportunistic collections were gathered by inventory technicians during regular goshawk surveys. Prey remains and regurgiated pellets were collected from beneath pluck posts, perches, and active and inactive nests when discovered by surveyors. Items from each pluck post, perch, or nest were pooled into a single sample. Systematic collections were gathered during thorough searches of the ground within a 50-m radius of an active nest. All physical remains from a single nest visit were pooled into a single sample.
+
+We reconstructed physical remains following a modification of Lewis et al. (2006). Within each sample, prey remains were identified to the lowest possible taxonomic category and the minimum number of individuals counted (ie 1.5 vole mandibles = 2 voles [family: Cricetidae]). Intact and broken but reassembled pellets were analyzed individually within each sample, while fragmented pellets were combined within each sample. Pellets were dissected and feathers, fur, and hard parts (bones, teeth, claws) were identified to the lowest taxonomic level. We counted the minimum number of individuals represented within the pellet or pellet collection (ie, Douglas squirrel fur and 3 squirrel claws = 1 *Tamiascuirus douglasii*). Items were additionally categorized to size and assigned mass as per camera data (see below).
+
+### Preliminary results
+
+We collected prey remains and pellets from 15 sites during the 2019 breeding season. At least 7 sites have one or more systematic collection. We have identified 28 prey items so far, 43% to family and 25% to genus or species.
+
+```{r}
+pr <- read.csv('../data/raw/20200424_specimens.csv', stringsAsFactors=FALSE)
+
+pr %>% group_by(class, family, genus, species) %>% 
+  summarize(n()) %>% 
+  kable('latex', booktabs=T, caption='Prey identified from physical remains',
+       table.envir = 'capctable',
+       col.names=c('Class', 'Family', 'Genus', 'Species', 'N'))
+```
+
+Preliminary results indicate that physical remains may be more accurate for identifying small mammals and birds, but less accurate for identifying large birds. Multiple species not recorded in cameras were identified using physical remains.
+
+Further analysis is currently on hold due to the covid-19 pandemic.
+
+## Cameras
+
+### Methods
+
+We quantified the diet of breeding goshawks using digital trail cameras placed at 6 nests during 2019. Cameras were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. Installation took place during the early nestling phase (between 4 June and 26 June) and cameras were left in place until after juvenile dispersal.
+
+Nest camera photos were reviewed and each new prey item was recorded and identified to species when possible. When identification to species was not possible, items were identified to the lowest possible taxonomic level. Items were additionally categorized by size (small, medium, or large). Prey items identified to species were assigned mass using data from the literature. Unidentified items and partial items were assigned mass by averaging the masses of the identified species in that size and taxonomic group.
+
+We calculated the relative proportions of avian and mammalian biomass delivered to all nests during the study period. For each nest, we calculated the mean prey deliveries per day by count and by biomass. Daily biomass for all six nests was pooled to determine the effect of brood size and brood age on delivery rate.
+
+We calculated prey species diversity for the entire study area and for each nest using items identified to genus or species using Simpson's Diversity Index. We calculated dietary overlap between nests using Morisita's Index of Similarity. 
+
+### Preliminary results
+
+We obtained 26577 photos from 6 nests during the 2019 breeding season. A total of 268 prey item deliveries were recorded. 16% of items were obscured from the camera during delivery and consumption and were removed from the analysis. Out of the 225 visible items, 75% were identified to class and 59% to genus or species. Small and medium birds were disproportionately represented among unidentified items, frequently arriving at the nest already plucked and decapitated.
+
+```{r}
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+# Do the datetime thing.
+df <- df %>% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+
+source('../src/prey_attributes.R')
+
+# Calculate days.
+timespan <- df %>% filter(interest %in% c('delivery', 'newprey')) %>% group_by(site) %>% 
+  summarize(first=min(datetime), last=max(datetime)) %>%
+  mutate(first=date(first), last=date(last)) %>%
+  mutate(days=difftime(last, first))
+
+n.prey <- df %>% filter(interest %in% c('delivery', 'newprey')) %>% group_by(site) %>% summarize(prey=n())
+
+# Photos per day?
+bind_cols(timespan, n.prey) %>%
+  mutate(days=as.numeric(days), per.day=prey/days) %>% 
+  mutate(per.day=round(per.day)) %>% 
+  dplyr::select(site, first, last, prey, per.day) %>% 
+  kable('latex', booktabs=T, caption='Deliveries recorded on nest cameras',
+       table.envir = "capctable",
+       col.names=c('Site', 'First delivery recorded', 'Last delivery recorded', 'N. deliveries', 'Deliveries/day'))
+```
+
+Across the entire study area, we observed 17 different prey species delivered to nests. By biomass, mammals made up the largest proportion of deliveries (69%). This was due to the overwhelming number of tree squirrels (*Tamiasciurus* spp.) delivered to nests, which provided 45% of biomass. Birds made up 17% of the diet, with the final 14% of prey biomass unable to be identifed as either bird or mammal.
+
+Prey deliveries averaged 1.86 ± 0.8 deliveries/day, although all nests observed occasionally went at least one or more days without any deliveries. Average biomass of items was 170.18 ± 181.64 g, and the average daily biomass of prey delivered to each nest was 290.57 ± 191.48 g/day. Brood age did not affect delivery rates, with older broods receiving approximately the same biomass per day as younger broods (P = 0.48).
+
+**Diversity/overlap**
+
+# Movement
+
+Introductory paragraph
+
+## Telemetry
+
+### Methods
+
+During 2018-2019 we captured and tagged 7 adult goshawks (4 female and 3 male)
+at 5 active nest sites. Trapping took place during the mid-breeding season (May-June) using a dho-gaza trap with a live great-horned owl (*Bubo virginianus*) as a lure. We fitted goshawks with a solar-powered GPS-UHF transmitter with an additional attached VHF transmitter. Transmitters were programmed to record a location every 15 minutes during the breeding season (approximately May-August) and every 4 hours during the nonbreeding season. Location data were retrieved from the tag via either a base station placed near the nest or a hand-held UHF receiver.
+
+* MCPs date range, calculation
+
+* summary of data available - perhaps just a table with bird id, duration of sampling (start end), # of points
+
+We used nocturnal points to locate nighttime roost sites and 
+
+### Preliminary results
+
+* results to date - v. brief but report in on some of thing you have tried -  identification of roost sites, predictors of roost sites , difficulty in discriminating foraging and transit locations, # birds with cameras and tracking and anecdotal statement about ability to link timestamps of deliveries to where prey captured
+
+# Occupancy & Landscape
+* v brief outline of what data available - this was a while ago - but you looked at # nests where there was consecutive years of sampling for period 2017/18, 2018/19, 2019/20?
+
+# Going forward
+
+* measure landscape metrics for x nests with cameras, y with pellets and z with occupancy data    ??
+* complete pellet id (x nests   ca y pellets per nest?) 
+* assess link between landscape and diet
+* compare diet assessed using two approaches
+* assess link between landscape and occupancy (?)
+* telemetry ??  UD during breeding season, other basic descriptors that layout radius for landscape metrics, habitat selection ?? 
+
+# Appendix
+
+* full table of data
+
+```{r}
+dt <- read.csv('../data/raw/total_data_twisted.csv', stringsAsFactors=FALSE) %>% 
+  replace(is.na(.), ' ')
+
+# kable(dt, 'latex', booktabs=T, caption='Summary of available sites',
+#       table.envir = "capctable",
+#       col.names=
+#         c('Site', 'Name', 'Type', 'Date', 'N', 'Date', 'N', 'Date', 'N', 'Date', 'Comments')) %>% 
+#   kable_styling(latex_options=c('scale_down')) %>% 
+#   add_header_above(c(' '=3, 'Physical remains'=2, 'Cameras'=2, 'Telemetry'=2, 'Occupancy'=1, ' '=1)) %>% 
+#   landscape(margin = c('1cm'))
+
+kable(dt, 'latex', booktabs=T, caption='Summary of available data',
+       table.envir = "capctable",
+       col.names=
+         c('Site', 'Name', 'Int', 'Ext', 'Phys. rem.', 'Cameras', '2018 M', '2018 F', '2019 M', '2019 F', '2015', '2016', '2017', '2018', '2019')) %>% 
+   kable_styling(latex_options=c('scale_down', 'striped')) %>% 
+   add_header_above(c(' '=2, 'Type'=2, 'Diet'=2, 'Telemetry'=4, 'Occupancy'=5)) %>% 
+   landscape(margin = c('1cm'))
+```
+
+```{r}
+# Do the calculations
+mass.table <- items %>% mutate(mass=as.numeric(mass)) %>%
+  # Calculate totall biomass & total count.
+  mutate(t.biomass=sum(mass), t.n=n()) %>% 
+  group_by(common) %>%
+  # Calcuate biomass and count by group.
+  # Calculate percent biomass and count by group.
+  mutate(n=n(), biomass=sum(mass), p.biomass=(biomass/t.biomass*100),
+         p.n=(n/t.n*100))
+
+# Make a pretty table.
+prey.table <- mass.table %>% arrange(class, group, genus) %>% 
+  unite(name, 4:5, sep=' ', remove=FALSE) %>% 
+  mutate(name=case_when(
+    name == 'Unknown unknown' ~ ' ',
+    TRUE ~ name
+  )) %>% 
+  dplyr::select(common, name, n, p.n, p.biomass) %>% 
+  distinct()
+
+# Print it out.
+prey.table %>% 
+  kable('latex', booktabs=T, caption='Summary of nest camera data',
+       table.envir = "capctable", col.names=(c('Prey species', '', 'count', '% count', '% biomass')), 
+        digits=2) %>% 
+  kable_styling(full_width=TRUE) %>%
+  column_spec(1, width='20em') %>% 
+  column_spec(2, italic=T, width='20em') %>% 
+  pack_rows('Large birds (> 150 g)', 1, 3) %>%
+  pack_rows('Medium birds (60-150 g)', 4, 8) %>%
+  pack_rows('Small birds (< 40 g)', 9, 10) %>% 
+  pack_rows('Large mammals (> 600 g)', 11, 12) %>%
+  pack_rows('Medium mammals (200-600 g)', 13, 18) %>%
+  pack_rows('Small mammals (< 200 g)', 19, 22) %>%
+  pack_rows('Unidentified items', 23, 24)
+```
+
+*Finis*

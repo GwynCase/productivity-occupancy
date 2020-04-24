@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1587664370977.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3699688673",
+    "id" : "EB84630D",
+    "lastKnownWriteTime" : 1587767310,
+    "last_content_update" : 1587767310645,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/1111_project_summary_2019.Rmd",
+    "project_path" : "notebooks/1111_project_summary_2019.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "52,240",
+        "last_setup_crc32" : "516D4D94e74108d1",
+        "scrollLine" : "51",
+        "tempName" : "Untitled2"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

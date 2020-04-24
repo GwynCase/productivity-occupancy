@@ -1,6 +1,6 @@
 ---
-title: "Canera data collection methods"
-output: html_document
+title: "Camera data collection methods"
+output: html_notebook
 ---
 
 ```{r setup, include=FALSE}

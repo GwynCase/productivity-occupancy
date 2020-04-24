@@ -1,0 +1,18 @@
+---
+title: "BEC zones"
+output: html_notebook
+---
+
+According to NGRT 2008, there are two "regions" within coastal BC, with regards to goshawk management. The *transition zone* is the drier variants of the Coastal Western Hemlock biogeoclimatic zone on the coastal mainland and may be an area where the coastal *laingi* subspecies and interior *atricapillus* subspecies may overlap. Bascially, this is an area where the models built for Vancouver Island and the coast may start breaking down because it is more similar to the interior.
+
+These subzones are CWHds1 and CWHmm1.
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
