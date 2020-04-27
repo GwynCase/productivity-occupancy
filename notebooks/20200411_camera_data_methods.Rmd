@@ -50,7 +50,7 @@ Prey items identified to species were assigned mass using Nagorsen (2002; mammal
 
 We calculated the relative proportions of avian and mammalian biomass delivered to all nests during the study period. For each nest, we calculated the mean prey deliveries per day by count and by biomass. <!-- Is it clear that this is the average of an average? --> Daily biomass for all six nests was pooled to determine the effect of brood size and brood age on delivery rate. We transformed biomass data by taking the natural log of daily biomass delivered to each nest and used linear models to assess the effects of brood age and number of chicks present in the nest on deliveries.
 
-We calculated prey species diversity for the entire study area and for each nest using items identified to genus or species using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
+We calculated prey species diversity for the entire study area and for each nest using items identified to genus or species using Simpson's Diversity Index (citation needed). We calculated dietary overlap between nests using the Simplified Morisita's Index of Similarity (Krebs 1998). <!-- but check that citation -->
 
 We report all means with $\pm$ SD.
 
@@ -153,4 +153,25 @@ Prey deliveries averaged `r del.per.day %>% group_by(site) %>% summarize(mean=me
 
 The proportion of prey biomass made of mammalian prey increased with brood age until age x, and then slowly decreased. Brood size also had an affect on the proportion of mammalian prey, with larger broods receiving a greater proportion of mammalian biomass.
 
-The overall index of diversity for the diet of all x nests was x. For individual nests, diversity ranged from x to x (mean=x). Overlap was consistently low, ranging from x to x (mean=x). There was a slight but non-significant difference in diversity between transition zone and coastal zone nests. Overlap was higher within zones than between zones.
+```{r}
+library('vegan')
+
+# Reorder data into a format vegan can eat.
+to.genus <- items %>% filter(genus != 'Unknown') %>% 
+  group_by(site, genus, species) %>% 
+  mutate(count=n()) %>% 
+  dplyr::select(site, genus, species, count) %>% 
+  unite(name, 2:3, sep=' ') %>% 
+  distinct() %>% 
+  pivot_wider(names_from=name, values_from=count,
+                         values_fill=list(count = 0))
+
+# Remove the oddity (will fix in future)
+to.genus <- to.genus %>% dplyr::select(-`Tamiasciurus sp`)
+
+# Prep for Morisita.
+mor <- column_to_rownames(to.genus, var='site')
+mor <- mor[,-1]
+```
+
+The overall index of diversity for the diet of all `r nrow(to.genus)` nests was `r to.genus %>% ungroup %>% summarize_at(2:ncol(.), sum) %>% diversity(index='simpson') %>% round(digits=2)`. For individual nests, diversity ranged from `r to.genus[-1] %>% diversity(index='simpson') %>% max() %>% round(digits=2)` to `r to.genus[-1] %>% diversity(index='simpson') %>% min() %>% round(digits=2)` (mean = `r to.genus[-1] %>% diversity(index='simpson') %>% mean() %>% round(digits=2)`). Overlap was consistently low, ranging from `r vegdist(mor, method='horn') %>% max() %>% round(digits=2)` to `r vegdist(mor, method='horn') %>% min() %>% round(digits=2)` (mean = `r vegdist(mor, method='horn') %>% mean() %>% round(digits=2)`). There was a slight but non-significant difference in diversity between transition zone and coastal zone nests. Overlap was higher within zones than between zones.

@@ -1,0 +1,157 @@
+---
+title: "Time Series Problem"
+output: html_notebook
+---
+
+## Gwyn's Problem
+
+Here's my problem: I have a series of photographs from some nest cameras. The point of the photographs is to document what food it being delivered to the nest, but we also count how many chicks are in the nest at a given time (this is the `live.chicks` variable.)
+
+The `live.chicks` variable is usually not updated unless it changes. This results in wide gaps between data points. It's also updated based on what the observer sees at that time, which may prove to be incorrect.
+
+For example,
+
+`2 NA NA NA NA 1 NA NA NA`
+
+means two chicks were seen in a photo, that didn't change for four photos, then only one chick was seen, which remained unchanged for three photos. In this scenario, the chick probably died. On the other hand,
+
+`2 NA NA 1 NA NA 2 NA NA`
+
+means two chicks were seen, unchanged for 2 photos, then only 1 chick was seen, but two photos later there were 2 chicks. In this scenario, there were two chicks the whole time, one was just out of view of the camera for a little while.
+
+These two scenarios are obviously very different biologically. I'm trying to create a table with a line for each day of observation for each nest (`site`) and the *true* number of chicks at the nest. So given the example data of:
+
+```{r}
+day <- c(1, 1, 2, 2, 4, 4)
+n.chicks <- c(2, NA, 1, NA, 2, 1)
+data.frame(day, n.chicks)
+```
+
+I would like to get
+
+```{r}
+day <- c(1, 2, 3, 4)
+n.chicks <- c(2, 2, 2, 1)
+data.frame(day, n.chicks)
+```
+
+Basically, the number of chicks on a given day can never be lower than the number of chicks on a later day. But the number of chicks on a given day *can* be lower than the number of chicks on an earlier day.
+
+Note that the cameras were recording for different days at each site. So the first and last date will be different for each site.
+
+Here's what I've got so far:
+
+```{r}
+library('tidyverse')
+library('lubridate')
+
+df <- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+
+chicks <- df %>% mutate(date=date(datetime)) %>% 
+  dplyr::select(site, date, live.chicks) %>% 
+  drop_na() %>%
+  group_by(site, date) %>% 
+  summarize(max(live.chicks)) %>% 
+  ungroup() %>% group_by(site) %>% 
+  complete(nesting(site), date=seq(min(date), max(date), by='day'))
+
+head(chicks)
+```
+
+Easy enough, so far, but I'm not sure where to go from here!
+
+(Also I feel like I must be using `complete` wrong?? It only seems to work properly if I ungroup and regroup first.)
+
+Thank you!!!
+
+
+## Bruno's Response
+
+This was well-written! It made it easy for me to understand the problem. Thank you for taking the time write this document. 
+
+### Fixing errors
+
+The first thing I tackled is the issue about birds being missed. I was able to write some R code to implement this rule you stated: 
+
+> Basically, the number of chicks on a given day can never be lower than the number of chicks on a later day. But the number of chicks on a given day *can* be lower than the number of chicks on an earlier day.
+
+This can be achieved using a cumulative max with the `cummax()` function. I could try to explain it with words, but I think a demo that you can play with is easier to understand. I've included a function called `fix_errors()` that you can use below. Note that in its current form, it will be sensitive to typos where one observation has a really high `live.chicks` count, which will cause every previous observation to inherit this high value. This could be addressed if this is an issue. 
+
+```{r}
+x1 <- c(2, 2, 2, 2, 2, 1, 1, 1, 1)
+x2 <- c(2, 2, 2, 1, 1, 1, 2, 2, 2)
+x3 <- c(3, 3, 2, 1, 2, 1, 2, 1, 0)
+
+fix_errors <- function (x) rev(cummax(rev(x)))
+
+print("x1")
+x1
+fix_errors(x1)
+
+print("x2")
+x2
+fix_errors(x2)
+
+print("x3")
+x3
+fix_errors(x3)
+```
+
+### Create a pipeline
+
+Once I had a function for fixing the errors, I could write the pipeline to generate what you're looking for. 
+
+Here, I copy-pasted what you wrote above with a few tweaks. I noticed you wrote `dplyr::` in front of select because there is often a conflict with other packages. If you're like me and you don't find this elegant, I use the `conflicted` package, written by the same people behind `dplyr`. It allows you to detect conflicts if they arise, and then you can state which function you prefer at the top of your script. 
+
+I also switch to `read_csv()` from the `readr` package as opposed to `read.csv()` from base R, because it has `stringsAsFactors=FALSE` as a default. So, you don't have to set it everytime. Now, I noticed that `read_csv()` complains about parsing failures. That's because in the first 1000 rows, the `sex` column looks like a logical column. You can force `read_csv()` to consider more rows before inferring the column type using `guess_max`. 
+
+```{r}
+library('tidyverse')
+library('lubridate')
+library('conflicted')
+
+conflict_prefer("select", "dplyr")
+
+camera_obs <- read_csv('~/Downloads/camera_corrected.csv', guess_max = 10000)
+```
+
+With the data loaded, I used the function I wrote above to fix the errors. A useful function here is the `fill()` function from `tidyr`. It allows you to fill in a series of `NA` values based on the value before or after (determined by the `.direction` argument). Here, I went with `.direction = "downup"` such that gaps in `live.chicks` were filled with the previous value first (within each site), and any `NA` values for the first observations for a site (where there isn't a previous value), I filled in using the next value. Note that `cummax()`, which is used by `fix_errors()`, does not handle `NA` values, so it's useful to eliminate them here with `fill()`.
+
+You can compare `live_chicks_all_before_fill` and `live_chicks_all_after_fill` to see the effects of `fill()`, and `live_chicks_all` is the final per-observation version with the errors fixed.  
+
+```{r}
+live_chicks_all_before_fill <- 
+  camera_obs %>% 
+  mutate(date = date(datetime)) %>% 
+  select(site, date, live.chicks)
+
+live_chicks_all_after_fill <- 
+  live_chicks_all_before_fill %>% 
+  group_by(site) %>% 
+  fill(live.chicks, .direction = "downup")
+
+live_chicks_all <- 
+  live_chicks_all_after_fill %>% 
+  mutate(live.chicks = fix_errors(live.chicks))
+
+live_chicks_all_before_fill
+live_chicks_all_after_fill
+live_chicks_all
+```
+
+Now that we have a cleaned-up per-observation version, we need to create a per-day version. Your approach was correct by grouping by site and date, and then summarizing. With the errors fixed, we can be more creative with how to select the correct number for `live.chicks`. You can pick the maximum count, the minimum count, or the most common count (_i.e._ the mode). Unfortunately, R doesn't have a built-in `mode()` function, so I'm cheating below and using `median()`. The `floor()` is there to handle the unlikely case where there is the same number of values one way or another, which would normally yield a `.5` median. You can change `floor()` for `ceiling()` if you want to round up instead of down in these situations.
+
+Finally, you were on the right track with `complete()`. It was the function I was going to use before I saw your attempted solution. Below, I use the convenience function `full_seq()`, which does essentially what you were trying to do with `seq()`, `min()`, and `max()`. The `period = 1` is equivalent to `by = 1` in `seq()`. And then, we will use `fill()` downwards one last time to fill in the `NA` values introduced by `complete()` for the missing dates. 
+
+```{r}
+live_chicks_per_day <- 
+  live_chicks_all %>% 
+  group_by(site, date) %>% 
+  summarise(live.chicks = floor(median(live.chicks))) %>% 
+  complete(site, date = full_seq(date, period = 1)) %>% 
+  fill(live.chicks, .direction = "down")
+
+live_chicks_per_day
+```
+
+Voilà! I hope this helps. Feel free to email me any follow-up questions. Make sure that the final output `live_chicks_per_day` matches what you're expecting.

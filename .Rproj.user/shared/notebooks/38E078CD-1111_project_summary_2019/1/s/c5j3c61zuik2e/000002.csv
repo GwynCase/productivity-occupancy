@@ -1,0 +1,6 @@
+"0","pr <- read.csv('../data/raw/20200424_specimens.csv', stringsAsFactors=FALSE)"
+"0","pr %>% group_by(class, family, genus, species) %>% "
+"0","  summarize(n()) %>% "
+"0","  kable('latex', booktabs=T, caption='Prey identified from physical remains',"
+"0","       table.envir = 'capctable',"
+"0","       col.names=c('Class', 'Family', 'Genus', 'Species', 'N'))"

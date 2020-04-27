@@ -1,18 +1,134 @@
 ---
 title: "BEC zones"
-output: html_notebook
+output: github_document
 ---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
 
 According to NGRT 2008, there are two "regions" within coastal BC, with regards to goshawk management. The *transition zone* is the drier variants of the Coastal Western Hemlock biogeoclimatic zone on the coastal mainland and may be an area where the coastal *laingi* subspecies and interior *atricapillus* subspecies may overlap. Bascially, this is an area where the models built for Vancouver Island and the coast may start breaking down because it is more similar to the interior.
 
-These subzones are CWHds1 and CWHmm1.
+These subzones are CWHds1 and CWHms1.
+
+Currently, sites are considered either transitional or coastal, either-or. I want to look at how well that division captures the forest types present in these sites.
+
+I have a couple of shapefiles I can use for this:
+
+* The homeranges I previously calculated, either from telemetry or averages.
+* BEC zone data (clipped to make a reasonable size)
 
 ```{r}
-plot(cars)
+# Load up some libraries.
+library('tidyverse')
+library('ggplot2')
+library('sf')
+
+hr <- st_read('../data/interim/camera_homerange_2019.shp')
+bec <- st_read('../data/interim/homerange_BEC_2019.shp')
+#tz <- st_read('../data/processed/new_transition_zone.shp')
+
+bec %>% data.frame() %>% 
+  transmute(abbr=MAP_LABEL, name=ZONE_NAME, sub=SUBZONE_NA) %>% 
+  dplyr::select(abbr, name, sub) %>% 
+  distinct()
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+So CWHds1 is here, but no CWHmm1. And IDFww is interior douglas-fir, which isn't even considered "transitional" because it's technically full interior habitat type. But it's present in my "coastal" sites. And it makes no sense to me that something labelled "very dry" doesn't count as transition.
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+``` {r}
+# Pull out the transitional variants.
+tz <- bec %>% filter(MAP_LABEL %in% c('CWHds1', 'CWHms1'))
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+# Plot it.
+ggplot() +
+  geom_sf(data=hr) +
+  geom_sf(data=tz, aes(fill='red')) +
+  theme_classic()
+```
+
+So how much overlap is there, actually, between these sites and tranzition-types?
+
+```{r}
+# Pull out UTZ site to start.
+utz <- hr %>% filter(site == 'UTZ')
+
+# Calculate the overlap.
+st_intersection(utz, tz) %>% 
+  st_area() %>% sum() / st_area(utz) * 100
+
+# Plot the overlap.
+st_intersection(utz, tz) %>% 
+  ggplot() +
+  geom_sf(fill='lightgrey') +
+  theme_classic()
+```
+
+Cool. And then just do it for the rest, I guess. I'm sure there's a fancy way to automate this but for the life of my I can't figure it out so I guess I'll do it the hard way.
+
+```{r}
+tmc <- hr %>% filter(site == 'TMC')
+
+tz.tmc <- st_intersection(tmc, tz) %>% 
+  st_area() %>% as.numeric() %>% 
+  data.frame() %>% 
+  rename(int=1) %>% 
+  mutate(t.area=as.numeric(st_area(tmc)), 
+         tz.per=round(int/t.area*100, digits=2), site='TMC')
+
+tcr <- hr %>% filter(site == 'TCR')
+
+tz.tcr <- st_intersection(tcr, tz) %>% 
+  st_area() %>% as.numeric() %>% 
+  data.frame() %>% 
+  rename(int=1) %>% 
+  mutate(t.area=as.numeric(st_area(tcr)), 
+         tz.per=round(int/t.area*100, digits=2), site='TCR')
+
+mtc <- hr %>% filter(site == 'MTC')
+
+tz.mtc <- st_intersection(mtc, tz) %>% 
+  st_area() %>% as.numeric() %>% 
+  data.frame() %>% 
+  rename(int=1) %>% 
+  mutate(t.area=as.numeric(st_area(mtc)), 
+         tz.per=round(int/t.area*100, digits=2), site='MTC')
+
+mtf <- hr %>% filter(site == 'MTF')
+
+tz.mtf <- st_intersection(mtf, tz) %>% 
+  st_area() %>% as.numeric() %>% 
+  data.frame() %>% 
+  rename(int=1) %>% 
+  mutate(t.area=as.numeric(st_area(mtf)), 
+         tz.per=round(int/t.area*100, digits=2), site='MTF')
+
+tz.utz <- st_intersection(utz, tz) %>% 
+  st_area() %>% as.numeric() %>% 
+  data.frame() %>% 
+  rename(int=1) %>% 
+  mutate(t.area=as.numeric(st_area(utz)), 
+         tz.per=round(int/t.area*100, digits=2), site='UTZ')
+
+# RLK is odd bc it's 0% transition.
+rlk <- hr %>% filter(site == 'RLK')
+
+tz.rlk <- data.frame(
+  int=0, t.area=as.numeric(st_area(rlk)), tz.per=0, site=as.character('RLK')
+)
+
+# Make a nice table.
+tz.index <- bind_rows(tz.mtc, tz.mtf, tz.tcr, tz.tmc, tz.rlk, tz.utz) %>%
+  group_by(site) %>% 
+  summarize(area=mean(t.area), 
+            tz.intersect=sum(int), percent.tz=sum(tz.per))
+
+# What are the official zones?
+data.frame(
+  site=c('MTC', 'MTF', 'RLK', 'TCR', 'TMC', 'UTZ'),
+  official.zone=c('U', 'TZ', 'CS', 'TZ', 'U', 'TZ')
+) %>% 
+  full_join(tz.index)
+```
+
+That looks nice. It shows the range of transition-ness, and how MTF, at 84% transition-type habitat, is considered equivalent to TMC, with only 50% transition-type habitat.
