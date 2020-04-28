@@ -1,0 +1,6 @@
+"0","# Vancouver Island occupancy data"
+"0","kable(vi.sites, 'latex', booktabs=T, caption='Vancouver Island occupancy data',"
+"0","       table.envir='capctable',"
+"0","       col.names=c('Site', '2018',' 2019')) %>% "
+"0","   kable_styling(latex_options=c('striped')) %>% "
+"0","  footnote(general='1 = no birds observed, 2 = birds present, no evidence of breeding, 3 = active, evidence of breeding')"

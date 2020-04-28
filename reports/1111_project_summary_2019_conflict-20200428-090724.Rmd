@@ -10,8 +10,6 @@ header-includes:
   \newfontfamily\ssf{Lato}
   \newenvironment{ctable}{\ssf }{}
   \newenvironment{capctable}[1][t]{\begin{table}[#1]\centering\ssf}{\end{table}}
-  \usepackage{xcolor}
-  \usepackage{framed}
 ---
 
 ```{r setup, include=FALSE}
@@ -28,24 +26,13 @@ library('lubridate')
 
 The Northern goshawk is an at-risk species in coastal BC which lives and breeds in mature and old-growth forests. Current goshawk management focuses on protecting habitat for breeding, and a  goshawk's requirements for breeding habitat are well understood. However, habitat used for foraging, while acknowledged to also be important, is largely excluded from management plans. This is primarily due to a lack of knowledge about foraging habitat requirements, particularly regarding how foraging habitat differs from breeding habitat and how much foraging habitat is needed.
 
-In 2018, I began a research project to examine how the landscape surrounding goshawk nests, where adults forage for prey to feed themselves and their chicks, directly and indirectly affects two drivers of population growth, productivity and occupancy. This is a short summary of what I've done so far and what I plan to do next.
+In 2018 I began a 
 
 # Diet
 
-Goshawks are generalist predators which consume a variety of small mammals and birds, but a single species or suite of species often contributes disproportionately to the diet. Annual variation in prey abundance, particularly in the abundance of key mammalian species, can affect goshawk productivity, home range size, adult and juvenile survival, and migration patterns. Productivity may be lower in regions where high-quality mammalian prey are less abundant and avian prey make up a larger proportion of the diet. Goshawk populations in these regions may be forced to forage over a greater area. A crucial first step to understanding goshawk foraging habitat requirements is therefore to quantify diet.
-
-We quantified the breeding season diet of goshawks using physical prey remains and nest cameras.
+Introductory paragraph.
 
 ## Physical specimens
-
-\begin{shaded}
-
-> Key points:
->* Physical remains were collected from 15 sites using two different methodologoies (opportunistic and systematic)
->* Physical remains appear to be biased toward small mammals and birds, in contrast to camera data.
->* Further analysis is on hold due to the covid-19 pandemic.
-
-\end{shaded}
 
 ### Methods
 
@@ -197,37 +184,15 @@ It has been suggested that high-quality habitat will be occupied more frequently
 
 # Going forward
 
-Short-term goals for the summer focus on the collection of additional data and the completion of processing existing data. Most of these actions are contingent on the evolving covid-19 situation.
+Short-term goals for the summer focus on the collection of additional data and the completion of processing existing data. Most of these actions are contingent on the 
 
-* Install cameras at 10 active goshawk nests in the South Coast. **priority sites**
-* Capture and tag adults goshawks at camera sites where possible.
-* Retrieve late breeding season and winter location data from birds tagged in 2019.
-* Collect occupancy data from priority extensive sites.
-* Process physical remains (pellets and prey remains) collected in 2019.
-* Measure landscape variables for intensive (camera and telemetry) sites and extensive (physical remains and occupancy) sites.
-
-Longer-term goals for the summer and fall focus on analyzing data.
-
-* Compare diet data from cameras to that from physical remains to determine biases between methods.
-* Differentiate multiple behavior states from telemetry data using **RTD** methods and identify foraging locations.
-* Assess links between landscape characteristics and diet.
-* Assess links between landscape characteristics and occupancy (dependent on sufficient occupancy dataset)
-
-Depending on time and data availability, two addtional avenues of research may supplement or replace the currently planned research: 
-
-**eDNA** During 2019, multiple samples of whitewash were collected 2-3 times from each intensive site with the intention to use DNA metabarcoding to identify cryptic prey species. This technique may be able to identify previously unknown goshawk prey species, and may offer a valuable comparison with tradition diet analysis methods (such as nest cameras and physical remains). Further research is needed to determine the best method to prepare whitewash samples for further analysis.
-
-**Winter movement** Goshawk winter movement is almost a complete unknown, with the literature unable to even agree on whether goshawks should be considered year-round residents or partial migrants. No winter data has been retrieved from tagged birds at this time, but even a single winter of data could help complete the picture of annual goshawk space use.
-
-> Based on the analysis of the data collected so far, I offer the following suggestions to improve data collection in the 2020 field season:
-
-> **Early identifiction** Locating active nests early in the breeding season enables us to pick and choose which sites are best suited to camera installation and trapping, and allows us to collect more data from each site.
-
-> **Higher and closer** Camera angle and distance from the nest has a major impact on our ability to obtain photos via motion triggering and to identify prey items brought to the nest. Cameras should be as close to the nest as possible and above it, so it can be angled to face down into the nest.
-
-> **Sensitivity** Despite concerns about losing data due to full SD card, we did not run out of memory space despite leaving cameras in place long past juvenile dispersal. However, we did miss some deliveries and adult visits to the nest due to slow camera triggering. Camera sensitivity should be high in order to capture as much data as possible, and this is unlikely to fill SD cards.
-
-> **Consistencey** Opportunistic collections of physical remains are not a priority for inventory technicians, but consistent data recording is still important. Some samples lack crucial information, such as site name or the location where they were gathered. Physical remains should be labelled with, at minimum, *date*, *location*, *site*, and *method* (opportunistic or systematic).
+* measure landscape metrics for x nests with cameras, y with pellets and z with occupancy data    ??
+* complete pellet id (x nests   ca y pellets per nest?) 
+* assess link between landscape and diet
+* compare diet assessed using two approaches
+* assess link between landscape and occupancy (?)
+* telemetry ??  UD during breeding season, other basic descriptors that layout radius for landscape metrics, habitat selection ?? 
+* improvements for methods
 
 # Appendix
 

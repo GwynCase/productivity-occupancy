@@ -230,6 +230,22 @@ summary {
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBMb2FkIHVwIHNvbWUgbGlicmFyaWVzLlxubGlicmFyeSgndGlkeXZlcnNlJylcbmxpYnJhcnkoJ2x1YnJpZGF0ZScpXG5saWJyYXJ5KCdnZ3Bsb3QyJylcbmxpYnJhcnkoJ2tuaXRyJylcbmxpYnJhcnkoJ2thYmxlRXh0cmEnKVxuIyBJbXBvcnQgdGhlIGRhdGEuXG5kZiA8LSByZWFkLmNzdignLi4vZGF0YS9pbnRlcmltL2NhbWVyYV9jb3JyZWN0ZWQuY3N2Jywgc3RyaW5nc0FzRmFjdG9ycz1GQUxTRSlcbiMgRG8gdGhlIGRhdGV0aW1lIHRoaW5nLlxuZGYgPC0gZGYgJT4lIG11dGF0ZShkYXRldGltZT1wYXJzZV9kYXRlX3RpbWUoZGF0ZXRpbWUsIFxuICAgICAgICAgICAgICAgICAgICAgICBvcmRlcnM9YygnJVktJW0tJWQgJUg6JU06JVMnLCAnJVkvJW0vJWQgJUg6JU06JVMnKSkpXG5uLm5lc3RzIDwtIGRmICU+JSBkaXN0aW5jdChzaXRlKSAlPiUgc3VtbWFyaXplKG4oKSkgJT4lIGFzLm51bWVyaWMoKVxuaW5zdGFsbC5kYXRlIDwtIGRmICU+JSBncm91cF9ieShzaXRlKSAlPiUgc3VtbWFyaXplKGQ9bWluKGRhdGV0aW1lKSkgJT4lIFxuICBtdXRhdGUoZGF5PWRheShkKSwgbT1tb250aChkKSlcbmBgYCJ9 -->
+<pre class="r"><code># Load up some libraries.
+library('tidyverse')
+library('lubridate')
+library('ggplot2')
+library('knitr')
+library('kableExtra')
+# Import the data.
+df &lt;- read.csv('../data/interim/camera_corrected.csv', stringsAsFactors=FALSE)
+# Do the datetime thing.
+df &lt;- df %&gt;% mutate(datetime=parse_date_time(datetime, 
+                       orders=c('%Y-%m-%d %H:%M:%S', '%Y/%m/%d %H:%M:%S')))
+n.nests &lt;- df %&gt;% distinct(site) %&gt;% summarize(n()) %&gt;% as.numeric()
+install.date &lt;- df %&gt;% group_by(site) %&gt;% summarize(d=min(datetime)) %&gt;% 
+  mutate(day=day(d), m=month(d))</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p><strong>Nest Cameras</strong></p>
@@ -239,6 +255,10 @@ summary {
 <p>We identified prey items delivered to the nest following Lewis et al. (2004). Nest camera photos were reviewed and each new prey item was recorded and identified to species when possible, using a combination of study skins, field guides, and researcher knowledge. When identification to species was not possible, items were identified to the lowest possible taxonomic level. Items were additionally categorized by size (small, medium, or large) following Miller et al. (2014). As very few items could be successfully aged, we did not include prey age in our analysis.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbXBvcnQgcHJleSBpdGVtcyBkYXRhXG5zb3VyY2UoJy4uL3NyYy9wcmV5X2F0dHJpYnV0ZXMuUicpXG5gYGAifQ== -->
+<pre class="r"><code># Import prey items data
+source('../src/prey_attributes.R')</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Prey items identified to species were assigned mass using Nagorsen (2002; mammals) and Billerman et al. (2020; birds). When unable to differentiate between species within a single genus (such as <em>Eutamias</em> and <em>Myotis</em>), we assigned mass by averaging the masses of all possible species, determined by range maps. Unidentified items and partial items were assigned mass by averaging the masses of the identified species in that size and taxonomic group. For example, an unidentified sciurid would receive the average mass of all identified sciurid species, while a small portion of an unidentified bird would receive the average mass of all identified small bird species.</p>
@@ -249,6 +269,21 @@ summary {
 <h2>Results</h2>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbXBvcnQgYmFzaWMgY2FtZXJhIG5lc3QgZGF0YVxuY2FtZXJhcyA8LSByZWFkLmNzdignLi4vZGF0YS9yYXcvcHJvZHVjdGl2aXR5XzIwMTkuY3N2Jywgc3RyaW5nc0FzRmFjdG9ycz1GQUxTRSlcbiMgRG8gdGhlIGRhdGUgY29udmVyc2lvbiB0aGluZy5cbmNhbWVyYXMgPC0gY2FtZXJhcyAlPiUgbXV0YXRlKGRhdGU9eW1kKGRhdGUpLCBicmFuY2g9eW1kKGJyYW5jaCksIGZsZWRnZT15bWQoZmxlZGdlKSlcbiMgSG93IG1hbnkgZmxlZGdlZD9cbm4uZmxlZGdlIDwtIGNhbWVyYXMgJT4lIGdyb3VwX2J5KG5fZmxlZGdlKSAlPiUgXG4gIHN1bW1hcml6ZShuPW4oKSlcbiMgSG93IG1hbnkgZGVsaXZlcmllcz9cbm4uZGVsIDwtIGRmICU+JSBmaWx0ZXIoaW50ZXJlc3QgJWluJSBjKCduZXdwcmV5JywgJ2RlbGl2ZXJ5JykpICU+JSBucm93KClcbiMgSG93IG1hbnkgaWRlbnRpZmllZCB0byBjbGFzcz9cbm4udG8uY2xhc3MgPC0gaXRlbXMgJT4lIGZpbHRlcihjbGFzcyAhPSAnVW5rbm93bicpICU+JSBucm93KClcbiMgSG93IG1hbnkgaWRldG5pZmllZCB0byBnZW51cz9cbm4udG8uZ2VudXMgPC0gaXRlbXMgJT4lIGZpbHRlcihnZW51cyAhPSAnVW5rbm93bicpICU+JSBucm93KClcbmBgYCJ9 -->
+<pre class="r"><code># Import basic camera nest data
+cameras &lt;- read.csv('../data/raw/productivity_2019.csv', stringsAsFactors=FALSE)
+# Do the date conversion thing.
+cameras &lt;- cameras %&gt;% mutate(date=ymd(date), branch=ymd(branch), fledge=ymd(fledge))
+# How many fledged?
+n.fledge &lt;- cameras %&gt;% group_by(n_fledge) %&gt;% 
+  summarize(n=n())
+# How many deliveries?
+n.del &lt;- df %&gt;% filter(interest %in% c('newprey', 'delivery')) %&gt;% nrow()
+# How many identified to class?
+n.to.class &lt;- items %&gt;% filter(class != 'Unknown') %&gt;% nrow()
+# How many idetnified to genus?
+n.to.genus &lt;- items %&gt;% filter(genus != 'Unknown') %&gt;% nrow()</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>We observed no nest abandonment following camera installation. One nest failed 9 days following camera install, while the other five nests successfully fledged at least one chick. Successfully nests fledged 1 (<em>n</em> = 1), 2 (<em>n</em> = 3), or 3 (<em>n</em> = 1) chicks. The unsuccessful nest failed after two chicks succumbed to siblicide and the third appeared to fledge prematurely, though the exact cause of failure is unknown. Two other nests were observed to lose a single chick each due to apparent siblicide. <!-- Include site names? --> <!-- Include chick ages --></p>
@@ -258,12 +293,82 @@ summary {
 <p>Across the entire study area, we observed 17 different prey species delivered to nests. By biomass, mammals made up the largest proportion of deliveries (69%). This was due to the overwhelming number of tree squirrels (<em>Tamiasciurus</em> spp.) delivered to nests, which provided 45% of biomass. Birds made up 17% of the diet, with the final 14% of prey biomass unable to be identifed as either bird or mammal.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBOdW1iZXIgKGNvdW50KSBvZiBkZWxpdmVyaWVzIHBlciBkYXkuXG5kZWwucGVyLmRheSA8LSBkZiAlPiUgZmlsdGVyKGludGVyZXN0ICVpbiUgYygnZGVsaXZlcnknLCAnbmV3cHJleScpKSAlPiUgXG4gIG11dGF0ZShkYXk9ZGF0ZShkYXRldGltZSkpICU+JSBcbiAgZ3JvdXBfYnkoc2l0ZSkgJT4lIFxuICBtdXRhdGUoZmlyc3Q9bWluKGRheSksIGxhc3Q9bWF4KGRheSksIG4uZGF5PWxhc3QtZmlyc3QpICU+JSBcbiAgYWRkX2NvdW50KHNpdGUsIGRheSwgbmFtZT0nbi5kZWwnKSAlPiUgXG4gIGFkZF9jb3VudChzaXRlLCBuYW1lPSd0LmRlbCcpICU+JSBcbiAgbXV0YXRlKG4uZGF5PWFzLm51bWVyaWMobi5kYXkpLCBwZXIuZGF5PXQuZGVsL24uZGF5KSAlPiUgXG4gIGRwbHlyOjpzZWxlY3Qoc2l0ZSwgZGF5LCBuLmRheSwgbi5kZWwsIHQuZGVsKSAlPiUgXG4gIGRpc3RpbmN0KCkgJT4lIFxuICBjb21wbGV0ZShuZXN0aW5nKHNpdGUpLCBkYXk9c2VxKG1pbihkYXkpLCBtYXgoZGF5KSwgYnk9J2RheScpKSAlPiUgXG4gIGZpbGwobi5kYXksIHQuZGVsKSAlPiUgXG4gIG11dGF0ZShuLmRlbD1yZXBsYWNlX25hKG4uZGVsLCAwKSlcbnNvdXJjZSgnLi4vc3JjL3ByZXlfYXR0cmlidXRlc19kYXRlLlInKVxuIyBBbW91bnQgKGJpb21hc3MpIG9mIGRlbGl2ZXJpZXMgcGVyIGRheS5cbm1hc3MuYnkuZGF5IDwtIGl0ZW1zLmFsdCAlPiUgbXV0YXRlKGRhdGU9ZGF0ZShkYXRldGltZSkpICU+JSBcbiAgZ3JvdXBfYnkoc2l0ZSwgZGF0ZSkgJT4lIFxuICBtdXRhdGUoZC5tYXNzPXN1bShtYXNzKSkgJT4lIFxuICBkcGx5cjo6c2VsZWN0KHNpdGUsIGRhdGUsIGQubWFzcykgJT4lIFxuICBhcnJhbmdlKHNpdGUsIGRhdGUpICU+JSBcbiAgZGlzdGluY3QoKSAlPiUgXG4gIHVuZ3JvdXAoKSAlPiUgZ3JvdXBfYnkoc2l0ZSkgJT4lIFxuICBjb21wbGV0ZShuZXN0aW5nKHNpdGUpLCBkYXRlPXNlcShtaW4oZGF0ZSksIG1heChkYXRlKSwgYnk9J2RheScpKSAlPiUgXG4gIG11dGF0ZShkLm1hc3M9cmVwbGFjZV9uYShkLm1hc3MsIDApKVxuIyBJbXBvcnQgbmVzdCBkYXRhLlxubmVzdHMgPC0gcmVhZC5jc3YoJy4uL2RhdGEvcmF3L2NhbWVyYV9uZXN0c18yMDE5LmNzdicsIHN0cmluZ3NBc0ZhY3RvcnM9RkFMU0UpXG4jIERvIHRoZSBkYXRldGltZSB0aGluZy5cbm5lc3RzIDwtIG5lc3RzICU+JSBtdXRhdGUoZXN0X2hhdGNoPXltZChlc3RfaGF0Y2gpKVxuIyBUYWJsZSB3aXRoIGRhdGUgYW5kIGFnZSBmb3IgZWFjaCBzaXRlLlxuYWdlIDwtIG5lc3RzICU+JSBkcGx5cjo6c2VsZWN0KHNpdGUsIGVzdF9oYXRjaCkgJT4lIFxuICBtdXRhdGUoZmxlZGdlPWVzdF9oYXRjaCArIDk5KSAlPiUgXG4gIHBpdm90X2xvbmdlcihjb2xzPTI6MykgJT4lIFxuICBncm91cF9ieShzaXRlKSAlPiUgXG4gIGNvbXBsZXRlKG5lc3Rpbmcoc2l0ZSksIHZhbHVlPXNlcShtaW4odmFsdWUpLCBtYXgodmFsdWUpLCBieT0nZGF5JykpICU+JSBcbiAgbXV0YXRlKGFnZT1zZXEoMToxMDApLCBkYXRlPXZhbHVlKSAlPiUgXG4gIGRwbHlyOjpzZWxlY3Qoc2l0ZSwgZGF0ZSwgYWdlKVxuIyBSZS1kaWdlc3QgbWFzcyBkYXRhIGludG8gbW9kZWwtZnJpZW5kbHkgZm9ybWF0LlxubWFzcy5mb3IubW9kZWwgPC0gaXRlbXMuYWx0ICU+JSBtdXRhdGUoZGF0ZT1kYXRlKGRhdGV0aW1lKSkgJT4lIFxuICBncm91cF9ieShzaXRlLCBkYXRlKSAlPiUgXG4gIG11dGF0ZShkLm1hc3M9c3VtKG1hc3MpLCBsb2cuZC5tYXNzPWxvZyhkLm1hc3MpKSAlPiUgXG4gIHBpdm90X3dpZGVyKG5hbWVzX2Zyb209Y2xhc3MsIHZhbHVlc19mcm9tPW1hc3MsIHZhbHVlc19maWxsPWxpc3QobWFzcz0wKSkgJT4lIFxuICBtdXRhdGUoQXZlcz1zdW0oQXZlcyksIE1hbW1hbGlhPXN1bShNYW1tYWxpYSksIFVua25vd249c3VtKFVua25vd24pKSAlPiUgXG4gIGFycmFuZ2Uoc2l0ZSwgZGF0ZSkgJT4lIFxuICBkcGx5cjo6c2VsZWN0KHNpdGUsIGRhdGUsIEF2ZXMsIE1hbW1hbGlhLCBVbmtub3duLCBkLm1hc3MsIGxvZy5kLm1hc3MpICU+JSBcbiAgZGlzdGluY3QoKSAlPiUgXG4gIG11dGF0ZShwLm1hbW1hbD1NYW1tYWxpYS9kLm1hc3MpXG4jIE5vdyBncmFmdCB0aGVtIHRvZ2V0aGVyLlxubWFzcy5mb3IubW9kZWwgPC0gbGVmdF9qb2luKG1hc3MuZm9yLm1vZGVsLCBhZ2UpICU+JSBcbiAgbXV0YXRlKGFnZT1hcy5udW1lcmljKGFnZSkpXG4jIEFuZCBtYWtlIGEgbW9kZWwuXG5tLm1hc3MuYnkuYWdlIDwtIGxtKGxvZy5kLm1hc3MgfiBhZ2UsIGRhdGE9bWFzcy5mb3IubW9kZWwpXG5gYGAifQ== -->
+<pre class="r"><code># Number (count) of deliveries per day.
+del.per.day &lt;- df %&gt;% filter(interest %in% c('delivery', 'newprey')) %&gt;% 
+  mutate(day=date(datetime)) %&gt;% 
+  group_by(site) %&gt;% 
+  mutate(first=min(day), last=max(day), n.day=last-first) %&gt;% 
+  add_count(site, day, name='n.del') %&gt;% 
+  add_count(site, name='t.del') %&gt;% 
+  mutate(n.day=as.numeric(n.day), per.day=t.del/n.day) %&gt;% 
+  dplyr::select(site, day, n.day, n.del, t.del) %&gt;% 
+  distinct() %&gt;% 
+  complete(nesting(site), day=seq(min(day), max(day), by='day')) %&gt;% 
+  fill(n.day, t.del) %&gt;% 
+  mutate(n.del=replace_na(n.del, 0))
+source('../src/prey_attributes_date.R')
+# Amount (biomass) of deliveries per day.
+mass.by.day &lt;- items.alt %&gt;% mutate(date=date(datetime)) %&gt;% 
+  group_by(site, date) %&gt;% 
+  mutate(d.mass=sum(mass)) %&gt;% 
+  dplyr::select(site, date, d.mass) %&gt;% 
+  arrange(site, date) %&gt;% 
+  distinct() %&gt;% 
+  ungroup() %&gt;% group_by(site) %&gt;% 
+  complete(nesting(site), date=seq(min(date), max(date), by='day')) %&gt;% 
+  mutate(d.mass=replace_na(d.mass, 0))
+# Import nest data.
+nests &lt;- read.csv('../data/raw/camera_nests_2019.csv', stringsAsFactors=FALSE)
+# Do the datetime thing.
+nests &lt;- nests %&gt;% mutate(est_hatch=ymd(est_hatch))
+# Table with date and age for each site.
+age &lt;- nests %&gt;% dplyr::select(site, est_hatch) %&gt;% 
+  mutate(fledge=est_hatch + 99) %&gt;% 
+  pivot_longer(cols=2:3) %&gt;% 
+  group_by(site) %&gt;% 
+  complete(nesting(site), value=seq(min(value), max(value), by='day')) %&gt;% 
+  mutate(age=seq(1:100), date=value) %&gt;% 
+  dplyr::select(site, date, age)
+# Re-digest mass data into model-friendly format.
+mass.for.model &lt;- items.alt %&gt;% mutate(date=date(datetime)) %&gt;% 
+  group_by(site, date) %&gt;% 
+  mutate(d.mass=sum(mass), log.d.mass=log(d.mass)) %&gt;% 
+  pivot_wider(names_from=class, values_from=mass, values_fill=list(mass=0)) %&gt;% 
+  mutate(Aves=sum(Aves), Mammalia=sum(Mammalia), Unknown=sum(Unknown)) %&gt;% 
+  arrange(site, date) %&gt;% 
+  dplyr::select(site, date, Aves, Mammalia, Unknown, d.mass, log.d.mass) %&gt;% 
+  distinct() %&gt;% 
+  mutate(p.mammal=Mammalia/d.mass)
+# Now graft them together.
+mass.for.model &lt;- left_join(mass.for.model, age) %&gt;% 
+  mutate(age=as.numeric(age))
+# And make a model.
+m.mass.by.age &lt;- lm(log.d.mass ~ age, data=mass.for.model)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Prey deliveries averaged 1.86 <span class="math inline">\(\pm\)</span> 0.8 deliveries/day, although all nests observed occasionally went at least one or more days without any deliveries. Average biomass of items was 170.18 <span class="math inline">\(\pm\)</span> 181.64 g, and the average daily biomass of prey delivered to each nest was 290.57 <span class="math inline">\(\pm\)</span> 191.48 g/day. Brood age did not affect delivery rates, with older broods receiving approximately the same biomass per day as younger broods (<em>P</em> = 0.48). Brood size did not affect delivery rates, with large broods receiving the same daily biomass per chick as smaller broods.</p>
 <p>The proportion of prey biomass made of mammalian prey increased with brood age until age x, and then slowly decreased. Brood size also had an affect on the proportion of mammalian prey, with larger broods receiving a greater proportion of mammalian biomass.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSgndmVnYW4nKVxuIyBSZW9yZGVyIGRhdGEgaW50byBhIGZvcm1hdCB2ZWdhbiBjYW4gZWF0LlxudG8uZ2VudXMgPC0gaXRlbXMgJT4lIGZpbHRlcihnZW51cyAhPSAnVW5rbm93bicpICU+JSBcbiAgZ3JvdXBfYnkoc2l0ZSwgZ2VudXMsIHNwZWNpZXMpICU+JSBcbiAgbXV0YXRlKGNvdW50PW4oKSkgJT4lIFxuICBkcGx5cjo6c2VsZWN0KHNpdGUsIGdlbnVzLCBzcGVjaWVzLCBjb3VudCkgJT4lIFxuICB1bml0ZShuYW1lLCAyOjMsIHNlcD0nICcpICU+JSBcbiAgZGlzdGluY3QoKSAlPiUgXG4gIHBpdm90X3dpZGVyKG5hbWVzX2Zyb209bmFtZSwgdmFsdWVzX2Zyb209Y291bnQsXG4gICAgICAgICAgICAgICAgICAgICAgICAgdmFsdWVzX2ZpbGw9bGlzdChjb3VudCA9IDApKVxuIyBSZW1vdmUgdGhlIG9kZGl0eSAod2lsbCBmaXggaW4gZnV0dXJlKVxudG8uZ2VudXMgPC0gdG8uZ2VudXMgJT4lIGRwbHlyOjpzZWxlY3QoLWBUYW1pYXNjaXVydXMgc3BgKVxuIyBQcmVwIGZvciBNb3Jpc2l0YS5cbm1vciA8LSBjb2x1bW5fdG9fcm93bmFtZXModG8uZ2VudXMsIHZhcj0nc2l0ZScpXG5tb3IgPC0gbW9yWywtMV1cbmBgYCJ9 -->
+<pre class="r"><code>library('vegan')
+# Reorder data into a format vegan can eat.
+to.genus &lt;- items %&gt;% filter(genus != 'Unknown') %&gt;% 
+  group_by(site, genus, species) %&gt;% 
+  mutate(count=n()) %&gt;% 
+  dplyr::select(site, genus, species, count) %&gt;% 
+  unite(name, 2:3, sep=' ') %&gt;% 
+  distinct() %&gt;% 
+  pivot_wider(names_from=name, values_from=count,
+                         values_fill=list(count = 0))
+# Remove the oddity (will fix in future)
+to.genus &lt;- to.genus %&gt;% dplyr::select(-`Tamiasciurus sp`)
+# Prep for Morisita.
+mor &lt;- column_to_rownames(to.genus, var='site')
+mor &lt;- mor[,-1]</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>The overall index of diversity for the diet of all 6 nests was 0.67. For individual nests, diversity ranged from 0.72 to 0.24 (mean = 0.55). Overlap was consistently low, ranging from 0.59 to 0.03 (mean = 0.26). There was a slight but non-significant difference in diversity between transition zone and coastal zone nests. Overlap was higher within zones than between zones.</p>

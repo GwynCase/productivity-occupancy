@@ -10,3 +10,6 @@
 "0","                         values_fill=list(count = 0))"
 "0","# Remove the oddity (will fix in future)"
 "0","to.genus <- to.genus %>% dplyr::select(-`Tamiasciurus sp`)"
+"0","# Prep for Morisita."
+"0","mor <- column_to_rownames(to.genus, var='site')"
+"0","mor <- mor[,-1]"
