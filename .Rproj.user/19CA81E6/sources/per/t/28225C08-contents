@@ -34,6 +34,8 @@ Introductory paragraph.
 
 ## Physical specimens
 
+### Methods
+
 Physical remains were collected using two different methodologies. Opportunistic collections were gathered by inventory technicians during regular goshawk surveys. Prey remains and regurgiated pellets were collected from beneath pluck posts, perches, and active and inactive nests when discovered by surveyors. Items from each pluck post, perch, or nest were pooled into a single sample. Systematic collections were gathered during thorough searches of the ground within a 50-m radius of an active nest. All physical remains from a single nest area search were pooled into a single sample.
 
 We reconstructed physical remains following a modification of Lewis et al. (2006). Within each sample, prey remains were identified to the lowest possible taxonomic category and the minimum number of individuals counted (ie 1.5 vole mandibles = 2 voles [family: Cricetidae]). Intact and broken but reassembled pellets were analyzed individually within each sample, while fragmented pellets were combined within each sample. Pellets were dissected and feathers, fur, and hard parts (bones, teeth, claws) were identified to the lowest taxonomic level. We counted the minimum number of individuals represented within the pellet or pellet collection (ie, Douglas squirrel fur and 3 squirrel claws = 1 *Tamiascuirus douglasii*). Items were additionally categorized to size and assigned mass as per camera data (see below).
@@ -115,19 +117,59 @@ Introductory paragraph
 
 ### Methods
 
+```{r}
+# Load up the 'new' telemetry data.
+tl <- read_csv('../data/processed/telemetry_2018-2019.csv') %>% 
+  drop_na('lat')
+
+# Do the datetime thing.
+tl$date <- ymd(tl$date)
+
+# I previously defined nestling and fledgling stages.
+breeding.2019 <- interval(ymd(20190511), ymd(20190901))
+breeding.2018 <- interval(ymd(20180511), ymd(20180901))
+
+# Filter out the breeding season points.
+tl <- tl %>% filter(date %within% breeding.2018 | breeding.2019)
+
+# Make a table.
+tl %>% group_by(site, id) %>% 
+  summarize(first=min(date), last=max(date), n=n()) %>% 
+  kable('latex', booktabs=T, caption='Summary of telemetry location data',
+       table.envir = "capctable",
+       col.names=c('Site', 'ID', 'First location', 'Last location', 'N. points')) %>% 
+  footnote(general='HAR07 died sometime during winter 18-19. No points have been retrieved from the UTZ bird yet.')
+```
+
 During 2018-2019 we captured and tagged 7 adult goshawks (4 female and 3 male)
 at 5 active nest sites. Trapping took place during the mid-breeding season (May-June) using a dho-gaza trap with a live great-horned owl (*Bubo virginianus*) as a lure. We fitted goshawks with a solar-powered GPS-UHF transmitter with an additional attached VHF transmitter. Transmitters were programmed to record a location every 15 minutes during the breeding season (approximately May-August) and every 4 hours during the nonbreeding season. Location data were retrieved from the tag via either a base station placed near the nest or a hand-held UHF receiver.
 
-* MCPs date range, calculation
+We used location points from 11 May to 1 September to calculate 95% MCP breeding season home ranges. We attempted to use hidden Markov models to identify behavioral states from movement data. At sites with both appropriate telemetry and camera data (*n* = 2), we also attempted to match foraging locations with prey deliveries.
 
-* summary of data available - perhaps just a table with bird id, duration of sampling (start end), # of points
-
-We used nocturnal points to locate nighttime roost sites and 
+We modelled predictors of nighttime roost sites and their similarity to nest sites using several habitat variables and two habitat models. We identified roost sites using the location point taken closest to midnight for each site. Landscape variables (canopy cover, stand age, and stand basal area) were taken from the BC VRI and modelled habitat values from the 2008 foraging HSI and nesting HSI.
 
 ### Preliminary results
 
-* results to date - v. brief but report in on some of thing you have tried -  identification of roost sites, predictors of roost sites , difficulty in discriminating foraging and transit locations, # birds with cameras and tracking and anecdotal statement about ability to link timestamps of deliveries to where prey captured
-* Foraging- also specific to nogo team. Curious if you have been able to link cam diet to foraging telemetry sites and if there is potential there
+```{r}
+# Load a few more libraries.
+library('sf')
+library('adehabitatHR')
+
+tl.sf <- tl <- st_as_sf(tl, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Make some 95% MCPs.
+area.95 <- tl.sf %>% dplyr::select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp.area(percent=95, unin='m', unout='ha', plotit=FALSE)
+```
+
+The mean breeding season homerange was `r area.95 %>% pivot_longer(cols=1:6) %>%  summarize(mean(value)) %>% as.numeric() %>% round(digits=2)` $\pm$ `r area.95 %>% pivot_longer(cols=1:6) %>%  summarize(sd(value)) %>% as.numeric() %>% round(digits=2)`ha, but there was a large difference between male and female homerange size. Male homeranges averaged `r area.95 %>% pivot_longer(cols=1:6) %>% filter(name %in% c('HAR07', 'HAR05', 'HAR09')) %>%     summarize(mean(value)) %>% as.numeric() %>% round(digits=2)` $\pm$ `r area.95 %>% pivot_longer(cols=1:6) %>% filter(name %in% c('HAR07', 'HAR05', 'HAR09')) %>%     summarize(sd(value)) %>% as.numeric() %>% round(digits=2)` ha, while female home ranges averaged `r area.95 %>% pivot_longer(cols=1:6) %>% filter(name %in% c('HAR04', 'HAR10', 'HAR08')) %>% summarize(mean(value)) %>% as.numeric() %>% round(digits=2)` $\pm$ `r area.95 %>% pivot_longer(cols=1:6) %>% filter(name %in% c('HAR04', 'HAR10', 'HAR08')) %>% summarize(sd(value)) %>% as.numeric() %>% round(digits=2)`ha.
+
+Distinguishing different behavioral states from location data has been challenging so far. Hidden Markov models, the most widely used method, do not appear effective at differentiating foraging locations from travel locations. However, several alternate methods remain to be explored. Linking deliveries observed on nest cameras to foraging location recorded by telemetry appears more promising, but more work is needed.
+
+We identified `r 20+16+65` nighttime roost locations at 3 sites. The most informative model (R^2^ = 0.16) included both canopy closure and the nesting HSI. This model was better than the second-best informative model by 2.72 AIC units, and better than the nesting HSI-alone model (R^2^ = 0.09) by 7.90 AIC units.
 
 # Occupancy & Landscape
 

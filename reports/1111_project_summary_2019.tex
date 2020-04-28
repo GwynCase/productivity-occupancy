@@ -1,0 +1,533 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage[]{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\PassOptionsToPackage{hyphens}{url} % url is loaded by hyperref
+\usepackage[unicode=true]{hyperref}
+\hypersetup{
+            pdftitle={2019 Project Summary},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage[margin=1in]{geometry}
+\usepackage{longtable,booktabs}
+% Fix footnotes in tables (requires footnote package)
+\IfFileExists{footnote.sty}{\usepackage{footnote}\makesavenoteenv{long table}}{}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+% set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+
+\usepackage{fontspec} \setmainfont{Sitka Display} \newfontfamily\ssf{Lato} \newenvironment{ctable}{\ssf }{} \newenvironment{capctable}[1][t]{\begin{table}[#1]\centering\ssf}{\end{table}}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\title{2019 Project Summary}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\section{Abstract}\label{abstract}
+
+The Northern goshawk is an at-risk species in coastal BC which lives and
+breeds in mature and old-growth forests. Current goshawk management
+focuses on protecting habitat for breeding, and a goshawk's requirements
+for breeding habitat are well understood. However, habitat used for
+foraging, while acknowledged to also be important, is largely excluded
+from management plans. This is primarily due to a lack of knowledge
+about foraging habitat requirements, particularly regarding how foraging
+habitat differs from breeding habitat and how much foraging habitat is
+needed.
+
+In 2018 I began a
+
+\section{Diet}\label{diet}
+
+Introductory paragraph.
+
+\subsection{Physical specimens}\label{physical-specimens}
+
+Physical remains were collected using two different methodologies.
+Opportunistic collections were gathered by inventory technicians during
+regular goshawk surveys. Prey remains and regurgiated pellets were
+collected from beneath pluck posts, perches, and active and inactive
+nests when discovered by surveyors. Items from each pluck post, perch,
+or nest were pooled into a single sample. Systematic collections were
+gathered during thorough searches of the ground within a 50-m radius of
+an active nest. All physical remains from a single nest area search were
+pooled into a single sample.
+
+We reconstructed physical remains following a modification of Lewis et
+al. (2006). Within each sample, prey remains were identified to the
+lowest possible taxonomic category and the minimum number of individuals
+counted (ie 1.5 vole mandibles = 2 voles {[}family: Cricetidae{]}).
+Intact and broken but reassembled pellets were analyzed individually
+within each sample, while fragmented pellets were combined within each
+sample. Pellets were dissected and feathers, fur, and hard parts (bones,
+teeth, claws) were identified to the lowest taxonomic level. We counted
+the minimum number of individuals represented within the pellet or
+pellet collection (ie, Douglas squirrel fur and 3 squirrel claws = 1
+\emph{Tamiascuirus douglasii}). Items were additionally categorized to
+size and assigned mass as per camera data (see below).
+
+\subsubsection{Preliminary results}\label{preliminary-results}
+
+We collected prey remains and pellets from 15 sites during the 2019
+breeding season. At least 7 sites have one or more systematic
+collection. We have identified 28 prey items so far, 43\% to family and
+25\% to genus or species.
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-2}Prey identified from physical remains}
+\centering
+\begin{tabular}[t]{llllr}
+\toprule
+Class & Family & Genus & Species & N\\
+\midrule
+Aves & Columbidae & Patagioenas & fasciata & 1\\
+Aves & Parulidae & U & U & 1\\
+Aves & Passerellidae & Pipilo & maculatus & 1\\
+Aves & Passerellidae & U & U & 1\\
+Aves & Picidae & Colaptes & auratus & 3\\
+\addlinespace
+Aves & U & U & U & 11\\
+Mammalia & Cricetidae & U & sp & 2\\
+Mammalia & Rodentidae & U & U & 1\\
+Mammalia & Sciuridae & Tamiasciurus & douglasii & 1\\
+Mammalia & Scuiridae & Tamiasciurus & douglasii & 1\\
+\addlinespace
+Mammalia & U & U & U & 5\\
+\bottomrule
+\end{tabular}
+\end{capctable}
+
+Preliminary results indicate that physical remains may be more accurate
+for identifying small mammals and birds, but less accurate for
+identifying large birds. Multiple species not recorded in cameras were
+identified using physical remains.
+
+Further analysis is currently on hold due to the covid-19 pandemic.
+
+\subsection{Cameras}\label{cameras}
+
+\subsubsection{Methods}\label{methods}
+
+We quantified the diet of breeding goshawks using digital trail cameras
+placed at 6 nests during 2019. Cameras were programmed to take three
+photos one second apart when triggered by motion, and an additional one
+photo every thirty minutes. Installation took place during the early
+nestling phase (between 4 June and 26 June) and cameras were left in
+place until after juvenile dispersal.
+
+Nest camera photos were reviewed and each new prey item was recorded and
+identified to species when possible. When identification to species was
+not possible, items were identified to the lowest possible taxonomic
+level. Items were additionally categorized by size (small, medium, or
+large). Prey items identified to species were assigned mass using data
+from the literature. Unidentified items and partial items were assigned
+mass by averaging the masses of the identified species in that size and
+taxonomic group.
+
+We calculated the relative proportions of avian and mammalian biomass
+delivered to all nests during the study period. For each nest, we
+calculated the mean prey deliveries per day by count and by biomass.
+Daily biomass for all six nests was pooled to determine the effect of
+brood size and brood age on delivery rate.
+
+We calculated prey species diversity for the entire study area and for
+each nest using items identified to genus or species using Simpson's
+Diversity Index. We calculated dietary overlap between nests using
+Morisita's Index of Similarity.
+
+\subsubsection{Preliminary results}\label{preliminary-results-1}
+
+We observed no nest abandonment following camera installation. One nest
+failed 9 days following camera install, while the other five nests
+successfully fledged at least one chick. Successfully nests fledged 1 (n
+= 1), 2 (n = 3), or 3 (n = 1) chicks. The unsuccessful nest failed after
+two chicks succumbed to siblicide and the third appeared to fledge
+prematurely, though the exact cause of failure is unknown. Two other
+nests were observed to lose a single chick each due to apparent
+siblicide.
+
+We obtained 26577 photos from 6 nests during the 2019 breeding season. A
+total of 268 prey item deliveries were recorded. 16\% of items were
+obscured from the camera during delivery and consumption and were
+removed from the analysis. Out of the 225 visible items, 75\% were
+identified to class and 59\% to genus or species. Small and medium birds
+were disproportionately represented among unidentified items, frequently
+arriving at the nest already plucked and decapitated.
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-3}Deliveries recorded on nest cameras}
+\centering
+\begin{tabular}[t]{lllrr}
+\toprule
+Site & First delivery recorded & Last delivery recorded & N. deliveries & Deliveries/day\\
+\midrule
+MTC & 2019-06-11 & 2019-07-21 & 51 & 1\\
+MTF & 2019-06-04 & 2019-07-08 & 73 & 2\\
+RLK & 2019-06-22 & 2019-07-15 & 20 & 1\\
+TCR & 2019-06-10 & 2019-07-08 & 44 & 2\\
+TMC & 2019-06-17 & 2019-07-02 & 47 & 3\\
+\addlinespace
+UTZ & 2019-06-26 & 2019-07-08 & 33 & 3\\
+\bottomrule
+\end{tabular}
+\end{capctable}
+
+Across the entire study area, we observed 17 different prey species
+delivered to nests. By biomass, mammals made up the largest proportion
+of deliveries (69\%). This was due to the overwhelming number of tree
+squirrels (\emph{Tamiasciurus} spp.) delivered to nests, which provided
+45\% of biomass. Birds made up 17\% of the diet, with the final 14\% of
+prey biomass unable to be identifed as either bird or mammal.
+
+Prey deliveries averaged 1.86 ± 0.8 deliveries/day, although all nests
+observed occasionally went at least one or more days without any
+deliveries. Average biomass of items was 170.18 ± 181.64 g, and the
+average daily biomass of prey delivered to each nest was 290.57 ± 191.48
+g/day. Brood age did not affect delivery rates, with older broods
+receiving approximately the same biomass per day as younger broods (P =
+0.48).
+
+The overall index of diversity for the diet of all 6 nests was 0.67. For
+individual nests, diversity ranged from 0.74 to 0.24 (mean = 0.56).
+Overlap was consistently low, ranging from 0.59 to 0.03 (mean = 0.26).
+
+\section{Movement}\label{movement}
+
+Introductory paragraph
+
+\subsection{Telemetry}\label{telemetry}
+
+\subsubsection{Methods}\label{methods-1}
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-4}Summary of telemetry location data}
+\centering
+\begin{tabular}[t]{llllr}
+\toprule
+Site & ID & First location & Last location & N. points\\
+\midrule
+MTC & HAR09 & 2019-06-11 & 2019-07-02 & 1216\\
+MTC & HAR10 & 2019-06-13 & 2019-06-29 & 923\\
+RLK & HAR04 & 2019-06-22 & 2019-07-08 & 1597\\
+SKA & HAR05 & 2019-06-23 & 2019-09-04 & 4671\\
+TCR & HAR07 & 2018-07-08 & 2019-05-08 & 2103\\
+\addlinespace
+TCR & HAR08 & 2019-06-10 & 2019-06-27 & 135\\
+\bottomrule
+\multicolumn{5}{l}{\textit{Note: }}\\
+\multicolumn{5}{l}{HAR07 died sometime during winter 18-19. No points have been retrieved from the UTZ bird yet.}\\
+\end{tabular}
+\end{capctable}
+
+During 2018-2019 we captured and tagged 7 adult goshawks (4 female and 3
+male) at 5 active nest sites. Trapping took place during the
+mid-breeding season (May-June) using a dho-gaza trap with a live
+great-horned owl (\emph{Bubo virginianus}) as a lure. We fitted goshawks
+with a solar-powered GPS-UHF transmitter with an additional attached VHF
+transmitter. Transmitters were programmed to record a location every 15
+minutes during the breeding season (approximately May-August) and every
+4 hours during the nonbreeding season. Location data were retrieved from
+the tag via either a base station placed near the nest or a hand-held
+UHF receiver.
+
+We used location points from 11 May to 1 September to calculate 95\% MCP
+breeding season home ranges. We attempted to use hidden Markov models to
+identify behavioral states from movement data. At sites with both
+appropriate telemetry and camera data (\emph{n} = 2), we also attempted
+to match foraging locations with prey deliveries.
+
+We modelled predictors of nighttime roost sites and their similarity to
+nest sites using several habitat variables and two habitat models. We
+located roost sites using the location point taken closest to midnight
+for each site. Landscape variables (canopy cover, stand age, and stand
+basal area) were taken from the BC VRI and modelled habitat values from
+the 2008 foraging HSI and nesting HSI.
+
+\subsubsection{Preliminary results}\label{preliminary-results-2}
+
+The mean breeding season homerange was 3571.05 ha, but there was a large
+difference between male and female homerange size. Male homeranges
+averaged 5482.58 \(\pm\) 2329.6 ha, while female home ranges averaged
+1659.53 \(\pm\) 2816.12ha.
+
+Distinguishing different behavioral states from location data has been
+challenging so far. Hidden Markov models, the most widely used method,
+do not appear effective at differentiating foraging locations from
+travel locations. However, several alternate methods remain to be
+explored. Linking deliveries observed on nest cameras to foraging
+location recorded by telemetry appears more promising, but more work is
+needed.
+
+We identified 101 nighttime roost locations at 3 sites. The most
+informative model (R\^{}2 = 0.16) included both canopy closure and the
+nesting HSI. This model was better than the second-best informative
+model by 2.72 AIC units, and better than the nesting HSI-alone model
+(R\^{}2 = 0.09) by 7.90 AIC units.
+
+\section{Occupancy \& Landscape}\label{occupancy-landscape}
+
+It has been suggested that high-quality habitat will be occupied more
+frequently than low-quality habitat. As an additional metric of habitat
+quality, I plan to examine links between landscape variables identifed
+in previous analyses and the historic occupancy of sites on Vancouver
+Island and the South Coast. Landscape variables found to be significant
+predictors of productivity or diet may also be linked to site occupancy.
+This is dependent on obtaining a sufficient sample size of nests. There
+are 9 Vancouver Island sites with occupancy data for both 2018 and 2019,
+and 28 South Coast sites with occupancy data for the same period.
+
+\section{Going forward}\label{going-forward}
+
+\begin{itemize}
+\tightlist
+\item
+  measure landscape metrics for x nests with cameras, y with pellets and
+  z with occupancy data ??
+\item
+  complete pellet id (x nests ca y pellets per nest?)
+\item
+  assess link between landscape and diet
+\item
+  compare diet assessed using two approaches
+\item
+  assess link between landscape and occupancy (?)
+\item
+  telemetry ?? UD during breeding season, other basic descriptors that
+  layout radius for landscape metrics, habitat selection ??
+\end{itemize}
+
+\section{Appendix}\label{appendix}
+
+\begin{itemize}
+\tightlist
+\item
+  Summary of data you have (or are using), sample sizes, what data do
+  you expect to get this field season. This can be a simple table.
+\end{itemize}
+
+\newgeometry{margin=1cm}
+
+\begin{landscape}\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-7}Summary of available data}
+\centering
+\resizebox{\linewidth}{!}{
+\begin{tabular}[t]{lllllllllllllll}
+\toprule
+\multicolumn{2}{c}{ } & \multicolumn{2}{c}{Type} & \multicolumn{2}{c}{Diet} & \multicolumn{4}{c}{Telemetry} & \multicolumn{5}{c}{Occupancy} \\
+\cmidrule(l{3pt}r{3pt}){3-4} \cmidrule(l{3pt}r{3pt}){5-6} \cmidrule(l{3pt}r{3pt}){7-10} \cmidrule(l{3pt}r{3pt}){11-15}
+Site & Name & Int & Ext & Phys. rem. & Cameras & 2018 M & 2018 F & 2019 M & 2019 F & 2015 & 2016 & 2017 & 2018 & 2019\\
+\midrule
+\rowcolor{gray!6}  UTZ & Utzilus & x &  & x & x &  &  &  & x &  &  &  &  & x\\
+MTC & Mt. Currie & x &  & x & x &  &  & x & x &  &  &  &  & x\\
+\rowcolor{gray!6}  MTF & Mt. Ford & x &  & x & x &  &  &  &  &  &  & x & x & x\\
+RLK & Ruby Lake & x &  & x & x &  &  &  & x & x & x & x & x & x\\
+\rowcolor{gray!6}  TCR & Turbid Creek & x &  & x & x & x &  &  & x & x &  & x & x & x\\
+\addlinespace
+TMC & Twenty-Mile Creek & x &  & x & x &  &  &  &  &  & x & x & x & x\\
+\rowcolor{gray!6}  SKA & Skaiakos & x &  & x &  &  &  & x &  &  &  &  & x & x\\
+PTC & Potlatch &  & x & x &  &  &  &  &  & x & x & x & x & x\\
+\rowcolor{gray!6}  CSK & Comsock &  & x & x &  &  &  &  &  &  &  &  &  & \\
+MPT & Middle Point &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+\addlinespace
+\rowcolor{gray!6}  PCR & Peers Creek &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+BKH & Birkenhead &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+\rowcolor{gray!6}  WCR & Wray Creek &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+PNC & Pinecone &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+\rowcolor{gray!6}  DCR & Douglas Creek &  & x & x &  &  &  &  &  &  &  &  &  & x\\
+\bottomrule
+\end{tabular}}
+\end{capctable}
+\end{landscape}
+
+\restoregeometry
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-8}Summary of nest camera data}
+\centering
+\begin{tabu} to \linewidth {>{\raggedright\arraybackslash}p{20em}>{\em\raggedright\arraybackslash}p{20em}>{\raggedleft}X>{\raggedleft}X>{\raggedleft}X}
+\toprule
+Prey species &  & count & \% count & \% biomass\\
+\midrule
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Large birds (> 150 g)}}\\
+\hspace{1em}ruffed grouse & Bonasa umbellus & 1 & 0.44 & 1.37\\
+\hspace{1em}sooty grouse & Dendragapus fulignosus & 2 & 0.89 & 5.51\\
+\hspace{1em}band-tailed pigeon & Patagoienas fasciata & 3 & 1.33 & 2.97\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Medium birds (60-150 g)}}\\
+\hspace{1em}Steller's jay & Cyanocitta stelleri & 2 & 0.89 & 0.67\\
+\hspace{1em}varied thrush & Ixoreus naevius & 7 & 3.11 & 1.45\\
+\hspace{1em}gray jay & Perisoreus canadensis & 2 & 0.89 & 0.37\\
+\hspace{1em}American robin & Turdus migratorius & 3 & 1.33 & 0.63\\
+\hspace{1em}average medium bird &  & 11 & 4.89 & 2.44\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Small birds (< 40 g)}}\\
+\hspace{1em}Swainson's thrush & Catharus ustulatus & 5 & 2.22 & 0.39\\
+\hspace{1em}average small bird &  & 18 & 8.00 & 1.40\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Large mammals (> 600 g)}}\\
+\hspace{1em}snowshoe hare & Lepus americanus & 2 & 0.89 & 7.00\\
+\hspace{1em}average large mammal &  & 1 & 0.44 & 3.50\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Medium mammals (200-600 g)}}\\
+\hspace{1em}bushy-tailed woodrat & Cricetidae cinerea & 1 & 0.44 & 0.98\\
+\hspace{1em}rat & Rattus sp & 11 & 4.89 & 7.75\\
+\hspace{1em}Douglas squirrel & Tamiasciurus douglasii & 73 & 32.44 & 38.80\\
+\hspace{1em}red squirrel & Tamiasciurus hudsonicus & 9 & 4.00 & 5.28\\
+\hspace{1em}tree squirrel & Tamiasciurus sp & 1 & 0.44 & 0.56\\
+\hspace{1em}average medium mammal &  & 4 & 1.78 & 2.25\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Small mammals (< 200 g)}}\\
+\hspace{1em}flying squirrel & Glaucomys sabrinus & 3 & 1.33 & 1.22\\
+\hspace{1em}bat & Myotis sp & 1 & 0.44 & 0.02\\
+\hspace{1em}chipmunk & Neotamias sp & 6 & 2.67 & 1.04\\
+\hspace{1em}average small mammal &  & 3 & 1.33 & 0.68\\
+\addlinespace[0.3em]
+\multicolumn{5}{l}{\textbf{Unidentified items}}\\
+\hspace{1em}average medium item &  & 13 & 5.78 & 6.00\\
+\hspace{1em}average small item &  & 43 & 19.11 & 7.74\\
+\bottomrule
+\end{tabu}
+\end{capctable}
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-9}Vancouver Island occupancy data}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
+Site & 2018 &  2019\\
+\midrule
+\rowcolor{gray!6}  Goose Creek & 1 & 1\\
+Rona Loop & 1 & 1\\
+\rowcolor{gray!6}  Lukwa South & 1 & 1\\
+Tsitika West & 1 & 1\\
+\rowcolor{gray!6}  Cook Creek & 1 & 2\\
+\addlinespace
+Mahatta & 1 & 1\\
+\rowcolor{gray!6}  China Beach & 2 & 1\\
+Taylor River & 1 & 1\\
+\rowcolor{gray!6}  Keta & 3 & 1\\
+\bottomrule
+\multicolumn{3}{l}{\textit{Note: }}\\
+\multicolumn{3}{l}{1 = no birds observed, 2 = birds present, no evidence of breeding, 3 = active, evidence of breeding}\\
+\end{tabular}
+\end{capctable}
+
+\begin{capctable}
+
+\caption{\label{tab:unnamed-chunk-10}South Coast occupancy data}
+\centering
+\begin{tabular}[t]{lrr}
+\toprule
+Site & 2018 &  2019\\
+\midrule
+\rowcolor{gray!6}  Dewdney Creek & 3 & 1\\
+Ford Mountain & 1 & 3\\
+\rowcolor{gray!6}  Mt Holden & 1 & 1\\
+Silver & 2 & 1\\
+\rowcolor{gray!6}  Clowhom & 3 & 3\\
+\addlinespace
+Duck Lake & 1 & 1\\
+\rowcolor{gray!6}  Freil & 2 & 3\\
+Giovanno & 2 & 1\\
+\rowcolor{gray!6}  Granite Mt & 1 & 3\\
+Haslam & 1 & 1\\
+\addlinespace
+\rowcolor{gray!6}  Maurell Island & 3 & 3\\
+McNair & 1 & 2\\
+\rowcolor{gray!6}  Mt Pearkes & 1 & 1\\
+Nanton & 1 & 1\\
+\rowcolor{gray!6}  Osgood & 1 & 3\\
+\addlinespace
+Phantom & 3 & 3\\
+\rowcolor{gray!6}  Potlatch & 3 & 2\\
+Powell Daniels & 3 & 3\\
+\rowcolor{gray!6}  Ruby Lake & 2 & 3\\
+Skaiakos & 1 & 3\\
+\addlinespace
+\rowcolor{gray!6}  St. Vincent & 1 & 3\\
+Brohm & 1 & 1\\
+\rowcolor{gray!6}  Dipper Creek & 1 & 3\\
+Jarvis & 1 & 1\\
+\rowcolor{gray!6}  Lillooette & 1 & 1\\
+\addlinespace
+Millars Pond & 1 & 1\\
+\rowcolor{gray!6}  Turbid & 3 & 3\\
+Wedge Creek & 1 & 3\\
+\bottomrule
+\end{tabular}
+\end{capctable}
+
+\end{document}

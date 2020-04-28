@@ -1,2 +1,0 @@
-"0","vi.sites <- read_csv('../data/processed/vi_occupancy_2018-2019.csv')"
-"0","sc.sites <- read_csv('../data/processed/sc_occupancy_2018-2019.csv')"

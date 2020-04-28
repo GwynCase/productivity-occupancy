@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588031160457.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2024590211",
+    "id" : "7852B615",
+    "lastKnownWriteTime" : 1587845901,
+    "last_content_update" : 1587845901,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200411_camera_data_methods.Rmd",
+    "project_path" : "notebooks/20200411_camera_data_methods.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "151,473",
+        "last_setup_crc32" : "7E55B743e74108d1",
+        "scrollLine" : "152",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

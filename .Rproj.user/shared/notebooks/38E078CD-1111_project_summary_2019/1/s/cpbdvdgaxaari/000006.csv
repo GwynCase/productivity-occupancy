@@ -1,6 +1,0 @@
-"0","# South Coast occupancy data"
-"0","sc.sites %>% dplyr::select(-old.name) %>% "
-"0","  kable('latex', booktabs=T, caption='Vancouver Island occupancy data',"
-"0","       table.envir='capctable',"
-"0","       col.names=c('Site', '2018',' 2019')) %>% "
-"0","   kable_styling(latex_options=c('striped'))"
