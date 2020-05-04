@@ -1,0 +1,28 @@
+"0","sites <- sites %>% mutate(score=0, score=case_when(
+  telemetry == 1 ~ score + 3,
+  TRUE ~ score
+)) %>% 
+  mutate(score=case_when(
+    cameras == 1 ~ score + 2,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    remains == 1 ~ score + 1,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    zone == 'cs' ~ score + 1,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    status.2018 > 0 & status.2019 > 0 ~ 1,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    access %within% c('h', 'b', 'q') ~ score - 6,
+    TRUE ~ score
+  ))
+"
+"2","Error in access %within% c(""h"", ""b"", ""q"") : 
+  could not find function ""%within%""
+"

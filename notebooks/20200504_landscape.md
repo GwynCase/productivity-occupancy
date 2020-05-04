@@ -1,0 +1,87 @@
+Landscape
+================
+
+Since I've put together my larger occupancy dataset, and I have the method to pull BEC data, I'm going to combine them and get the BEC data for all of them.
+
+``` r
+# Load up some libraries.
+library('tidyverse')
+library('sf')
+
+# Load in the data.
+df <- read_csv('../data/processed/the_big_list_of_nests.csv')
+
+# Collapse multiple nests into a single value by generating a nest centroid, etc.
+sites <- df %>% group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  select(-nest, -NOTES) %>% 
+  distinct()
+
+# Select only sites with 2018 & 2019 occupancy data or prey remains.
+
+sites <- sites %>% filter(status.2018 > 0 & status.2019 | remains > 0)
+```
+
+Now that I've got my sites and their centroids, I need to decide how big of a landscape I want to define.
+
+A biologically reasonable level would be the annual home range. Unfortunately, there aren't any estimates of that from coastal BC. From the interior, there's an estimat of 3,500-8,400 ha (Mahon 2008). The only estimates from Washington are breeding-season only. SE AK has an estimate of 15,719-47,563 ha (Lewis & Flatten 2004 via McClaren et al. 2015). Those are two very, very different numbers.
+
+Alternatively, I could go a lot smaller and just stick to the breeding season home range. The average from Vancouver Island is 3,700 ha. If I recall correctly from a previous wild citation chase, this was calculated from the average distance between nests in an area presumed to be saturated with goshawks (so it's not a MCP or a KDE). But my average homerange (albeit a MCP, so probs oversized) is already about that size: 3571 ha. Finn used 1886 ha (so small!) as their home range in the Olympic Peninsula, which comes from unpublished data (!) on 6 (!) individuals.
+
+So I could go with the 3700 from VI. On one hand it makes sense to keep it this size, since this is the amount of space they're using. On the other hand, the wider landscape might make a difference... somehow. What the hell, there's no harm in going bigger. So I guess I'll go with the SE AK numbers. Next question: which ones?? Maybe just the median?
+
+``` r
+median(c(12431, 42451))
+```
+
+    ## [1] 27441
+
+Fine, there's a nice big number. Now to make some nice big circles.
+
+``` r
+# Convert area in ha to radius in m
+a.hr.ha <- 27441
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf <- st_as_sf(sites, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Draw the buffers.
+a.hr.buffers <- st_buffer(sites.sf, dist=r.hr.m)
+```
+
+As long as I'm making buffers I may as well make smaller, 3700 ha ones. I can use them for comparison with my final homerange estimates based on my telemetry.
+
+``` r
+# Area to radius.
+bhr.ha <- 3700
+r.bhr.m <- sqrt(bhr.ha*10000/pi)
+
+# Draw buffers.
+b.hr.buffers <- st_buffer(sites.sf, dist=r.bhr.m)
+```
+
+And let's finish up with the breeding area (175 ha). This number comes from McClaren et al. (2015) and is basically a 90% MCP.
+
+``` r
+# Area to radius.
+ba.ha <- 175
+r.ba.m <- sqrt(ba.ha*10000/pi)
+
+# Draw buffers.
+ba.buffers <- st_buffer(sites.sf, dist=r.ba.m)
+```
+
+It doesn't seem worth it calculate "nest area" since I can just use the points of the nests themselves.
+
+And finally, save as shps.
+
+``` r
+# st_write(a.hr.buffers, '../data/processed/hr_annual_SC.shp')
+# st_write(b.hr.buffers, '../data/processed/hr_breedingseason_SC.shp')
+# st_write(ba.buffers, '../data/processed/hr_breedingarea_SC.shp')
+```

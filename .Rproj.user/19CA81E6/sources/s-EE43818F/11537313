@@ -1,0 +1,26 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1588605090980.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "8|30|12|0|\n26|32|31|0|\n34|29|38|0|\n",
+    "hash" : "0",
+    "id" : "11537313",
+    "lastKnownWriteTime" : 1588608302,
+    "last_content_update" : 1588608302848,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/0000_writing_outline.Rmd",
+    "project_path" : "notebooks/0000_writing_outline.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "15,639",
+        "docOutlineVisible" : "0",
+        "scrollLine" : "0",
+        "source_window_id" : "wrcljfbhny61b",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

@@ -1,0 +1,66 @@
+---
+title: 'From Landscapes to Lunch'
+subtitle: 'a progress report'
+author: 'Gwyn Case'
+output:
+  bookdown::pdf_document2:
+    latex_engine: xelatex
+    toc: no
+    fontsize: 12pt
+urlcolor: blue
+header-includes:
+- \newfontfamily\ssf{Lato}
+- \newenvironment{ctable}{\ssf }{}
+- \newenvironment{capctable}[1][t]{\begin{table}[#1]\centering\ssf}{\end{table}}
+- \usepackage{color}
+- \usepackage{framed}
+- \setlength{\fboxsep}{.8em}
+
+- \newenvironment{blackbox}{\definecolor{ashgrey}{rgb}{0.7, 0.75, 0.71}\color{black}\begin{shaded}}{\end{shaded}}
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r load-libraries, echo=FALSE}
+library('knitr')
+library('kableExtra')
+library('tidyverse')
+library('lubridate')
+```
+
+We quantified the breeding season diet of goshawks using physical prey remains and nest cameras.
+
+## Physical specimens
+
+\begin{blackbox}
+\textbf{What's important:}
+\begin{itemize}
+  \item Physical remains were collected from 15 sites during 2019 using two different methodologoies (opportunistic and systematic).
+  \item Additional samples may be available from 2018 and from Vancouver Islad.
+  \item Physical remains appear to be biased toward small mammals and birds, in contrast to camera data.
+  \item Further analysis is on hold due to the covid-19 pandemic.
+\end{itemize}
+\end{blackbox}
+
+**Methods**\ \ \ Physical remains were collected using two different methodologies. Opportunistic collections were gathered by inventory technicians during regular goshawk surveys. Prey remains and regurgiated pellets were collected from beneath pluck posts, perches, and active and inactive nests when discovered by surveyors. Items from each pluck post, perch, or nest were pooled into a single sample. Systematic collections were gathered during thorough searches of the ground within a 50-m radius of an active nest. All physical remains from a single nest area search were pooled into a single sample.
+
+ent\@ref(tab:camera-sites). Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

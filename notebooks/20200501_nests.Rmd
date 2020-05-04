@@ -1,0 +1,58 @@
+---
+title: "Nest database"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Which nests should we focus on this season?
+
+```{r}
+# Load some libraries.
+library('tidyverse')
+
+# Load in the data.
+df <- read_csv('../data/interim/the_big_list_of_nests.csv') %>% 
+  dplyr::select(-starts_with('X')) %>% 
+  rename(status.2013=Occup2013, status.2014=Occup2014)
+
+# Make a nice table of sites.
+sites <- df %>% dplyr::select(name, lat, lon, zone, access, telemetry, cameras, 
+                            remains, starts_with('status')) %>% 
+  group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  distinct()
+```
+
+Now that I have that, I can score each site based on characteristics.
+
+```{r}
+sites <- sites %>% mutate(score=0, score=case_when(
+  telemetry == 1 ~ score + 4,
+  TRUE ~ score
+)) %>% 
+  mutate(score=case_when(
+    cameras == 1 ~ score + 3,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    remains == 1 ~ score + 2,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    zone == 'cs' ~ score + 1,
+    TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    status.2018 > 0 & status.2019 > 0 ~ score + 1,
+    # TRUE ~ score
+  )) %>% 
+  mutate(score=case_when(
+    access %in% c('h', 'b', 'q') ~ score - 11,
+    TRUE ~ score
+  ))
+```
