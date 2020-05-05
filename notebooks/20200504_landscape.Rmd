@@ -1,6 +1,6 @@
 ---
 title: "Landscape"
-output: github_document
+output: html_notebook
 ---
 
 ```{r setup, include=FALSE}

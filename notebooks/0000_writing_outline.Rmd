@@ -13,7 +13,7 @@ output: html_notebook
 ```
 
 
-Effective wildlife management requires a thorough understanding of the many factors that can affect species' population demographics, including survival, reproduction, immigration, and emigration. All of these may be influence by diet. For individuals, abundanct food increases adult survival and the number of young produced. At the population level, abundant food resources can lead to population growth and the dispersal of individuals to surrounding areas. Fluctuations in the prey base may cause corresponding flucations in population size or growth, creating instability that must be taken into account in species management plans. However, the severity of such fluctuations depends in turn on several factors, including dietary niche breadth. Species with a narrow, specialized diet are more sensitive to changes in prey abundance than those with a wide, diverse diet, and as a result may be more vulnerable to population declines and even local extinctions.
+Effective wildlife management requires a thorough understanding of the many factors that can affect species' population demographics, including survival, reproduction, immigration, and emigration. All of these may be influenced by diet. For individuals, abundant food increases adult survival and the number of young produced. At the population level, abundant food resources can lead to population growth and the dispersal of individuals to surrounding areas. Fluctuations in the prey base may cause corresponding flucuations in population size or growth, creating instability that must be taken into account in species management plans. However, the severity of such fluctuations depends in turn on several factors, including dietary niche breadth. Species with a narrow, specialized diet are more sensitive to changes in prey abundance than those with a wide, diverse diet, and as a result may be more vulnerable to population declines and even local extinctions.
 
 
 ```{block diet-popdy-region}
@@ -22,7 +22,9 @@ Effective wildlife management requires a thorough understanding of the many fact
 > The diversity of prey in their diets ultimately depends on the abundance and availability of the local bird and mammal fauna, which varies geographically. In Canada, although goshawks regularly consumed several prey species (->5), goshawk reproduction showed a strong functional response to only one species--snowshoe hare (Lepusa mericanus; Doyle and Smith 2001). In contrast, 14 species of birds and mammals regularly contributed to goshawk diets in the southwestern United States (Reynolds et al. 1992). This diet diversity may stabilize their breeding rates. --Salafsky et al. 2005 (introduction)
 ```
 
-For a generalist predator, dietary breadth may depend less on which species it is capable of hunting and more on which species are available to be hunted. Within a single species' range the diversity of available prey species may vary widely, forcing some populations to subsist on a few species while other populations have access to many. A wide prey base reduces the likelihood that prey species will fluctuate synchronously, and increases the predator's ability to switch from a less abundant prey to a more abundant one.
+
+For a generalist predator, dietary breadth may depend less on which species it is capable of hunting and more on which species are available to be hunted. Within a single species' range the diversity of available prey species may vary widely, forcing some populations to subsist on a few species while other populations have access to many. A wide prey base reduces the likelihood that prey species will fluctuate synchronously, and increases the predator's ability to switch from a less abundant prey to a more abundant one. Regional diet diversity can therefore influence population productivity and stability.
+
 
 ```{block region-preybase-popdy}
 * Different areas dominated by different forest types may be expected to have different prey base, with consequences for brood size and ultimately population growth.
@@ -32,6 +34,8 @@ prey. -- Solonen et al. 2019 (Introduction)
 ```
 
 
+In addition to prey diversity, prey species composition may also vary across a species' range. Factors such as abundance, size, encounter rate, and handling time can make some prey species more desirable than others. The presence of these species can increase population productivity by providing an especially valuable food resource, but also decrease population stability if they are prone to fluctuations in abundance. These two factors---prey diversity and prey composition---combine to make diet a powerful influence on population demographics.
+
 
 ```{block preybase-landscape}
 * Recommendations for goshawk management include increasing prey abundance through forest management (Reynolds). This opens to the door to umbrella-style or ecosystem-based management, but that requires a thorough understanding of links between diet, prey, and landscape.
@@ -39,6 +43,7 @@ prey. -- Solonen et al. 2019 (Introduction)
 > Six nonexclusive hypotheses have been proposed to explain the requirement of spotted owls for old growth, but only abundance of prey can explain the requirement of Spotted Owls for large areas of old growth (Carey 1985). This hypothesis predicts that prey abun- dance (and diversity) and landscape composition should be the major correlates of home range size and the absolute amount of old growth in the range, that latitudinal variation in home range size should reflect prey distribution with changes in home range size being abrupt (reflecting abrupt changes in prey diversity), as opposed to clinal, and that selection of foraging habitat should reflect prey abundance. -- Carey et al. 1992 (Introdution)
 ```
 
+Both factors ultimately depend on landscape characteristics. At larger scales, ecosystem type dictates the distribution of prey species, while at smaller scales, habitat type affects local patterns of abundance.
 
 ### Methods
 
@@ -66,7 +71,7 @@ likely a result of encounter rates with goshawks. Goshawks are opportunistsa nd 
 
 > Past discrepancies among studies with respect to proportions of mammalian and avian prey items might be attributable to the method used to quantify diet. Most studies that reported a higher percent of birds than mammals in goshawk diet used indirect methods such as analysis of pellets or prey remains to assess dietary components. These methods have been scrutinized because they can overestimate bird species due to the relative ease in locating feathers over small pieces of mammal fur and bones (Simmons et al. 1991, Beilefeldt et al. 1992) -- Rogers et al. 2006 (Conclusion)
 
-* Management recommendations in the US suggest managing forests for the direct benefit of goshawk prey, with only indirect benefits to goshawks. Our results supoort the idea that managing for select prey species may be beneficial. Our results also provide a locally-relevant list of species for consideration, since those recommendations come from the American SW.
+* Management recommendations in the US suggest managing forests for the direct benefit of goshawk prey, with only indirect benefits to goshawks. Our results support the idea that managing for select prey species may be beneficial. Our results also provide a locally-relevant list of species for consideration, since those recommendations come from the American SW.
 
 > In 1992, the USDA Forest Service (USFS) developed guidelines for Northern Goshawks and forest management that are currently being implemented on some national forests across the southwestern US (Reynolds et al. 1992). These management recommendations recognized 14 consistently abundant and important prey species, out of a total of 66 potential prey species from various goshawk diet studies (Schnell 1958, Meng 1959, Reynolds and Meslow 1984, Kennedy 1991, Boal and Mannan 1994) and suggested managing habitat for all prey species. Among the 14 prey species listed in the guidelines, we observed that six species contributed >5% each
 to goshawk diet on the Sitgreaves Forest. Our study supports the idea that managing habitat for these consistently hunted prey items is important. -- Rogers et al. 2006 (Conclusion)

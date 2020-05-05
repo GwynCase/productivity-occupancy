@@ -258,11 +258,32 @@ summary {
 <p>Fine, there’s a nice big number. Now to make some nice big circles.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDb252ZXJ0IGFyZWEgaW4gaGEgdG8gcmFkaXVzIGluIG1cbmEuaHIuaGEgPC0gMjc0NDFcbnIuaHIubSA8LSBzcXJ0KGEuaHIuaGEqMTAwMDAvcGkpXG5cbiMgTWFrZSBzaXRlIHRhYmxlIGEgc3BhdGlhbCBvYmplY3QgYW5kIG1ha2UgaXQgVVRNcy5cbnNpdGVzLnNmIDwtIHN0X2FzX3NmKHNpdGVzLCBjb29yZHM9YygnbG9uJywgJ2xhdCcpKSAlPiVcbiAgc3Rfc2V0X2NycygnK3Byb2o9bG9uZ2xhdCArZWxscHM9V0dTODQgK2RhdHVtPVdHUzg0ICtub19kZWZzJykgJT4lXG4gIHN0X3RyYW5zZm9ybShcIitwcm9qPXV0bSArem9uZT0xMCArZGF0dW09V0dTODQgK3VuaXRzPW0gK25vX2RlZnNcIilcblxuIyBEcmF3IHRoZSBidWZmZXJzLlxuYS5oci5idWZmZXJzIDwtIHN0X2J1ZmZlcihzaXRlcy5zZiwgZGlzdD1yLmhyLm0pXG5gYGAifQ== -->
+<pre class="r"><code># Convert area in ha to radius in m
+a.hr.ha &lt;- 27441
+r.hr.m &lt;- sqrt(a.hr.ha*10000/pi)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf &lt;- st_as_sf(sites, coords=c('lon', 'lat')) %&gt;%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %&gt;%
+  st_transform(&quot;+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs&quot;)
+
+# Draw the buffers.
+a.hr.buffers &lt;- st_buffer(sites.sf, dist=r.hr.m)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>As long as I’m making buffers I may as well make smaller, 3700 ha ones. I can use them for comparison with my final homerange estimates based on my telemetry.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBBcmVhIHRvIHJhZGl1cy5cbmJoci5oYSA8LSAzNzAwXG5yLmJoci5tIDwtIHNxcnQoYmhyLmhhKjEwMDAwL3BpKVxuXG4jIERyYXcgYnVmZmVycy5cbmIuaHIuYnVmZmVycyA8LSBzdF9idWZmZXIoc2l0ZXMuc2YsIGRpc3Q9ci5iaHIubSlcbmBgYCJ9 -->
+<pre class="r"><code># Area to radius.
+bhr.ha &lt;- 3700
+r.bhr.m &lt;- sqrt(bhr.ha*10000/pi)
+
+# Draw buffers.
+b.hr.buffers &lt;- st_buffer(sites.sf, dist=r.bhr.m)</code></pre>
+<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>And let’s finish up with the breeding area (175 ha). This number comes from McClaren et al. (2015) and is basically a 90% MCP.</p>
