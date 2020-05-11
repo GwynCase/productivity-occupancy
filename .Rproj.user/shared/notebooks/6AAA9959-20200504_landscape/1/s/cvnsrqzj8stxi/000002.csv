@@ -1,0 +1,6 @@
+"0","```r
+df <- read_csv('../data/processed/big_list_of_nests.csv')
+
+```"
+"1","Error: '../data/processed/big_list_of_nests.csv' does not exist in current working directory ('C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks').
+"

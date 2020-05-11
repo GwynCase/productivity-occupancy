@@ -1,0 +1,19 @@
+"0","```r
+# Load homerange data.
+hr <- st_read('../data/interim/camera_homerange_2019.shp')
+
+# Pull out one site as a toy.
+utz.hr <- hr %>% filter(site == 'UTZ')
+
+# Clip the BEC poly to the UTZ homerange.
+utz.bec <- st_intersection(utz.hr, bec)
+
+# Set raster extent based on UTZ homerange.
+utz.ext <- extent(utz.bec)
+
+# Make an empty raster to populate with values.
+utz.empty <- raster(utz.ext, res=c(100, 100))
+
+# Populate BEC polygon data onto empty raster grid.
+utz.r <- rasterize(utz.bec, utz.empty, 'MAP_LABEL')
+```"

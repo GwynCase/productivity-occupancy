@@ -1,0 +1,4 @@
+"0","# Import BEC raster created previously."
+"0","bec.raster <- raster('../data/interim/bec_raster_SC.tif')"
+"0","# Double-check that it's ok."
+"0","check_landscape(bec.raster)"

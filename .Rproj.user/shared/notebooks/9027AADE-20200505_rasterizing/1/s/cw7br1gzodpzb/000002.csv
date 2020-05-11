@@ -1,0 +1,10 @@
+"0","```r
+# Get the categories from the original shapefile.
+bec.levels <- data.frame(levels(bec[[\"MAP_LABEL\"]])) %>% 
+  rownames_to_column() %>% 
+  rename(ID=1, map_label=2) %>% 
+  as.numeric(ID)
+
+```"
+"1","Error in function_list[[k]](value) : object 'ID' not found
+"

@@ -1,0 +1,13 @@
+"0","```r
+# Convert area in ha to radius in m
+a.hr.ha <- 27441
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf <- st_as_sf(sites, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform(\"+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs\")
+
+# Draw the buffers.
+a.hr.buffers <- st_buffer(sites.sf, dist=r.hr.m)
+```"

@@ -1,3 +1,5 @@
-calculate_lsm(utz.r, what=c('lsm_c_area_mn', 'lsm_c_ca')) %>% 
-  pivot_wider(id_cols=class, names_from=metric, values_from=value) %>% 
-  left_join(bec.levels, by=c('class'='ID'))
+ggplot(class.area, aes(x=amt.tz, y=prop.ml, label=site)) +
+  geom_point() +
+  geom_text(hjust='inward', nudge_y = 0.5) +
+  theme_classic()
+  

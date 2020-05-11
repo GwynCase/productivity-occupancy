@@ -1,0 +1,129 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+I'm going to try a really small, basic analysis to see if I have the hang of how this works: does forest type at the estimate Vancouver Island home range of 3700 ha, as mapped by BEC zone, predict proportion of squirrel biomass in the diet?
+
+```{r}
+# Load some libraries.
+library('raster')
+library('tidyverse')
+library('sf')
+library('landscapemetrics')
+
+# Bring in diet data.
+df <- read_csv('../data/interim/camera_corrected.csv')
+source('../src/prey_attributes.R')
+
+# Calculate proportion of squirrel biomass per site.
+squirrel.mass <- items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), prop.sq=amount.sq/total) %>% 
+  select(site, prop.sq) %>% distinct()
+
+squirrel.mass
+```
+
+Now I need to calculate proportion of each forest type for each site.
+
+```{r}
+# Import BEC raster created previously.
+bec.raster <- raster('../data/interim/bec_raster_SC.tif')
+
+# Double-check that it's ok.
+check_landscape(bec.raster)
+```
+
+Looks fine. Now I need to define the sample areas.
+
+```{r}
+# Import data and get centroids for camera nests.
+sites <- read_csv('../data/processed/the_big_list_of_nests.csv') %>% 
+  group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  select(-nest, -NOTES) %>% 
+  distinct() %>% 
+  filter(cameras > 0)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf <- st_as_sf(sites, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Convert area in ha to radius in m
+a.hr.ha <- 3700
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+```
+
+Now I have to actually pick what metrics I'm going to use to represent "forest type". Dominant forest type and diversity seem like promising starting points for a quick test. Or I could do proportion of each forest type.
+
+```{r}
+# Calculate area per class per site.
+class.area <- sample_lsm(bec.raster, y=sites.sf, size=r.hr.m, what='lsm_c_ca', 
+           shape='circle') %>% 
+# Amend class number with BEC name.
+  left_join(data.frame(levels(bec.raster)), by=c('class'='ID')) %>% 
+# Reorganize by site.  
+  pivot_wider(id_cols=plot_id, names_from=category, values_from=value, 
+              values_fill=list(value=0))
+
+# Amend with site names.
+class.area <- select(sites, site) %>% rownames_to_column() %>% 
+  mutate(rowname=as.integer(rowname)) %>% 
+  right_join(class.area, by=c('rowname'='plot_id'))
+
+class.area
+```
+
+Umm yes, ok, very pretty data, but too many variables. Let's try summing the tranzition zone types.
+
+```{r}
+class.area <- class.area %>% mutate(amt.tz=CWHds1+CWHms1)
+```
+
+That's a bit more reasonable. Let's try add the squirrel and try a model...
+
+```{r}
+# Add proportion of biomass that is squirrel.
+class.area <- left_join(class.area, squirrel.mass)
+
+# Make a model.
+sq.x.tz <- lm(prop.sq ~ amt.tz, data=class.area)
+
+# Look at it.
+summary(sq.x.tz)
+```
+
+Absolutely useless, which seems about right. What might be slightly more reasonable it proportion mammal ~ amount transition.
+
+```{r}
+# Calculate proportion of mammalian biomass.
+mammal.mass <- items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.sq=sum(mass), prop.ml=amount.sq/total) %>% 
+  select(site, prop.ml) %>% distinct()
+
+# Add to the main data set.
+class.area <- left_join(class.area, mammal.mass)
+
+# Try another model.
+ml.x.tz <- lm(prop.ml ~ amt.tz, data=class.area)
+
+# Look at it.
+summary(ml.x.tz)
+```
+
+Lol nope.
+
+K so that's two negatives but it ruled some things out and was a nice test of how to use the package.
