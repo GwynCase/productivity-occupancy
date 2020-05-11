@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1589217146279.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "849EDDC9",
+    "lastKnownWriteTime" : 1589218953,
+    "last_content_update" : 1589219240752,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/src/scratch.R",
+    "project_path" : "src/scratch.R",
+    "properties" : {
+        "cursorPosition" : "2,45",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

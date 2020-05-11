@@ -1,0 +1,107 @@
+---
+title: "Rasterizing stuff"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+I have a shapefile of BEC zones (forest types, basically) that I've clipped to my annual homerange estimates. It looks like this:
+
+```{r}
+# Load up some libraries.
+library('sf')
+library('ggplot2')
+library('raster')
+library('tidyverse')
+library('rgdal')
+library('landscapemetrics')
+
+# Load in the data.
+bec <- st_read('../data/processed/BEC_annual-homerange_clipped.shp')
+
+ggplot() +
+  geom_sf(data=bec, aes(fill=MAP_LABEL)) +
+  theme_classic()
+```
+
+Pretty cool. But what I need to do is rasterize it.
+
+```{r eval=FALSE}
+# Set raster extent based on BEC shapefile.
+ext <- extent(bec)
+
+# Make an empty raster to populate with values.
+r <- raster(ext, res=c(100, 100))
+
+# Populate BEC polygon data onto empty raster grid.
+r.bec <- rasterize(bec, r, 'MAP_LABEL')
+```
+
+And that's great, but I have no idea what numerical values were mapped to which categorical forest type. Supposedly, the raster value is the same as the interger displatyed by `levels()` and I can add that to the raster.
+
+```{r}
+# Get the categories from the original shapefile.
+bec.levels <- data.frame(levels(bec[["MAP_LABEL"]])) %>% 
+  rownames_to_column() %>% 
+  rename(ID=1, map_label=2) %>% 
+  mutate(ID=as.numeric(ID))
+
+# Add them to the raster.
+# levels(r.bec) <- bec.levels
+
+# Save the raster image.
+# writeRaster(r.bec, '../data/interim/bec_raster_SC.tif', format='GTiff')
+```
+
+That... seems to have worked. But it's too big to play with. I'll bring in the smaller BEC layer I made earlier to start with.
+
+```{r}
+# Load homerange data.
+hr <- st_read('../data/interim/camera_homerange_2019.shp')
+
+# Pull out one site as a toy.
+utz.hr <- hr %>% filter(site == 'UTZ')
+
+# Clip the BEC poly to the UTZ homerange.
+utz.bec <- st_intersection(utz.hr, bec)
+
+# Set raster extent based on UTZ homerange.
+utz.ext <- extent(utz.bec)
+
+# Make an empty raster to populate with values.
+utz.empty <- raster(utz.ext, res=c(100, 100))
+
+# Populate BEC polygon data onto empty raster grid.
+utz.r <- rasterize(utz.bec, utz.empty, 'MAP_LABEL')
+```
+
+There's a R package that duplicates most of the function of FRAGSTATS, `landscapemetrics`.
+
+```{r}
+show_patches(utz.r, labels=FALSE)
+```
+
+That shows all of the patches in the landsape. And I can break them apart like this:
+
+```{r}
+show_patches(utz.r, class='all', labels=FALSE)
+```
+
+which is pretty cool. Let's start with something very basic: patch area.
+
+```{r}
+lsm_p_area(utz.r)
+```
+
+So as small as 2 ha and as large as 2161. And what's the class area?
+
+```{r}
+# Mean patch size per class, total class area.
+calculate_lsm(utz.r, what=c('lsm_c_np', 'lsm_c_area_mn', 'lsm_c_ca')) %>% 
+  pivot_wider(id_cols=class, names_from=metric, values_from=value) %>% 
+  left_join(bec.levels, by=c('class'='ID'))
+```
+
+So mostly big chunks of western hemlock with a some smaller patches of Englemann sprice and one big block of interior Douglas-fir.
