@@ -1,0 +1,8 @@
+"0","# Pick just the sites with more than 1000 ha of tz-type habitats."
+"0","tz.ml.tz <- ml.tz %>% filter(amt.tz > 1000)"
+"0","# Plot it."
+"0","ggplot(tz.ml.tz, aes(x=amt.tz, y=ratio, label=site)) +"
+"0","  geom_point() +"
+"0","  geom_text(hjust='inward', nudge_y = 0.5) +"
+"0","  geom_smooth(method='lm', se=FALSE, color='black', linetype='dashed') +"
+"0","  theme_classic()"

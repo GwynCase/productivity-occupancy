@@ -1,0 +1,8 @@
+"0","# Calculate proportion of mammal biomass per site."
+"0","avian.mass <- items %>% mutate(mass=as.numeric(mass)) %>% "
+"0","  group_by(site) %>% "
+"0","  mutate(total=sum(mass)) %>% "
+"0","  filter(class == 'Aves') %>% "
+"0","  mutate(amount.av=sum(mass), prop.av=amount.av/total) %>% "
+"0","  dplyr::select(site, prop.av) %>% distinct()"
+"0","avian.mass"
