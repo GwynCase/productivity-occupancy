@@ -10,8 +10,6 @@ items <- df %>% filter(class != '') %>%
   dplyr::select(site, class, family, genus, species, common, size) %>% 
   arrange(class, family, genus, species, size)
 
-# prey_attributes
-
 # Classify each avian item into a size class.
 items <- items %>% mutate(group=case_when(
   # Band-tailed pigeon
@@ -45,7 +43,7 @@ items <- items %>% mutate(common=case_when(
   class == 'Aves' & species == 'unknown' & size == 'Large' ~ 'average large bird',
   TRUE ~ common))
 
-# Fil in mass for known bird species.
+# Fill in mass for known bird species.
 items <- items %>% mutate(mass=case_when(
   # Band-tailed pigeon (# from S. BC)
   species == 'fasciata' ~ 379.4,

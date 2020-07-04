@@ -1,0 +1,190 @@
+---
+title: "Mammals and zones"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Unsurprisingly, since they were very silly models, my last set of models didn't turn up anything. Here's a slightly more realistic idea:
+
+The proportion of mammal to bird biomass in the diet is affected by the amount of transition zone-type habitats within a territory.
+
+```{r}
+# Load some libraries.
+library(tidyverse)
+library(landscapemetrics)
+library(raster)
+library(sf)
+
+# Bring in diet data.
+df <- read_csv('../data/interim/camera_corrected.csv')
+source('../src/prey_attributes.R')
+
+head(items)
+
+# Calculate proportion of mammal biomass per site.
+mammal.mass <- items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.ml=sum(mass), prop.ml=amount.ml/total) %>% 
+  dplyr::select(site, prop.ml) %>% distinct()
+
+mammal.mass
+
+# Calculate proportion of mammal biomass per site.
+avian.mass <- items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Aves') %>% 
+  mutate(amount.av=sum(mass), prop.av=amount.av/total) %>% 
+  dplyr::select(site, prop.av) %>% distinct()
+
+avian.mass
+```
+
+Since some items were not identified to class, the proportion of avian biomass is not simply the inverse of mammalian biomass.
+
+Next step is to pull in the landscape data. Last time I used all the BEC zones, but I do have a simpler shapefile that delineates just the transition zone.
+
+```{r}
+# Import transition zone shapefile.
+tz <- st_read('../data/processed/new_transition_zone.shp')
+
+# Look at it.
+ggplot() +
+  geom_sf(data=tz) +
+  theme_classic()
+```
+
+Then rasterize it.
+
+```{r}
+# Set raster extent based on tz shapefile.
+ext <- extent(tz)
+
+# Make an empty raster to populate with values.
+r <- raster(ext, res=c(100, 100))
+
+# Populate BEC polygon data onto empty raster grid.
+r.tz <- rasterize(tz, r, 'MAP_LABEL')
+```
+
+...and wait. (This takes a bit.)
+
+Then save it for later.
+
+```{r}
+# Get labels from the original shapefile.
+tz.levels <- data.frame(levels(tz[["MAP_LABEL"]])) %>% 
+  rownames_to_column() %>% 
+  rename(ID=1, map_label=2) %>% 
+  mutate(ID=as.numeric(ID))
+
+# Add them to the raster.
+levels(r.tz) <- tz.levels
+
+# Save the raster image.
+# writeRaster(r.tz, '../data/interim/tz_raster_SC.tif', format='GTiff')
+```
+
+Then get the nest locations, calculate territory centroids, and extract the proportion of transition zone-types for each.
+
+```{r}
+# Import data and get centroids for camera nests.
+sites <- read_csv('../data/processed/the_big_list_of_nests.csv') %>% 
+  group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  dplyr::select(-nest, -NOTES) %>% 
+  distinct() %>% 
+  filter(cameras > 0)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf <- st_as_sf(sites, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Convert approximate homerange area in ha to radius in m
+a.hr.ha <- 3700
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+```
+
+Mind you, I recently learned that the nest locations I have contain a lot of errors, so obviously that needs to get fixed before I go on to my final analysis.
+
+```{r}
+# Calculate area per class per site.
+class.area <- sample_lsm(r.tz, y=sites.sf, size=r.hr.m, what='lsm_c_ca', 
+           shape='circle') %>% 
+  # Amend class number with BEC name.
+  left_join(data.frame(levels(r.tz)), by=c('class'='ID')) %>% 
+# Reorganize by site.  
+  pivot_wider(id_cols=plot_id, names_from=map_label, values_from=value, 
+              values_fill=list(value=0))
+
+# Amend with site names.
+class.area <- dplyr::select(sites, site) %>% rownames_to_column() %>% 
+  mutate(rowname=as.integer(rowname)) %>% 
+  right_join(class.area, by=c('rowname'='plot_id'))
+
+class.area
+```
+
+Now add the diet data to this.
+
+```{r}
+# Join everything together.
+ml.tz <- left_join(mammal.mass, avian.mass) %>% 
+  left_join(class.area)
+
+# Do some cleaning.
+ml.tz <- ml.tz %>% mutate(amt.tz=CWHds1 + CWHms1, ratio=prop.ml/prop.av) %>% 
+  dplyr::select(site, name, prop.ml, prop.av, ratio, amt.tz)
+
+ml.tz
+```
+
+Take a look at the pattern.
+
+```{r}
+# Plot it.
+ggplot(ml.tz, aes(x=amt.tz, y=ratio, label=site)) +
+  geom_point() +
+  geom_text(hjust='inward', nudge_y = 0.5) +
+  geom_smooth(method='lm', se=FALSE, color='black', linetype='dashed') +
+  theme_classic()
+```
+
+Well that doesn't look promising.
+
+```{r}
+# Make the model.
+ratio.x.tz <- lm(ratio ~ amt.tz, data=ml.tz)
+
+# Look at it.
+summary(ratio.x.tz)
+```
+
+Yeah, no, really not promising.
+
+So this is totes cheating and drops my down to n = 4 which is meaningless, but what happens if I look at the transition zone sites alone?
+
+```{r}
+# Pick just the sites with more than 1000 ha of tz-type habitats.
+tz.ml.tz <- ml.tz %>% filter(amt.tz > 1000)
+
+# Plot it.
+ggplot(tz.ml.tz, aes(x=amt.tz, y=ratio, label=site)) +
+  geom_point() +
+  geom_text(hjust='inward', nudge_y = 0.5) +
+  geom_smooth(method='lm', se=FALSE, color='black', linetype='dashed') +
+  theme_classic()
+
+# And model it.
+lm(ratio ~ amt.tz, data=tz.ml.tz) %>% summary()
+```
+
+So it makes a much prettier line but still doesn't make a pretty p value or anything. But it's something to think about for later, when I have a little more data, that there is a (v slim) possibility of different patterns.

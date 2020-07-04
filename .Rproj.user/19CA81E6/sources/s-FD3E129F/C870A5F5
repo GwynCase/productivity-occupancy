@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1593628391004.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C870A5F5",
+    "lastKnownWriteTime" : 1592954804,
+    "last_content_update" : 1592954804,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200620_mammal_zones.Rmd",
+    "project_path" : "notebooks/20200620_mammal_zones.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "89,71",
+        "last_setup_crc32" : "",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

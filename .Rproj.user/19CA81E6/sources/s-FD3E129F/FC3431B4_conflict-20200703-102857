@@ -1,0 +1,25 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1593628404302.000,
+    "dirty" : true,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "FC3431B4",
+    "lastKnownWriteTime" : 1593795901,
+    "last_content_update" : 1593795901548,
+    "path" : "C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks/20200701_edge_species.Rmd",
+    "project_path" : "notebooks/20200701_edge_species.Rmd",
+    "properties" : {
+        "chunk_output_type" : "inline",
+        "cursorPosition" : "104,43",
+        "last_setup_crc32" : "FD3E129Fdf6655cb",
+        "scrollLine" : "97",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_markdown"
+}

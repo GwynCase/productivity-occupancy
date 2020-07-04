@@ -3,15 +3,32 @@ ggplot(ml.tz, aes(x=amt.tz, y=ratio, label=site)) +
   geom_text(hjust='inward', nudge_y = 0.5) +
   theme_classic()
 
-ggplot(ml.tz, aes(x=amt.tz, y=log(ratio), label=site)) +
-  geom_point() +
-  geom_text(hjust='inward', nudge_y = 0.5) +
-  theme_classic()
+vri.class <- vri %>% mutate(class=case_when(
+  # Non-vegetated and water
+  BCLCS_LV_1 == 'N' & BCLCS_LV_2 == 'W' ~ 1, 
+  # Non-vegetated and not water
+  BCLCS_LV_1 == 'N' & BCLCS_LV_2 != 'W' ~ 2, 
+  # Vegetated and not trees
+  BCLCS_LV_1 == 'V' & BCLCS_LV_2 == 'N' ~ 3,
+  # Vegetated and mixed or deciduous trees
+  BCLCS_LV_1 == 'V' & BCLCS_LV_4 %in% c('TD', 'TM') ~ 4,
+  # Vegetated and coniferous trees
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 < 20 ~ 5,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 20 & PROJ_AGE_1 < 60 ~ 6,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 60 & PROJ_AGE_1 < 140 ~ 7,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 140 ~ 8,
+  TRUE ~ 0
+))
 
-pr.ml.tz <- predict(ratio.x.tz)
 
-plot(pr.ml.tz)
+vri.class %>% filter(class == 0 & BCLCS_LV_4 == 'TC') %>% 
+  dplyr::select(PROJ_AGE_1)
 
-residuals(ratio.x.tz) %>% plot()
+vri.class$hab.class %>% class()
+class(vri.class)
 
-mammal.mass
+r.vri <- rasterize(vri.class, r, 'hab.class')
+
+levels <- data.frame(id=0:8, class.name=c('undefined', 'water', 'land', 'unforested',
+                               'deciduous', 'regen', 'young', 'mature', 'old'))
+
