@@ -1,8 +1,0 @@
-"0","```r
-# Area to radius.
-bhr.ha <- 3700
-r.bhr.m <- sqrt(bhr.ha*10000/pi)
-
-# Draw buffers.
-b.hr.buffers <- st_buffer(sites.sf, dist=r.bhr.m)
-```"

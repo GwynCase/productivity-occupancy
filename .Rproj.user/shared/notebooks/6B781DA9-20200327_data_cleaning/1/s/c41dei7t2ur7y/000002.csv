@@ -1,4 +1,0 @@
-"0","# Filter out only observations of prey."
-"0","prey <- df %>% filter(!is.na(class))"
-"0","# Check if any are missing size values."
-"0","prey %>% filter(is.na(size))"

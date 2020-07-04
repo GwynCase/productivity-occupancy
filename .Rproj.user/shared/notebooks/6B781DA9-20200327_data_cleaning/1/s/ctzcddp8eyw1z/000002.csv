@@ -1,3 +1,0 @@
-"0","# Number of prey deliveried to nest."
-"0","df %>% filter(interest %in% c('newprey', 'delivery')) %>%"
-"0","  summarize(n())"

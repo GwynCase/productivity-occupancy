@@ -1,7 +1,0 @@
-"0","# Pull out the transitional variants."
-"0","tz <- bec %>% filter(MAP_LABEL %in% c('CWHds1', 'CWHms1'))"
-"0","# Plot it."
-"0","ggplot() +"
-"0","  geom_sf(data=hr) +"
-"0","  geom_sf(data=tz, aes(fill='red')) +"
-"0","  theme_classic()"

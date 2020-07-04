@@ -1,4 +1,0 @@
-"0","# And in 2019?"
-"0","vi.2019 %>% right_join(vi.sites, by=c(`Site Name`='site')) %>% "
-"0","  dplyr::select(`Site Name`, `Total Number Of Goshawks`) %>% "
-"0","  drop_na() %>% distinct()"

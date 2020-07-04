@@ -20,15 +20,12 @@ vri.class <- vri %>% mutate(class=case_when(
   TRUE ~ 0
 ))
 
+buffers <- st_buffer(sites.sf, r.hr.m)
+crop(r.vri, buffers) %>% plot()
 
-vri.class %>% filter(class == 0 & BCLCS_LV_4 == 'TC') %>% 
-  dplyr::select(PROJ_AGE_1)
+buffers$site %>% plot()
 
-vri.class$hab.class %>% class()
-class(vri.class)
+show_landscape(r.vri, discrete=TRUE)
+show_shareplot(r.vri, sites.sf, 10, 50) 
 
-r.vri <- rasterize(vri.class, r, 'hab.class')
-
-levels <- data.frame(id=0:8, class.name=c('undefined', 'water', 'land', 'unforested',
-                               'deciduous', 'regen', 'young', 'mature', 'old'))
-
+show_shareplot(classified_landscape, new_point, 10, 50)

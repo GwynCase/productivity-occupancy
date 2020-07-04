@@ -1,5 +1,0 @@
-"0","# Make the correction."
-"0","df$size[df$genus=='Lepus'] <- 'Large'"
-"0","# And check."
-"0","df %>% filter(!is.na(class)) %>%"
-"0","  filter(is.na(size))"

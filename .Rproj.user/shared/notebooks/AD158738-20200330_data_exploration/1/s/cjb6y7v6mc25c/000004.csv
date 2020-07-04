@@ -1,5 +1,0 @@
-"0","bind_cols(success, diff) %>%"
-"0","  ggplot(aes(x=m.diff, y=success, label=site)) +"
-"0","  geom_point() +"
-"0","  geom_text(hjust='inward', nudge_y = 0.5) +"
-"0","  theme_classic()"

@@ -1,3 +1,0 @@
-"0","day <- c(1, 2, 3, 4)"
-"0","n.chicks <- c(2, 2, 2, 1)"
-"0","data.frame(day, n.chicks)"

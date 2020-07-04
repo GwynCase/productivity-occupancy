@@ -1,7 +1,0 @@
-"0","```r
-prey <- prey %>% 
-  mutate(genus = replace(genus, genus=='Tamasciurus', 'Tamiasciurus'))
-prey %>%  
-  group_by(class, family, genus) %>% 
-  summarize(n())
-```"

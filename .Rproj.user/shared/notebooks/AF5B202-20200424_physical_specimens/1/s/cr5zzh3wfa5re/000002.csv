@@ -1,5 +1,0 @@
-"0","df %>% mutate(total=n()) %>% "
-"0","  group_by(class) %>% "
-"0","  mutate(t.class=n(), prop=t.class/total) %>% "
-"0","  dplyr::select(class, prop) %>% "
-"0","  distinct()"

@@ -1,5 +1,0 @@
-"0","# Load in the data.
-df <- read_csv('../data/interim/big_list_of_nests.csv')
-"
-"2","Error: '../data/interim/big_list_of_nests.csv' does not exist in current working directory ('C:/Users/Gwyn/sfuvault/productivity-occupancy/notebooks').
-"

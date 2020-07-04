@@ -1,4 +1,0 @@
-"0","ggplot(mass.for.model, aes(x=age, y=log.d.mass)) +"
-"0","  geom_point() +"
-"0","  theme_classic() +"
-"0","  geom_smooth(method='lm', formula=y ~ x, se=FALSE)"

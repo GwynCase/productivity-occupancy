@@ -1,6 +1,0 @@
-"0","df %>% mutate(hour=hour(datetime), site=as.factor(site)) %>%"
-"0","  filter(interest %in% c('delivery', 'newprey')) %>%"
-"0","  ggplot(aes(x=hour(datetime))) +"
-"0","  geom_histogram(binwidth=1, color='black', fill='gray') +"
-"0","  theme_classic() +"
-"0","  facet_wrap(vars(site))"

@@ -1,7 +1,0 @@
-"0","# Remove the oddity."
-"0","to.genus <- to.genus %>% dplyr::select(-`Tamiasciurus sp`)"
-"0","# And run Simpson's index of diversity."
-"0","simpson <- plyr::ddply(to.genus, ~site, function(x) {"
-"0","           data.frame(simpson=diversity(x[-1], index='simpson'))"
-"0","   })"
-"0","simpson"

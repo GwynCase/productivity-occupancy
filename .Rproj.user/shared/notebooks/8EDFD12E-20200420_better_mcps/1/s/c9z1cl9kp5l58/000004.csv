@@ -1,8 +1,0 @@
-"0","mean.area <- breeding %>% filter(id %in% "
-"0","                                   c('HAR09', 'HAR04', 'HAR05', 'HAR07')) %>% "
-"0","  dplyr::select(id, geometry) %>%"
-"0","  as_Spatial() %>%"
-"0","  mcp.area(percent=95, unin='m', unout='ha', plotit=FALSE) %>% "
-"0","  pivot_longer(cols=1:4) %>% "
-"0","  summarize(mean(value))"
-"0","mean.area"

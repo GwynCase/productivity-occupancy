@@ -1,7 +1,0 @@
-"0","df %>% mutate(hour=hour(datetime), site=as.factor(site)) %>%"
-"0","  filter(interest %in% c('delivery', 'newprey')) %>%"
-"0","  group_by(site, hour) %>%"
-"0","  summarize(n=n()) %>%"
-"0","  ggplot(aes(x=site, y=n)) +"
-"0","  geom_boxplot() +"
-"0","  theme_classic()"

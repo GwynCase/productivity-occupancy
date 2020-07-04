@@ -1,3 +1,0 @@
-"0","# Photos per day?"
-"0","bind_cols(timespan, n.prey) %>%"
-"0","  mutate(days=as.numeric(days), per.day=prey/days)"

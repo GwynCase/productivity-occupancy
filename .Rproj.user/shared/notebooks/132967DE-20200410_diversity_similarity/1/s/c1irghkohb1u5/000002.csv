@@ -1,5 +1,0 @@
-"0","simpson %>% add_column(rating=c(5, 3, 1, 2, 4, 6)) %>% "
-"0","  ggplot(aes(x=rating, y=simpson, label=site)) +"
-"0","  geom_point() +"
-"0","  geom_text(hjust='inward', nudge_y = 0.5) +"
-"0","  theme_classic()"

@@ -1,7 +1,0 @@
-"0","```r
-st_write(ba.buffers, '../data/processed/hr_breedingarea_SC.shp')
-
-```"
-"1","Writing layer `hr_breedingarea_SC' to data source `../data/processed/hr_breedingarea_SC.shp' using driver `ESRI Shapefile'
-Writing 39 features with 14 fields and geometry type Polygon.
-"

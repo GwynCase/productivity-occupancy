@@ -1,6 +1,0 @@
-"0","df %>%"
-"0","  arrange(site, datetime) %>%"
-"0","  group_by(site) %>%"
-"0","  mutate(diff=datetime-lag(datetime), diff.min=as.numeric(diff, units='mins')) %>%"
-"0","  mutate(diff.min=replace_na(diff.min, 0)) %>%"
-"0","  summarize(mean(diff.min))"

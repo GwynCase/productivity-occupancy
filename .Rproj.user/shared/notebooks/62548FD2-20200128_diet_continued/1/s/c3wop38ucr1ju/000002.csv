@@ -1,6 +1,0 @@
-"0","```r
-prey <- df %>%
-  filter(class != '')
-prey %>% group_by(class, family, genus) %>% 
-  summarize(n())
-```"

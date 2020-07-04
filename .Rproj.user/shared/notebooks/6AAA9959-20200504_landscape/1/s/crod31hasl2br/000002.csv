@@ -1,8 +1,0 @@
-"0","```r
-# Draw buffers.
-ba.buffers <- st_buffer(sites.sf, dist=r.ma.m)
-
-```"
-"1","Error in st_buffer.sfc(st_geometry(x), dist, nQuadSegs, endCapStyle = endCapStyle,  : 
-  object 'r.ma.m' not found
-"

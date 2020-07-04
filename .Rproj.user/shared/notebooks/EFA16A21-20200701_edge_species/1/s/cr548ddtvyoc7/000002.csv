@@ -1,0 +1,25 @@
+"0","# Import transition zone shapefile.
+vri <- st_read('../data/external/VRI_camera-sites_2019.shp')
+"
+"1","Reading layer `"
+"1","VRI_camera-sites_2019"
+"1","' from data source `"
+"1","C:\Users\gwync\sfuvault\productivity-occupancy\data\external\VRI_camera-sites_2019.shp"
+"1","' using driver `"
+"1","ESRI Shapefile"
+"1","'"
+"1","
+"
+"1","Simple feature collection with 13321 features and 188 fields"
+"1","
+"
+"1","geometry type:  POLYGON
+"
+"1","dimension:      XY
+"
+"1","bbox:           "
+"1","xmin: 413289.1 ymin: 5428268 xmax: 645675.7 ymax: 5589928"
+"1","
+"
+"1","projected CRS:  WGS 84 / UTM zone 10N
+"

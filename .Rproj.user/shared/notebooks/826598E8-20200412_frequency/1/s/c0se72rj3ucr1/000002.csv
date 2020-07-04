@@ -1,5 +1,0 @@
-"0","```r
-to.genus <- items %>% filter(genus != 'Unknown')
-to.family <- items %>% filter(family != 'Unknown')
-to.class <- items %>% filter(class != 'Unknown')
-```"

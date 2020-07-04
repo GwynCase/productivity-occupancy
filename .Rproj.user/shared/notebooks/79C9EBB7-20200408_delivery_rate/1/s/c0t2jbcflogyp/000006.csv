@@ -1,2 +1,0 @@
-"0","mass.per.day %>% ungroup() %>% "
-"0","  summarize(mean(d.mass), sd(d.mass))"

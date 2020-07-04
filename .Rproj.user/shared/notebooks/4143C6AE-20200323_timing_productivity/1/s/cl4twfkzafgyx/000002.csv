@@ -1,4 +1,0 @@
-"0","cameras %>% dplyr::select(site, hatch, to.branch, n_fledge) %>%"
-"0","  arrange(hatch) %>%"
-"0","  kable(col.names=c('Site', 'Hatch date', 't to fledge', 'n fledged')) %>%"
-"0","  kable_styling(full_width=FALSE)"

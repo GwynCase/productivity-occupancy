@@ -1,5 +1,0 @@
-"0","del.per.day %>% dplyr::select(site, n.day) %>% "
-"0","  distinct() %>% "
-"0","  right_join(mass.per.site) %>% "
-"0","  mutate(d.mass=t.mass/n.day) %>% "
-"0","  summarize(mean(d.mass), sd(d.mass))"

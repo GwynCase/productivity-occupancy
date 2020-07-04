@@ -1,8 +1,0 @@
-"0","# What percent was IDed to family and genus/species?"
-"0","df %>% mutate(total=n()) %>% "
-"0","  filter(family != 'U') %>% "
-"0","  mutate(t.family=n(), p.family=t.family/total*100) %>% "
-"0","  filter(genus != 'U') %>% "
-"0","  mutate(t.genus=n(), p.genus=t.genus/total*100) %>% "
-"0","  dplyr::select(p.family, p.genus) %>% "
-"0","  distinct()"

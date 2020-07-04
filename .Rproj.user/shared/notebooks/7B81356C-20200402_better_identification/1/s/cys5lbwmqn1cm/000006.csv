@@ -1,5 +1,0 @@
-"0","# Calculate averages per group."
-"0","m.mass <- items %>% filter(mass != 0) %>%"
-"0","  group_by(group) %>%"
-"0","  summarise(mean=mean(mass))"
-"0","m.mass"

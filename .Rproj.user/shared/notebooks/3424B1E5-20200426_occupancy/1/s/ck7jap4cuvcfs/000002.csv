@@ -1,2 +1,0 @@
-"0","write_csv(vi.sites, '../data/processed/vi_occupancy_2018-2019.csv')"
-"0","write_csv(sc.sites, '../data/processed/sc_occupancy_2018-2019.csv')"
