@@ -1,0 +1,16 @@
+"0","# Plot the new PCA.
+"
+"2","Warning messages:
+"
+"2","1: "
+"2","In readChar(file, size, TRUE) :"
+"2"," truncating string with embedded nuls
+"
+"2","2: "
+"2","In readChar(file, size, TRUE) :"
+"2"," truncating string with embedded nuls
+"
+"0","ggbiplot(diet.pca.2, labels=rownames(by.site)) +"
+"0","  xlim(-2, 2) +"
+"0","  ylim(-2, 2) +"
+"0","  theme_classic()"

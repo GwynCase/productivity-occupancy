@@ -1,0 +1,7 @@
+"0","```r
+```r
+# Import transition zone shapefile.
+vri <- st_read('../data/external/VRI_camera-sites_2019.shp')
+
+```
+```"

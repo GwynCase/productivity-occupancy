@@ -1,0 +1,17 @@
+"0","```r
+# Import transition zone shapefile.
+tz <- st_read('../data/processed/new_transition_zone.shp')
+```"
+"1","Reading layer `new_transition_zone' from data source `C:\Users\Gwyn\sfuvault\productivity-occupancy\data\processed\new_transition_zone.shp' using driver `ESRI Shapefile'
+Simple feature collection with 36 features and 23 fields
+geometry type:  MULTIPOLYGON
+dimension:      XY
+bbox:           xmin: 343952.3 ymin: 5428110 xmax: 653480.1 ymax: 5682236
+CRS:            32610
+"
+"0","```r
+# Look at it.
+ggplot() +
+  geom_sf(data=tz) +
+  theme_classic()
+```"

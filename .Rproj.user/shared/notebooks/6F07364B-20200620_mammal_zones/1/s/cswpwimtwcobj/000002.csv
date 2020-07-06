@@ -1,0 +1,15 @@
+"0","```r
+# Calculate area per class per site.
+class.area <- sample_lsm(r.tz, y=sites.sf, size=r.hr.m, what='lsm_c_ca', 
+           shape='circle') %>% 
+  # Amend class number with BEC name.
+  left_join(data.frame(levels(r.tz)), by=c('class'='ID')) %>% 
+# Reorganize by site.  
+  pivot_wider(id_cols=plot_id, names_from=map_label, values_from=value, 
+              values_fill=list(value=0))
+# Amend with site names.
+class.area <- dplyr::select(sites, site) %>% rownames_to_column() %>% 
+  mutate(rowname=as.integer(rowname)) %>% 
+  right_join(class.area, by=c('rowname'='plot_id'))
+class.area
+```"

@@ -1,0 +1,8 @@
+"0","```r
+# Plot it.
+ggplot(ml.tz, aes(x=amt.tz, y=ratio, label=site)) +
+  geom_point() +
+  geom_text(hjust='inward', nudge_y = 0.5) +
+  geom_smooth(method='lm', se=FALSE, color='black', linetype='dashed') +
+  theme_classic()
+```"

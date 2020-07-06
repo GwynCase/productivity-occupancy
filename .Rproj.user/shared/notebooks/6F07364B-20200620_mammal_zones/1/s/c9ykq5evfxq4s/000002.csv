@@ -1,0 +1,18 @@
+"0","```r
+# Import data and get centroids for camera nests.
+sites <- read_csv('../data/processed/the_big_list_of_nests.csv') %>% 
+  group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  dplyr::select(-nest, -NOTES) %>% 
+  distinct() %>% 
+  filter(cameras > 0)
+# Make site table a spatial object and make it UTMs.
+sites.sf <- st_as_sf(sites, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform(\"+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs\")
+# Convert approximate homerange area in ha to radius in m
+a.hr.ha <- 3700
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+```"

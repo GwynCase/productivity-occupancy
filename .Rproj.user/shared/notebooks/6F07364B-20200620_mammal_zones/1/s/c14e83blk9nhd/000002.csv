@@ -1,0 +1,9 @@
+"0","```r
+# Join everything together.
+ml.tz <- left_join(mammal.mass, avian.mass) %>% 
+  left_join(class.area)
+# Do some cleaning.
+ml.tz <- ml.tz %>% mutate(amt.tz=CWHds1 + CWHms1, ratio=prop.ml/prop.av) %>% 
+  dplyr::select(site, name, prop.ml, prop.av, ratio, amt.tz)
+ml.tz
+```"

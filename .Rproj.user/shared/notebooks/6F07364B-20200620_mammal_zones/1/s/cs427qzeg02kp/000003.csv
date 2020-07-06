@@ -1,0 +1,10 @@
+"0","```r
+# Calculate proportion of mammal biomass per site.
+mammal.mass <- items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.ml=sum(mass), prop.ml=amount.ml/total) %>% 
+  dplyr::select(site, prop.ml) %>% distinct()
+mammal.mass
+```"

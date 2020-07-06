@@ -1,0 +1,10 @@
+"0","items <- items %>% mutate(common=case_when(
+"
+"2","Warning message:
+"
+"2","In readChar(file, size, TRUE) :"
+"2"," truncating string with embedded nuls
+"
+"0","  genus == 'Tamiasciurus' & species == 'sp' ~ 'Douglas squirrel',"
+"0","  TRUE ~ common"
+"0","))"

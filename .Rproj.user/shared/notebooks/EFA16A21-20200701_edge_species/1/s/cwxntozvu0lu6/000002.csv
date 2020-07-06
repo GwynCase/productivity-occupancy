@@ -1,0 +1,6 @@
+"0","```r
+library(MuMIn)
+
+```"
+"1","Error in library(MuMIn) : there is no package called â€˜MuMInâ€™
+"

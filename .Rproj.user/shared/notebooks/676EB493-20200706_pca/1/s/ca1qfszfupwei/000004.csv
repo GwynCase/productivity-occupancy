@@ -1,0 +1,4 @@
+"0","ggbiplot(diet.pca, labels=rownames(by.site)) +"
+"0","  xlim(-2, 2) +"
+"0","  ylim(-2, 2) +"
+"0","  theme_classic()"

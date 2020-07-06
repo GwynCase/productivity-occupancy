@@ -1,0 +1,8 @@
+"0","```r
+# Set raster extent based on tz shapefile.
+ext <- extent(tz)
+# Make an empty raster to populate with values.
+r <- raster(ext, res=c(100, 100))
+# Populate BEC polygon data onto empty raster grid.
+r.tz <- rasterize(tz, r, 'MAP_LABEL')
+```"

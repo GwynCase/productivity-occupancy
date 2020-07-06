@@ -1,0 +1,11 @@
+"0","```r
+# Get labels from the original shapefile.
+tz.levels <- data.frame(levels(tz[[\"MAP_LABEL\"]])) %>% 
+  rownames_to_column() %>% 
+  rename(ID=1, map_label=2) %>% 
+  mutate(ID=as.numeric(ID))
+# Add them to the raster.
+levels(r.tz) <- tz.levels
+# Save the raster image.
+# writeRaster(r.tz, '../data/interim/tz_raster_SC.tif', format='GTiff')
+```"

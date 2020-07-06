@@ -1,0 +1,25 @@
+"0","```r
+# Make the model.
+ratio.x.tz <- lm(ratio ~ amt.tz, data=ml.tz)
+# Look at it.
+summary(ratio.x.tz)
+```"
+"1","
+Call:
+lm(formula = ratio ~ amt.tz, data = ml.tz)
+
+Residuals:
+       1        2        3        4        5        6 
+ 3.37175 -4.06317  0.03472 -1.81002 -0.14515  2.61187 
+
+Coefficients:
+              Estimate Std. Error t value Pr(>|t|)  
+(Intercept)  6.7623895  2.3970942   2.821   0.0478 *
+amt.tz      -0.0007473  0.0009427  -0.793   0.4723  
+---
+Signif. codes:  0 â€˜***â€™ 0.001 â€˜**â€™ 0.01 â€˜*â€™ 0.05 â€˜.â€™ 0.1 â€˜ â€™ 1
+
+Residual standard error: 3.082 on 4 degrees of freedom
+Multiple R-squared:  0.1358,	Adjusted R-squared:  -0.08029 
+F-statistic: 0.6284 on 1 and 4 DF,  p-value: 0.4723
+"
