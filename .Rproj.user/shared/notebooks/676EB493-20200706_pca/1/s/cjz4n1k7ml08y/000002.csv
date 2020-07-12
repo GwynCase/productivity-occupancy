@@ -1,0 +1,3 @@
+"0","pca.species <- genus.pca$rotation[,1:2] %>% data.frame()"
+"0",""
+"0","pca.species %>% arrange(PC1)"

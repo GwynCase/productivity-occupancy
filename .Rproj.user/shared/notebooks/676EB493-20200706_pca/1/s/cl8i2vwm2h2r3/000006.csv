@@ -1,0 +1,5 @@
+"0","# Save the raster image.
+writeRaster(r.f.hsi, '../data/interim/foraging_sc.tif', format='GTiff')
+"
+"2","Error in .requireRgdal() : package 'rgdal' is not available
+"
