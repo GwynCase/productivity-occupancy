@@ -1,0 +1,7 @@
+"0",""
+"0","# Plot it."
+"0","ggplot(sq.vri, aes(x=older, y=prop.sq, label=site)) +"
+"0","  geom_point() +"
+"0","  geom_text(hjust='inward', nudge_y = 0.5) +"
+"0","  geom_smooth(method='lm', se=FALSE, color='black', linetype='dashed') +"
+"0","  theme_classic()"

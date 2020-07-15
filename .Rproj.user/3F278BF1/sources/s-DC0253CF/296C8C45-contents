@@ -1,0 +1,32 @@
+---
+title: "Sunburst"
+output: github_document
+always_allow_html: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+```{r message=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load libraries.
+library(tidyverse)
+library(plotly)
+```
+
+
+Let's try this out.
+
+```{r}
+fig <- plot_ly(
+  labels = c("Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"),
+  parents = c("", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve"),
+  values = c(10, 14, 12, 10, 2, 6, 6, 4, 4),
+  type = 'sunburst'
+)
+
+fig
+```

@@ -1,0 +1,7 @@
+"0","# Join VRi and diet data together."
+"0","sq.vri <- sq.mass %>% filter(site != 'TCR') %>% left_join(class.area)"
+"0",""
+"0","# Sum mature and old forest classes"
+"0","sq.vri <- sq.vri %>% mutate(older=sum(mature, old))"
+"0",""
+"0","sq.vri"
