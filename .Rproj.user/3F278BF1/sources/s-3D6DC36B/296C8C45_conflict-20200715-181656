@@ -1,0 +1,27 @@
+{
+    "id": "296C8C45",
+    "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20200715_sunburst.Rmd",
+    "project_path": "notebooks/20200715_sunburst.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": true,
+    "created": 1594850083617.0,
+    "source_on_save": false,
+    "relative_order": 5,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "cursorPosition": "53,91",
+        "scrollLine": "22",
+        "last_setup_crc32": "3D6DC36Be74108d1"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1594862182,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1594862209797,
+    "read_only": false,
+    "read_only_alternatives": []
+}
