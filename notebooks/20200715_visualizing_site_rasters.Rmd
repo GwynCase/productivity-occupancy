@@ -1,11 +1,73 @@
 ---
 title: "R Notebook"
-output: html_notebook
+output: github_document
 ---
 
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
 
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+I've run into a small problem with my BEC raster--some classes don't seem to be showing up properly in the analysis.
+
+```{r}
+# Load up some libraries.
+library(tidyverse)
+library(sf)
+library(raster)
+library(landscapemetrics)
+
+# Import nests and calculate centroids.
+cam.sites <- read_csv('../data/processed/the_big_list_of_nests.csv') %>% 
+  group_by(name) %>% 
+  mutate_at(c('lat', 'lon'), mean) %>% 
+  mutate_at(vars(starts_with('status')), max) %>% 
+  mutate_at(c('telemetry', 'cameras', 'remains'), max) %>% 
+  dplyr::select(-nest, -NOTES) %>% 
+  distinct() %>% 
+  filter(cameras > 0)
+
+# Drop TCR, ungroup.
+cam.sites <- cam.sites %>% filter(site != 'TCR') %>% 
+  ungroup() %>% 
+  rownames_to_column(var='plot_id') %>% 
+  mutate(plot_id=as.integer(plot_id))
+
+# Make site table a spatial object and make it UTMs.
+cam.sites.sf <- ungroup(cam.sites) %>% st_as_sf(coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Convert approximate homerange area in ha to radius in m
+a.hr.ha <- 3700
+r.hr.m <- sqrt(a.hr.ha*10000/pi)
+
+# Import the BEC raster.
+r.bec <- raster('../data/interim/bec_raster_SC.tif')
+```
+
+That's just the basics. So far, so good. What are the levels on the BEC raster, as it stands?
+
+```{r}
+levels(r.bec)
+```
+
+Ah, so it already has levels assigned. I tried to re-assign them. What did I try to re-assign them to?
+
+```{r}
+# Import the original shapefile.
+shp.bec <- st_read('../data/processed/BEC_annual-homerange_clipped.shp')
+
+# Get BEC levels.
+bec.levels <- data.frame((shp.bec[["MAP_LABEL"]])) %>% 
+  rownames_to_column() %>% 
+  rename(ID=1, map_label=2) %>% 
+  mutate(ID=as.numeric(ID))
+
+bec.levels
+```
+
+Verrrryyy different. The question is, which ones are right?
+
 
 ```{r}
 # Build sample.
@@ -15,7 +77,7 @@ my.plots <- data.frame(construct_buffer(coords=cam.sites.sf, shape='circle',
 # Make the graph.
 bec.plot <- raster::as.data.frame(r.bec, xy=TRUE) %>% 
   ggplot() +
-  geom_raster(aes(x=x, y=y, fill=factor(bec_raster_SC_map_label)))
+  geom_raster(aes(x=x, y=y, fill=factor(bec_raster_SC_category)))
 
 # Add sample polygons.
 bec.plot +
@@ -23,18 +85,116 @@ bec.plot +
                                   y = my.plots[, 2],
                                   group = my.plots[, 3]),
                                   col = "black", fill = NA)
+```
 
-# Can facet wrap polygons, but doesn't work with raster.
-ggplot() +
+That's with the built-in levels. What about the levels I added?
+
+```{r}
+bad.bec <- r.bec
+
+levels(bad.bec) <- bec.levels
+
+bad.plot <- raster::as.data.frame(bad.bec, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=factor(bec_raster_SC_map_label)))
+
+# Add sample polygons.
+bad.plot +
   geom_polygon(data=my.plots, aes(x = my.plots[, 1],
                                   y = my.plots[, 2],
                                   group = my.plots[, 3]),
-               col = "black", fill = NA) +
-  facet_wrap(~my.plots[, 3], scales='free')
+                                  col = "black", fill = NA)
 ```
 
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+So it looks like adding levels was a mistake. But can I get a closer look?
 
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+```{r}
+# Pull out a toy known to be a problem.
+utz.coord <- cam.sites.sf %>% filter(site == 'UTZ')
 
-The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+utz.plot <- data.frame(construct_buffer(coords=utz.coord, shape='circle',
+                                            size=r.hr.m, return_sp=FALSE))
+
+# Get bounding coordinates for site.
+utzxmin <- st_bbox(utz.coord)[1] - r.hr.m
+utzymin <- st_bbox(utz.coord)[2] - r.hr.m
+utzxmax <- st_bbox(utz.coord)[3] + r.hr.m
+utzymax <- st_bbox(utz.coord)[4] + r.hr.m
+
+# Add to graph.
+bec.plot +
+  geom_polygon(data=utz.plot, aes(x = utz.plot[, 1],
+                                  y = utz.plot[, 2],
+                                  group = utz.plot[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(utzxmin, utzxmax) +
+  ylim(utzymin, utzymax)
+```
+
+And with the added labels...
+
+```{r}
+# Using bad bec.
+bad.plot +
+  geom_polygon(data=utz.plot, aes(x = utz.plot[, 1],
+                                  y = utz.plot[, 2],
+                                  group = utz.plot[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(utzxmin, utzxmax) +
+  ylim(utzymin, utzymax)
+```
+
+Ohhhhhh super different. So that really is where the problem is.
+
+As long as I'm here, can I figure out a way to plot all of my sites together?
+```{r}
+# Site 1
+bec.plot +
+  geom_polygon(data=my.plots, aes(x = my.plots[, 1],
+                                  y = my.plots[, 2],
+                                  group = my.plots[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(st_bbox(cam.sites.sf[1, ])[1] - r.hr.m, st_bbox(cam.sites.sf[1, ])[3] + r.hr.m) +
+  ylim(st_bbox(cam.sites.sf[1, ])[2] - r.hr.m, st_bbox(cam.sites.sf[1, ])[4] + r.hr.m) +
+  theme_classic() + labs(title='MTF')
+
+# Site 2
+bec.plot +
+  geom_polygon(data=my.plots, aes(x = my.plots[, 1],
+                                  y = my.plots[, 2],
+                                  group = my.plots[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(st_bbox(cam.sites.sf[2, ])[1] - r.hr.m, st_bbox(cam.sites.sf[2, ])[3] + r.hr.m) +
+  ylim(st_bbox(cam.sites.sf[2, ])[2] - r.hr.m, st_bbox(cam.sites.sf[2, ])[4] + r.hr.m) +
+  theme_classic() + labs(title='MTC')
+
+# Site 3
+bec.plot +
+  geom_polygon(data=my.plots, aes(x = my.plots[, 1],
+                                  y = my.plots[, 2],
+                                  group = my.plots[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(st_bbox(cam.sites.sf[3, ])[1] - r.hr.m, st_bbox(cam.sites.sf[3, ])[3] + r.hr.m) +
+  ylim(st_bbox(cam.sites.sf[3, ])[2] - r.hr.m, st_bbox(cam.sites.sf[3, ])[4] + r.hr.m) +
+  theme_classic() + labs(title='RLK')
+
+# Site 4
+bec.plot +
+  geom_polygon(data=my.plots, aes(x = my.plots[, 1],
+                                  y = my.plots[, 2],
+                                  group = my.plots[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(st_bbox(cam.sites.sf[4, ])[1] - r.hr.m, st_bbox(cam.sites.sf[4, ])[3] + r.hr.m) +
+  ylim(st_bbox(cam.sites.sf[4, ])[2] - r.hr.m, st_bbox(cam.sites.sf[4, ])[4] + r.hr.m) +
+  theme_classic() + labs(title='TMC')
+
+# Site 5
+bec.plot +
+  geom_polygon(data=my.plots, aes(x = my.plots[, 1],
+                                  y = my.plots[, 2],
+                                  group = my.plots[, 3]),
+                                  col = "black", fill = NA) +
+  xlim(st_bbox(cam.sites.sf[5, ])[1] - r.hr.m, st_bbox(cam.sites.sf[5, ])[3] + r.hr.m) +
+  ylim(st_bbox(cam.sites.sf[5, ])[2] - r.hr.m, st_bbox(cam.sites.sf[5, ])[4] + r.hr.m) +
+  theme_classic() + labs(title='UTZ')
+```

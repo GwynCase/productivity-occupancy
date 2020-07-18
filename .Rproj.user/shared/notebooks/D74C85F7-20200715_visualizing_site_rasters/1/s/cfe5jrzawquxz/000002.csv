@@ -1,0 +1,8 @@
+"0","# Using bad bec."
+"0","bad.plot +"
+"0","  geom_polygon(data=utz.plot, aes(x = utz.plot[, 1],"
+"0","                                  y = utz.plot[, 2],"
+"0","                                  group = utz.plot[, 3]),"
+"0","                                  col = ""black"", fill = NA) +"
+"0","  xlim(utzxmin, utzxmax) +"
+"0","  ylim(utzymin, utzymax)"

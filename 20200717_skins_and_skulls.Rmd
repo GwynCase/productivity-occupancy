@@ -1,0 +1,91 @@
+---
+title: "Skins and Skulls"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+Just putting together a "shopping list" of items to borrow from the SFU teaching collection. 
+
+```{r}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+
+# Bring in SFU's inventory.
+sk <- read_csv('../data/external/study_specimens.csv')
+
+head(sk)
+```
+
+```{r}
+# Make a binomial column.
+sk <- sk %>% mutate(binom=paste(GEN, SP, sep=' '))
+
+# Which unique species are present?
+sk %>% distinct(binom)
+```
+
+That's a lot. I don't think there's a more graceful way to do this, so I'll start making a list of genii I'm interested in.
+
+```{r}
+mammals.want <- data.frame(GEN=c('Ochotona', # pikas
+         'Lepus', # hares
+         'Glaucomys', # flying squirrels
+         'Tamias', # chipmunk
+         'Neotamias', # also chipmunk
+         'Microtus', # microtine voles
+         'Rattus', # rats
+         'Neotoma', # woodrats
+         'Peromyscus' # new world rats
+         ))
+
+mammals.avail <- semi_join(sk, mammals.want) %>% distinct(GEN, SP, SPENA) %>% 
+  arrange(GEN, SP)
+
+mammals.avail
+```
+
+That's much more manageable.
+
+```{r}
+birds.want <- data.frame(GEN=c(
+  'Anas', # ducks
+  'Dendragapus', # grouse
+  'Bonasa', # also grouse
+  'Patagioenas', # batpig
+  'Strix', # some owls
+  'Sphyrapicus', # sapsuckers
+  'Picoides', # woodpeckers
+  'Colaptes', # flicker
+  'Dryocopus', # PIWO
+  'Perisoreus', # gray jay
+  'Turdus', # robins
+  'Ixoreus', # thrushes
+  'Cetophaga', # some warblers
+  'Pipilo' # towhee
+))
+
+birds.avail <- semi_join(sk, birds.want) %>% distinct(GEN, SP, SPENA) %>% 
+  arrange(GEN, SP)
+
+birds.avail
+```
+
+```{r}
+specs.avail <- bind_rows(mammals.avail, birds.avail)
+
+short.list <- semi_join(sk, specs.avail) %>% distinct(GEN, SP, SPENA, .keep_all=TRUE) %>% 
+  arrange(GEN, SP)
+
+short.list
+```
+
+
+
+
+
