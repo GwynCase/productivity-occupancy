@@ -1,0 +1,6 @@
+"0",""
+"0","# Diet diversity ~ forest type richness."
+"0","bec.models %>% "
+"0","  mutate(glance=map(m_div.x.rich, glance)) %>% "
+"0","  unnest(glance) %>% "
+"0","  select(!c(starts_with('m_'), data))"

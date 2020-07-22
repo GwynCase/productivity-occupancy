@@ -1,0 +1,4 @@
+"0","bec.models %>% "
+"0","  mutate(glance=map(m_pc1.x.for, glance)) %>% "
+"0","  unnest(glance) %>% "
+"0","  select(!c(starts_with('m_'), data))"

@@ -1,0 +1,8 @@
+"0","bec.models <- bec.and.diet %>% "
+"0","  mutate(m_div.x.div=map(data, diversity.by.diversity),"
+"0","         m_rich.x.rich=map(data, diversity.by.richness),"
+"0","         m_pc1.x.for=map(data, pc1.by.forest),"
+"0","         m_pc1.x.dom=map(data, pc1.by.dominance),"
+"0","         m_mm.x.for=map(data, mammal.by.forest),"
+"0","         m_sq.x.for=map(data, squirrel.by.forest)"
+"0","         )"
