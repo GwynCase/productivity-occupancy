@@ -1,0 +1,9 @@
+"0","# The diversity of the diet is determined by the main forest type of the territory."
+"0","# H3: Some forest types support a more diverse prey base than others."
+"0","diet.diversity.by.dominant.bec <- data %>% drop_na(diet.diversity) %>% "
+"0","  split(.$size) %>% "
+"0","  map(~aov(diet.diversity ~ dominant.bec, data=.x))"
+"0","  "
+"0","diet.diversity.by.dominant.bec %>% map(glance)"
+"1","$`breeding area`
+"

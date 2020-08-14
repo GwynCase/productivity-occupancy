@@ -1,0 +1,76 @@
+---
+title: "Better models"
+output: html_notebook
+---
+
+After all that work to nest things, I didn't feel that coding method did a good job of handling names. So here's an alternate method.
+
+```{r}
+# Here's how Hadley does it.
+mtcars %>% 
+  split(.$cyl) %>% 
+  map(~lm(mpg~wt, data=.x)) %>%
+  map(summary) %>% 
+  map_dbl('r.squared')
+
+# Doesn't seem to work with nested data.
+bec.and.diet %>% 
+  map(~lm(simspon ~ sidi, data=.x))
+
+# What if I split?
+split <- right_join(bec.ls.metrics, diet.data, by=c('plot_id'='site')) %>% 
+  right_join(ls, by=c('ls.size'='radius')) %>% 
+  split(.$size)
+
+split
+
+# And now try the model.
+split %>% 
+  map(~lm(simpson ~ sidi, data=.x)) %>% 
+  map(summary) %>% 
+  map_dbl('r.squared')
+
+# Store it.
+div.by.div <- split %>% 
+  map(~lm(simpson ~ sidi, data=.x))
+
+# And another.
+div.by.rich <- split %>% 
+  map(~lm(simpson ~ pr, data=.x))
+
+# AIC them.
+aictab(c(div.by.div, div.by.rich))
+# Keeps size names, which is something.
+# Can I add better names?
+
+# Where are the names even coming from?
+div.by.div
+# It's the list names.
+
+# Check.
+names(div.by.div)
+# Yep.
+
+# Change the names.
+names(div.by.div) <- names(div.by.div) %>% 
+  map_chr(~ paste('div.by.div:', .x))
+
+# Check.
+names(div.by.div)
+
+# Run aictabs again to see if they stick.
+aictab(c(div.by.div, div.by.rich))
+
+# Change over model names.
+names(div.by.rich) <- names(div.by.rich) %>% 
+  map_chr(~ paste('div.by.rich:', .x))
+
+# One last run.
+aictab(c(div.by.div, div.by.rich))
+```
+
+
+```{r}
+# Quickly make a test doc for pellets.
+
+```

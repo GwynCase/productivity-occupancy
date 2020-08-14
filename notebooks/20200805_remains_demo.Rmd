@@ -1,0 +1,76 @@
+---
+title: "Remains demo"
+output: html_notebook
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Testing out code to clean up remains data.
+
+```{r}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+
+# Load in the test remains data set.
+df <- read_csv('../data/raw/20200801_specimens.csv', guess_max=7000)
+```
+
+Let's first check which sites we have data for.
+
+```{r}
+df %>% distinct(site)
+```
+What I'm missing from here is a unique identifier for site and year. So I can create and bring in a new table for site abbreviations.
+
+```{r}
+# Bring in the big list of nests and pull out the abbreviations.
+nest.list <- read_csv('../data/processed/the_big_list_of_nests.csv') %>% select(site, name) %>% distinct()
+
+# To make things easier, rename a confusing column.
+df <- df %>% rename(name=site)
+
+# Join to the remains table.
+df <- left_join(df, nest.list)
+
+# Now create a nest column.
+df$nest <- paste(df$site, year(df$date), sep='')
+```
+
+Now each site/year has a unique identifier. Next I need to clean up the data and add mass, etc.
+
+```{r}
+# What critters do we have?
+df %>% select(class, order, family, genus, species) %>% distinct()
+```
+From the original 2019 camera data set, what are the unique items?
+
+```{r}
+dist.cam <- camera.data.2019 %>% select(-site, -nest, -size) %>% distinct() %>% 
+  arrange(class, family, genus, species)
+
+dist.rem <- df %>% select(class, order, family, genus, species, common) %>% distinct() %>% 
+  arrange(class, order, family, genus, species)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

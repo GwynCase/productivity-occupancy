@@ -1,0 +1,16 @@
+"0","# The diversity of the diet is determined by the diversity of forest types in which birds can hunt.
+# H1: Each forest type supports a different set of prey species, so more of more forest types means more kinds prey species. Assumes (I think) that birds hunt in proportion to forest type availability.
+diet.diversity.by.bec.diversity <- data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ bec.diversity, data=.x))
+
+names(diet.diversity.by.bec.diversity) <- names(diet.diversity.by.bec.diversity) %>% 
+  map_chr(~ paste('~ forest type diversity', .x))
+
+diet.diversity.by.bec.diversity %>% 
+  map(summary) %>% 
+  map(glance)
+"
+"1","$`~ forest type diversity breeding area`
+"

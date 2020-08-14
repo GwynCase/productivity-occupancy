@@ -1,0 +1,109 @@
+---
+title: "VRI models"
+output: html_notebook
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Same thing as before, but with VRI instead of BEC data. This is capturing more fine-scale forest attributes.
+
+```{r}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(vegan)
+library(AICcmodavg)
+
+# Import VRI shapefile.
+shp.vri <- st_read('../data/external/VRI/VEG_R1_PLY_polygon.shp')
+```
+Now to do some land cover classification. Last time I did something pretty simple, but I think I'd like a little more nuanced this time.
+
+* Undefined
+* Bare ground/rock
+* Ocean
+* Freshwater
+* Alpine
+* Wetland
+* Shrub & burns (ie natural openings)
+* Deciduous forest
+* Regen/clearcut forest (<20)
+* Young forest (20-70)
+* Mature forest (70-250)
+* Old forest (>250)
+
+Louise does >250, 140-250, and <140. But that makes sense for MAMU.
+The HSI tops out at 150.
+McClaren says old > 250, mature/second growth 40-140
+
+```{r}
+# Define class levels.
+vri.landcover.levels <- data.frame(ID=0:11, class.name=
+                                     c('undefined', 'rock', 'ocean', 'freshwater',
+                                       'alpine', 'wetland',
+                                       'shrub', 'deciduous', 'regen',
+                                       'young', 'mature', 'old'))
+# Add to VRI.
+shp.vri <- shp.vri %>% mutate(land.cover=case_when(
+  # Bare ground/rock
+  BCLCS_LV_1 == 'N' & BCLCS_LV_2 != 'W' ~ 1,
+  # Ocean
+  BCLCS_LV_2 == 'W' & BCLCS_LV_5 == 'OC' ~ 2 ,
+  # Freshwater (rivers, lakes, & ponds)
+  BCLCS_LV_2 == 'W' & BCLCS_LV_5 != 'OC' ~ 3,
+  # Shrub
+  BCLCS_LV_1 == 'V' & BCLCS_LV_2 == 'N' ~ 6,
+  # Burns 
+  BCLCS_LV_1 == 'N' & BCLCS_LV_5 == 'BU' ~ 6,
+  # Mixed or deciduous trees
+  BCLCS_LV_1 == 'V' & BCLCS_LV_4 %in% c('TB', 'TM') ~ 7,
+  # Coniferous trees
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 < 20 ~ 8,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 20 & PROJ_AGE_1 < 70 ~ 9,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 70 & PROJ_AGE_1 < 250 ~ 10,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 250 ~ 11,
+  # Alpine
+  BCLCS_LV_3 == 'A' ~ 4,
+  # Wetland
+  BCLCS_LV_3 == 'W'~ 5,
+  TRUE ~ 0
+))
+```
+
+
+```{r eval=FALSE}
+# Set raster extent based on VRI shapefile.
+ext <- extent(shp.vri)
+
+# Make an empty raster to populate with values.
+r <- raster(ext, res=c(15, 15))
+
+# Populate VRI polygon data onto empty raster grid.
+r.vri <- rasterize(shp.vri, r, 'land.cover')
+
+# And save.
+writeRaster(r.vri, '../data/processed/vri_land-cover_camera-sites_2020.tif', format='GTiff')
+```
+
+So that's land cover. Is there anything else I want to get from the VRI?
+
+One idea is tree diversity, or dominant tree type. No point whatsoever in age or height. Also canopy closure, if there's enough coverage for it.
+
+```{r}
+# How good is my canopy closure data?
+
+shp.vri %>% data.frame() %>% filter(BCLCS_LV_2 == 'T') %>% 
+  mutate(forest.patches=n()) %>% 
+  filter(is.na(CR_CLOSURE)) %>% 
+  mutate(missing.closure=n()) %>% 
+  select(forest.patches, missing.closure) %>% 
+  distinct()
+```
+Ok, that's great, if only 4 patches labeled as forest are missing canopy closure information.

@@ -1,0 +1,5 @@
+"0","# How many sites in each category for each year?"
+"0","# Note that ""cam"" really means both cameras and remains, since all camera sites have remains but not all remains sites have cameras."
+"0","sites %>% group_by(year, method) %>% "
+"0","  summarize(`number of sites`=n()) %>% kable() %>% "
+"0","  kable_styling()"

@@ -1,0 +1,13 @@
+"0","n.fledglings.by.lon <- data %>% "
+"0","  drop_na(n.fledglings) %>% "
+"0","  split(.$size) %>% "
+"0","  map(~lm(n.fledglings ~ lon, data=.x))"
+"0",""
+"0","names(n.fledglings.by.lon) <- names(n.fledglings.by.lon) %>% "
+"0","  map_chr(~ paste('~ lon:', .x))"
+"0",""
+"0","n.fledglings.by.lon %>% "
+"0","  map(summary) %>% "
+"0","  map(glance)"
+"1","$`~ lon: breeding area`
+"
