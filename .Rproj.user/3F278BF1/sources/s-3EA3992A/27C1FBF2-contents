@@ -1,6 +1,7 @@
 ---
 title: "NW PLN"
-output: html_notebook
+output: github_document
+always_allow_html: true
 ---
 
 ```{r setup, include=FALSE}
@@ -239,6 +240,11 @@ Lewis et al (2006) used a modified form of the Simpson's index and standardized 
 Miller et al (2014) used propotion of biomass that was mammalian out of total biomass. Lewis et al (2006) went a slightly different route and used the number of items that were birds or mammals.
 
 ```{r compare-methods}
+# Create a function to calculate n.
+give.n <- function(x){
+  return(c(y = mean(x), label = length(x)))
+}
+
 # Calculate diet diversity separately for camera and remains methods.
 camera.only.diversity <- diet.items %>% filter(genus != 'Unknown') %>% 
   group_by(nest, binomial, method) %>% 
