@@ -13,6 +13,7 @@ ggplot(diamonds, aes(cut, price)) +
 names(diet.diversity.by.bec.diversity)
 class(diet.diversity.by.bec.diversity)
 
+# Here's a list of the models.
 diet.diversity.by.bec.richness
 diet.diversity.by.cover.diversity
 diet.diversity.by.cover.interspersion
@@ -22,9 +23,7 @@ diet.diversity.by.hsi.interspersion
 diet.diversity.by.year
 
 
-data %>% 
-  drop_na(diet.diversity) %>% 
-  split(.$size) %>% 
-  map(~lm(diet.diversity ~ year, data=.x)) %>% 
-  map(summary) %>%
-  map_dbl('r.squared')
+filter(camera.sites$year == '2019') %>% nrow()
+
+camera.sites %>% filter(year == 2019) %>% nrow()
+

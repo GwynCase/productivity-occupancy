@@ -1,6 +1,6 @@
 ---
 title: "NW PLN"
-output: github_document
+output: html_notebook
 always_allow_html: true
 ---
 
@@ -512,7 +512,7 @@ landcover.landscape.metrics %>% select(nest, radius, undefined, rock, ocean, fre
   coord_flip()
 ```
 
-I won't be using the amount of any particular class, but this visualizes what the classes are and how they're distributed. There are two additional classes that are present in the landcover data but aren't present in any of the current sites: alpine and wetland. This is currently calculated only using the 2019 camera sites (**n = `r nrow(camera.sites)` sites**) because that's the landcover data I currently have prepared, but will later be calculated using the full site set (**n = `r nrow(sites)` + unprocessed remains sites**).
+I won't be using the amount of any particular class, but this visualizes what the classes are and how they're distributed. There are two additional classes that are present in the landcover data but aren't present in any of the current sites: alpine and wetland. This is currently calculated only using the 2019 camera sites (**n = `r camera.sites %>% filter(year == 2019) %>% nrow()` sites**) because that's the landcover data I currently have prepared, but will later be calculated using the full site set (**n = `r nrow(sites)` + unprocessed remains sites**).
 
 ```{r landcover-diversity}
 # Diversity of land cover types within territory.
@@ -732,6 +732,7 @@ Not modeled:
 * ~ amound suitable habitat
 * ~ geographic position (lat/lon)
 
+Diet diversity ~ forest type diversity
 ```{r}
 # The diversity of the diet is determined by the diversity of forest types in which birds can hunt.
 # H1: Each forest type supports a different set of prey species, so more of more forest types means more kinds prey species. Assumes (I think) that birds hunt in proportion to forest type availability.
@@ -743,11 +744,16 @@ diet.diversity.by.bec.diversity <- data %>%
 names(diet.diversity.by.bec.diversity) <- names(diet.diversity.by.bec.diversity) %>% 
   map_chr(~ paste('~ forest type diversity', .x))
 
-diet.diversity.by.bec.diversity %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ bec.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Diet diversity ~ forest type richness
 ```{r}
 # The diversity of the diet is determined by the richness of forest types in which birds can hunt.
 # H2: Basically the same as H1. This does not assume birds hunt in proportion to forest type availability.
@@ -759,14 +765,19 @@ diet.diversity.by.bec.richness <- data %>%
 names(diet.diversity.by.bec.richness) <- names(diet.diversity.by.bec.richness) %>% 
   map_chr(~ paste('~ forest type richness:', .x))
 
-diet.diversity.by.bec.richness %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ bec.richness, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 
 # THIS IS BROKEN
 # HELP! PLS FIX ME!!
 ```
 
+Diet diversity ~ dominant forest type
 ```{r}
 # The diversity of the diet is determined by the main forest type of the territory.
 # H3: Some forest types support a more diverse prey base than others.
@@ -774,9 +785,14 @@ diet.diversity.by.dominant.bec <- data %>% drop_na(diet.diversity) %>%
   split(.$size) %>% 
   map(~aov(diet.diversity ~ dominant.bec, data=.x))
   
-diet.diversity.by.dominant.bec %>% map(glance)
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ dominant.bec, data=.x)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') 
 ```
-
+Diet diversity ~ landcover diversity
 ```{r}
 # The diversity of the diet is determined by land cover diversity.
 # H4: Each land cover type (wetland, shrub, forest) supports different prey species. A greater diversity of forest leads to a greater diversity of prey.
@@ -788,11 +804,15 @@ diet.diversity.by.cover.diversity <- data %>%
 names(diet.diversity.by.cover.diversity) <- names(diet.diversity.by.cover.diversity) %>% 
   map_chr(~ paste('~ land cover diversity:', .x))
 
-diet.diversity.by.cover.diversity %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ cover.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
-
+Diet diversity ~ landcover edge density
 ```{r}
 # The diversity of the diet is determined by land cover edge density.
 # H5: Edges support large numbers of diverse species, so more edge may increase prey diversity even if goshawks do not necessarily hunt in edges.
@@ -804,11 +824,16 @@ diet.diversity.by.cover.edge.density <- data %>%
 names(diet.diversity.by.cover.edge.density) <- names(diet.diversity.by.cover.edge.density) %>% 
   map_chr(~ paste('~ landcover edge density:', .x))
 
-diet.diversity.by.cover.edge.density %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ cover.edge.density, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Diet diversity ~ landcover interspersion
 ```{r}
 # The diversity of the diet is determined by land cover interspersion.
 # H6: Diverse land cover types support a diverse prey, but this only equates to diet diversity if prey are able to disperse into cover types where goshawks prefer to hunt.
@@ -820,9 +845,13 @@ diet.diversity.by.cover.interspersion <- data %>%
 names(diet.diversity.by.cover.interspersion) <- names(diet.diversity.by.cover.interspersion) %>% 
   map_chr(~ paste('~ landcover interspersion:', .x))
 
-diet.diversity.by.cover.interspersion %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ cover.interspersion, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
 ```{r}
@@ -835,9 +864,13 @@ diet.diversity.by.hsi.edge.density <- data %>%
 names(diet.diversity.by.hsi.edge.density) <- names(diet.diversity.by.hsi.edge.density) %>% 
   map_chr(~ paste('~ HSI edge density:', .x))
 
-diet.diversity.by.hsi.edge.density %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ bec.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
 ```{r}
@@ -850,11 +883,16 @@ diet.diversity.by.hsi.interspersion <- data %>%
 names(diet.diversity.by.hsi.interspersion) <- names(diet.diversity.by.hsi.interspersion) %>% 
   map_chr(~ paste('~ HSI interspersion:', .x))
 
-diet.diversity.by.hsi.interspersion %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ hsi.interspersion, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Diet diversity ~ year (null)
 ```{r}
 # The diversity of the diet is determined by year only (null model).
 diet.diversity.by.year <- data %>% 
@@ -865,9 +903,13 @@ diet.diversity.by.year <- data %>%
 names(diet.diversity.by.year) <- names(diet.diversity.by.year) %>% 
   map_chr(~ paste('~ year:', .x))
 
-diet.diversity.by.year %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ year, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
 ```{r diet-diversity-aic}
@@ -878,7 +920,8 @@ aictab(c(diet.diversity.by.bec.diversity,
          diet.diversity.by.cover.edge.density,
          diet.diversity.by.cover.interspersion,
          diet.diversity.by.hsi.edge.density,
-         diet.diversity.by.hsi.interspersion))
+         diet.diversity.by.hsi.interspersion)) %>% 
+  data.frame()
 ```
 
 ### Squirrel biomass models
@@ -898,6 +941,7 @@ Not modeled:
 * ~ forest type diversity/richness
 * ~ geographic position (lat/lon)
 
+Proportion squirrel ~ dominant forest type
 ```{r}
 # The proportion of squirrel biomass is determined by the dominant forest type.
 # H8: Squirrels are an important and high-quality prey, and squirrels are more common in certain forest types.
@@ -910,10 +954,15 @@ proportion.squirrel.by.dominant.bec <- data %>%
 names(proportion.squirrel.by.dominant.bec) <- names(proportion.squirrel.by.dominant.bec) %>% 
   map_chr(~ paste('~ dominant forest type:', .x))
 
-proportion.squirrel.by.dominant.bec %>% 
-  map(glance)
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~aov(proportion.squirrel ~ dominant.bec, data=.x)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ landcover diversity
 ```{r}
 # The proportion of squirrel biomass is determined by the diversity of cover types.
 # H9: 
@@ -925,11 +974,16 @@ proportion.squirrel.by.cover.diversity <- data %>%
 names(proportion.squirrel.by.cover.diversity) <- names(proportion.squirrel.by.cover.diversity) %>% 
   map_chr(~ paste('~ landcover diversity:', .x))
 
-proportion.squirrel.by.cover.diversity %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ cover.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ landcover edge density
 ```{r}
 # The proportion of squirrel biomass is determined by the density of landcover edge density.
 # Squirrels prefer mature, interior forest, and should be inversely related to amount of edge.
@@ -941,11 +995,16 @@ proportion.squirrel.by.cover.edge.density <- data %>%
 names(proportion.squirrel.by.cover.edge.density) <- names(proportion.squirrel.by.cover.edge.density) %>% 
   map_chr(~ paste('~ landcover edge density:', .x))
 
-proportion.squirrel.by.cover.edge.density %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ cover.edge.density, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ landcover interspersion
 ```{r}
 # The proportion of squirrel biomass is determined by landcover interspersion.
 # 
@@ -957,11 +1016,16 @@ proportion.squirrel.by.cover.interspersion <- data %>%
 names(proportion.squirrel.by.cover.interspersion) <- names(proportion.squirrel.by.cover.interspersion) %>% 
   map_chr(~ paste('~ landcover interspersion:', .x))
 
-proportion.squirrel.by.cover.interspersion %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ cover.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ amount mature cover
 ```{r}
 # The proportion of squirrel biomass is determined by the amount of mature forest cover (mature + old).
 # Squirrels prefer mature, interior forest.
@@ -973,9 +1037,13 @@ proportion.squirrel.by.amount.cover.mature <- data %>%
 names(proportion.squirrel.by.amount.cover.mature) <- names(proportion.squirrel.by.amount.cover.mature) %>% 
   map_chr(~ paste('~ amount mature forest cover:', .x))
 
-proportion.squirrel.by.amount.cover.mature %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ amount.cover.mature, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
 ```{r eval=FALSE}
@@ -993,6 +1061,7 @@ proportion.squirrel.by.canopy.cover %>%
   map(glance)
 ```
 
+Proportion squirrel ~ amount.suitable
 ```{r}
 # The proportion of squirrel biomass is determined by amount of suitable habitat under the HSI.
 proportion.squirrel.by.amount.suitable <- data %>% 
@@ -1003,11 +1072,16 @@ proportion.squirrel.by.amount.suitable <- data %>%
 names(proportion.squirrel.by.amount.suitable) <- names(proportion.squirrel.by.amount.suitable) %>% 
   map_chr(~ paste('~ amount suitable habitat:', .x))
 
-proportion.squirrel.by.amount.suitable %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ amount.suitable, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ HSI edge density
 ```{r}
 # The proportion of squirrel biomass is determined by the density of edges between HSI classes.
 proportion.squirrel.by.hsi.edge.density <- data %>% 
@@ -1018,11 +1092,16 @@ proportion.squirrel.by.hsi.edge.density <- data %>%
 names(proportion.squirrel.by.hsi.edge.density) <- names(proportion.squirrel.by.hsi.edge.density) %>% 
   map_chr(~ paste('~ hsi edge density:', .x))
 
-proportion.squirrel.by.hsi.edge.density %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ hsi.edge.density, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ HSI interspersion
 ```{r}
 # The proportion of squirrel biomass is determined by the interspersion of habitat suitability classes.
 proportion.squirrel.by.hsi.interspersion <- data %>% 
@@ -1033,11 +1112,16 @@ proportion.squirrel.by.hsi.interspersion <- data %>%
 names(proportion.squirrel.by.hsi.interspersion) <- names(proportion.squirrel.by.hsi.interspersion) %>% 
   map_chr(~ paste('~ amount suitable habitat:', .x))
 
-proportion.squirrel.by.hsi.interspersion %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ hsi.interspersion, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Proportion squirrel ~ year (null)
 ```{r eval=FALSE}
 # The proportion of squirrel biomass is determined by year only (null model).
 proportion.squirrel.by.year <- data %>% 
@@ -1048,10 +1132,15 @@ proportion.squirrel.by.year <- data %>%
 names(proportion.squirrel.by.year) <- names(proportion.squirrel.by.year) %>% 
   map_chr(~ paste('~ year:', .x))
 
-proportion.squirrel.by.year %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ year, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
+AIC
 
 ```{r proportion-squirrel-models}
 aictab(c(
@@ -1062,7 +1151,8 @@ aictab(c(
   proportion.squirrel.by.amount.suitable,
   proportion.squirrel.by.hsi.edge.density,
   proportion.squirrel.by.hsi.interspersion
-))
+)) %>% 
+  data.frame()
 ```
 
 ### Productivity models
@@ -1073,6 +1163,7 @@ aictab(c(
 * productivity ~ geographic position
 * productivity ~ year (null)
 
+Productivity ~ diet diversity
 ```{r productivity-models}
 # Productivity is determined by diet diversity.
 n.fledglings.by.diet.diversity <- data %>% 
@@ -1083,11 +1174,16 @@ n.fledglings.by.diet.diversity <- data %>%
 names(n.fledglings.by.diet.diversity) <- names(n.fledglings.by.diet.diversity) %>% 
   map_chr(~ paste('~ diet diversity:', .x))
 
-n.fledglings.by.diet.diversity %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ diet.diversity, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Productivity ~ proportion squirrel
 ```{r productivity-proportion-squirrel}
 # Productivity is determined by proportion of squirrel.
 n.fledglings.by.proportion.squirrel <- data %>% 
@@ -1098,12 +1194,16 @@ n.fledglings.by.proportion.squirrel <- data %>%
 names(n.fledglings.by.proportion.squirrel) <- names(n.fledglings.by.proportion.squirrel) %>% 
   map_chr(~ paste('~ proportion squirrel:', .x))
 
-n.fledglings.by.proportion.squirrel %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ proportion.squirrel, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
-
+Productivity ~ amount suitable habitat
 ```{r}
 # Productivity is determined by the amount of suitable habitat.
 n.fledglings.by.amount.suitable <- data %>% 
@@ -1114,11 +1214,16 @@ n.fledglings.by.amount.suitable <- data %>%
 names(n.fledglings.by.amount.suitable) <- names(n.fledglings.by.amount.suitable) %>% 
   map_chr(~ paste('~ amount suitable habitat:', .x))
 
-n.fledglings.by.amount.suitable %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ amount.suitable, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Productivity ~ latitude
 ```{r}
 # Productivity is determined by geographic position.
 n.fledglings.by.lat <- data %>% 
@@ -1129,11 +1234,16 @@ n.fledglings.by.lat <- data %>%
 names(n.fledglings.by.lat) <- names(n.fledglings.by.lat) %>% 
   map_chr(~ paste('~ lat:', .x))
 
-n.fledglings.by.lat %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ lat, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Productivity ~ longitude
 ```{r}
 n.fledglings.by.lon <- data %>% 
   drop_na(n.fledglings) %>% 
@@ -1143,11 +1253,16 @@ n.fledglings.by.lon <- data %>%
 names(n.fledglings.by.lon) <- names(n.fledglings.by.lon) %>% 
   map_chr(~ paste('~ lon:', .x))
 
-n.fledglings.by.lon %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ lon, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Productivity ~ lat & lon
 ```{r}
 n.fledglings.by.lat.lon <- data %>% 
   drop_na(n.fledglings) %>% 
@@ -1157,11 +1272,16 @@ n.fledglings.by.lat.lon <- data %>%
 names(n.fledglings.by.lat.lon) <- names(n.fledglings.by.lat.lon) %>% 
   map_chr(~ paste('~ lat & lon:', .x))
 
-n.fledglings.by.lat.lon %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ lat * lon, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
+Productivity ~ year
 ```{r eval=FALSE}
 # Productivity is determined by year only.
 lm(n.fledglings ~ year, data=data)
@@ -1173,9 +1293,13 @@ n.fledglings.by.year <- data %>%
 names(n.fledglings.by.year) <- names(n.fledglings.by.year) %>% 
   map_chr(~ paste('~ year:', .x))
 
-n.fledglings.by.year %>% 
+data %>% 
+  drop_na(diet.diversity) %>% 
+  split(.$size) %>% 
+  map(~lm(n.fledglings ~ year, data=.x)) %>% 
   map(summary) %>% 
-  map(glance)
+  map(glance) %>% 
+  bind_rows(.id='size') 
 ```
 
 ```{r productivity-models-aic}
@@ -1186,7 +1310,8 @@ aictab(c(
   n.fledglings.by.lat,
   n.fledglings.by.lon,
   n.fledglings.by.lat.lon
-))
+)) %>% 
+  data.frame()
 ```
 ### Occupancy models
 

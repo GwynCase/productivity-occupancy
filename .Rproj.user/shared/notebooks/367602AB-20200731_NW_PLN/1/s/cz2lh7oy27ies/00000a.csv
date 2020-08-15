@@ -1,6 +1,0 @@
-"0","n.fledglings.by.proportion.squirrel %>% 
-  map(summary) %>% 
-  map(glance)
-"
-"1","$`~ proportion squirrel: ~ diet diversity: breeding area`
-"
