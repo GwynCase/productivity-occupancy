@@ -1,4 +1,0 @@
-"0","# And save.
-writeRaster(r.vri, '../data/processed/vri_land-cover_camera-sites_2020.tif', format='GTiff')
-"
-"2","NOT UPDATED FOR PROJ >= 6"

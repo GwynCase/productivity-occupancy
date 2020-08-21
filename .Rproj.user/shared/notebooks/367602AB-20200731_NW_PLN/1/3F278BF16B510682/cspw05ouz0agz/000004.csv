@@ -1,0 +1,5 @@
+"0","# Run the function for each sample size.
+landcover.landscape.metrics <- map_df(landscape$radius, calc.landcover.metrics)
+"
+"2","Error in .local(x, y, ...) : extents do not overlap
+"

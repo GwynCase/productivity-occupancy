@@ -22,7 +22,7 @@ library(vegan)
 library(AICcmodavg)
 
 # Import VRI shapefile.
-shp.vri <- st_read('../data/external/VRI/VEG_R1_PLY_polygon.shp')
+shp.vri <- st_read('../data/external/VRI_sc_all/VRI_lower-mainland.shp')
 ```
 Now to do some land cover classification. Last time I did something pretty simple, but I think I'd like a little more nuanced this time.
 
@@ -88,8 +88,21 @@ r <- raster(ext, res=c(15, 15))
 # Populate VRI polygon data onto empty raster grid.
 r.vri <- rasterize(shp.vri, r, 'land.cover')
 
+# Define land cover levels.
+landcover.levels <- data.frame(ID=0:11, class.name=
+                                     c('undefined', 'rock', 'ocean', 'freshwater',
+                                       'alpine', 'wetland',
+                                       'shrub', 'deciduous', 'regen',
+                                       'young', 'mature', 'old'))
+
+# Add levels to raster.
+levels(r.vri) <- landcover.levels
+
+# Assign CRS.
+crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
 # And save.
-writeRaster(r.vri, '../data/processed/vri_land-cover_camera-sites_2020.tif', format='GTiff')
+writeRaster(r.vri, '../data/processed/vri_lower-mainland.tif', format='GTiff')
 ```
 
 So that's land cover. Is there anything else I want to get from the VRI?
