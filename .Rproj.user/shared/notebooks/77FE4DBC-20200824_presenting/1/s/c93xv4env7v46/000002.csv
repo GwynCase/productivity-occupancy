@@ -1,0 +1,3 @@
+"0","load(file='../data/interim/bec_landscape_metrics.rda')"
+"0","load(file='../data/interim/landcover_landscape_metrics.rda')"
+"0","load(file='../data/interim/hsi_landscape_metrics.rda')"

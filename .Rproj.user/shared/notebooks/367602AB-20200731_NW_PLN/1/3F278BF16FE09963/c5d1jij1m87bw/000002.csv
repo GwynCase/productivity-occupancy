@@ -1,0 +1,5 @@
+"0","data %>% select(diet.diversity, proportion.squirrel, bec.diversity, bec.richness, cover.diversity,"
+"0","                cover.edge.density, cover.interspersion, amount.cover.mature, amount.suitable,"
+"0","                hsi.edge.density, hsi.interspersion, lat, lon) %>% "
+"0","  drop_na(cover.diversity) %>% "
+"0","  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=3)"

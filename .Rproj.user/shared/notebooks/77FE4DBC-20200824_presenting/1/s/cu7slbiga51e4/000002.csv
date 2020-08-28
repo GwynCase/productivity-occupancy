@@ -1,0 +1,7 @@
+"0","# Latitude & longitude of nest."
+"0",""
+"0","sites %>% select(nest, lat, lon) %>% "
+"0"," # pivot_longer(-nest, names_to='coord', values_to='value') %>% "
+"0","  ggplot(aes(x=lon, y=lat)) +"
+"0","  geom_point() +"
+"0","  theme_classic()"

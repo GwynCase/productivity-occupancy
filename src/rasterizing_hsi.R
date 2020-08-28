@@ -1,6 +1,7 @@
 setwd('C:/Users/gwync/sfuvault/productivity-occupancy/notebooks')
-# library(tidyverse)
-# library(lubridate)
+library(tidyverse)
+library(sf)
+library(raster)
 
 #################
 # Rasterize HSI
@@ -15,12 +16,13 @@ f.hsi <- st_read('../data/external/foraging_sc.shp')
 ext <- extent(f.hsi)
 
 ## Make an empty raster to populate with values.
+## (100m is the resolution of the original data.)
 r <- raster(ext, res=c(100, 100))
 
 
 # For the default raster, just use the grid code already present in the data.
 
-## Populate BEC polygon data onto empty raster grid.
+## Populate HSI polygon data onto empty raster grid.
 r.f.hsi <- rasterize(f.hsi, r, 'gridcode')
 
 ## Save the raster image.
@@ -28,3 +30,25 @@ writeRaster(r.f.hsi, '../data/processed/foraging_sc.tif', format='GTiff')
 
 
 # For measuring suitable habitat, 2s and 3s need to be rolled together into a single class.
+
+## Classify 2s and 3s as 4s ("suitable") and leave everything else unchanged.
+f.hsi <- mutate(f.hsi, gridcode=case_when(
+  gridcode == 2 ~ 4,
+  gridcode == 3 ~ 4,
+  TRUE ~ gridcode
+))
+
+## Populate HSI polygon data onto empty raster grid.
+r.f.hsi <- rasterize(f.hsi, r, 'gridcode')
+
+## And save it.
+writeRaster(r.f.hsi, '../data/processed/foraging_sc_suitable.tif', format='GTiff')
+
+
+
+
+
+
+
+
+

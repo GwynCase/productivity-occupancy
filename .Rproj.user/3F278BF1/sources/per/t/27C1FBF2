@@ -1,0 +1,27 @@
+{
+    "id": "27C1FBF2",
+    "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20200824_presenting.Rmd",
+    "project_path": "notebooks/20200824_presenting.Rmd",
+    "type": "r_markdown",
+    "hash": "1433799408",
+    "contents": "",
+    "dirty": false,
+    "created": 1597355610172.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "cursorPosition": "0,0",
+        "scrollLine": "0",
+        "last_setup_crc32": ""
+    },
+    "folds": "982|0|976|0|\n992|0|976|0|\n1018|0|976|0|\n1067|0|976|0|\n1092|0|976|0|\n1104|0|976|0|\n1163|0|976|0|\n1179|0|976|0|\n1268|0|976|0|\n1354|0|976|0|\n1418|0|976|0|\n1433|0|976|0|\n1476|0|976|0|\n1482|0|976|0|\n1506|0|976|0|\n1517|0|976|0|\n1558|0|976|0|\n1612|0|976|0|\n1643|0|976|0|\n1782|0|976|0|\n1927|0|976|0|\n1933|0|976|0|\n1957|0|976|0|\n1994|0|976|0|\n2004|0|976|0|\n2029|0|976|0|\n",
+    "lastKnownWriteTime": 1598577145,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1598633093173,
+    "read_only": false,
+    "read_only_alternatives": []
+}
