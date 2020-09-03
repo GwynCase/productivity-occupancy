@@ -18,3 +18,4 @@
 "0","library(rgeos)"
 "0","library(GGally)"
 "0","library(ggridges)"
+"0","library(stringr)"

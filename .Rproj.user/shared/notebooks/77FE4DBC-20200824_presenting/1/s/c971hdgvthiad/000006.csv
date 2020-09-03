@@ -1,6 +1,0 @@
-"0","diet.variables %>% pivot_longer(-nest, names_to='variable', values_to='value') %>% "
-"0","  ggplot(aes(x=value, y=variable, fill=variable)) + "
-"0","  geom_density_ridges() +"
-"0","  theme_ridges() +"
-"0","  scale_fill_brewer(palette='Set2') +"
-"0","  theme_classic()"

@@ -3,4 +3,3 @@
 "0","         -freshwater, -undefined, -ocean, -hsi.freshwater, -hsi.ocean, -hsi.river,"
 "0","         -diet.diversity, -proportion.squirrel, -n.fledglings, -nil, -moderate, -high, -low, -area) %>% "
 "0","  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)"
-"2","data in column(s) 'dominant.bec' are not numeric and were ignored"
