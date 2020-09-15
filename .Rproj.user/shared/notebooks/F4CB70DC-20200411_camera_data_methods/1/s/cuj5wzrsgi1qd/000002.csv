@@ -1,0 +1,17 @@
+"0","```r
+library('vegan')
+# Reorder data into a format vegan can eat.
+to.genus <- items %>% filter(genus != 'Unknown') %>% 
+  group_by(site, genus, species) %>% 
+  mutate(count=n()) %>% 
+  dplyr::select(site, genus, species, count) %>% 
+  unite(name, 2:3, sep=' ') %>% 
+  distinct() %>% 
+  pivot_wider(names_from=name, values_from=count,
+                         values_fill=list(count = 0))
+# Remove the oddity (will fix in future)
+to.genus <- to.genus %>% dplyr::select(-`Tamiasciurus sp`)
+# Prep for Morisita.
+mor <- column_to_rownames(to.genus, var='site')
+mor <- mor[,-1]
+```"

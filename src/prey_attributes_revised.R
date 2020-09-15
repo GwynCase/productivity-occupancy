@@ -1,6 +1,6 @@
-# setwd('C:/Users/gwync/sfuvault/productivity-occupancy/notebooks')
-# library(tidyverse)
-# library(lubridate)
+ setwd('C:/Users/gwync/sfuvault/productivity-occupancy/notebooks')
+library(tidyverse)
+library(lubridate)
 
 #################
 # Tidy data
@@ -48,9 +48,12 @@ camera.data.2019 <- prey.list %>% select(order, family) %>%
   ## and finally add a marker for method.
   mutate(method='camera')
 
+# Let's also make sure common names are lowercase.
+camera.data.2019$common <- str_to_lower(camera.data.2019$common)
+
 
 # Import prey remains data from 2019 & 2020...
-remains.data <- read_csv('../data/raw/20200801_specimens.csv', guess_max=7000) %>% 
+remains.data <- read_csv('../data/raw/20200910_specimens.csv', guess_max=7000) %>% 
   
   ## filter only records with at least size assigned...
   filter(size != 'U') %>% 
@@ -89,7 +92,7 @@ remains.data <- remains.data %>%
   mutate(method='remains')
   
 
-# Make the Unknowns under species lowercase.
+# Make sure species is lowercase.
 remains.data$species <- str_to_lower(remains.data$species)
 
 

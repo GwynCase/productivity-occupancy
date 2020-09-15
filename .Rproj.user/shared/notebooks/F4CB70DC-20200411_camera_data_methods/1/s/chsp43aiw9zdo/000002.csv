@@ -1,0 +1,4 @@
+"0","```r
+# Import prey items data
+source('../src/prey_attributes.R')
+```"

@@ -1,0 +1,27 @@
+{
+    "id": "28A540DC",
+    "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20200910_significant_univariates.Rmd",
+    "project_path": "notebooks/20200910_significant_univariates.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1599773254933.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "cursorPosition": "2,21",
+        "scrollLine": "0",
+        "last_setup_crc32": "D1F191E3df6655cb"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1600210644,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1600210644661,
+    "read_only": false,
+    "read_only_alternatives": []
+}

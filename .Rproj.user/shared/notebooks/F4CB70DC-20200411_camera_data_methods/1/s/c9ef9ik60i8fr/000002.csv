@@ -1,0 +1,15 @@
+"0","```r
+# Import basic camera nest data
+cameras <- read.csv('../data/raw/productivity_2019.csv', stringsAsFactors=FALSE)
+# Do the date conversion thing.
+cameras <- cameras %>% mutate(date=ymd(date), branch=ymd(branch), fledge=ymd(fledge))
+# How many fledged?
+n.fledge <- cameras %>% group_by(n_fledge) %>% 
+  summarize(n=n())
+# How many deliveries?
+n.del <- df %>% filter(interest %in% c('newprey', 'delivery')) %>% nrow()
+# How many identified to class?
+n.to.class <- items %>% filter(class != 'Unknown') %>% nrow()
+# How many idetnified to genus?
+n.to.genus <- items %>% filter(genus != 'Unknown') %>% nrow()
+```"

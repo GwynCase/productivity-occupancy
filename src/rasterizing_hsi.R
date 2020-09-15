@@ -30,19 +30,20 @@ writeRaster(r.f.hsi, '../data/processed/foraging_sc.tif', format='GTiff')
 
 
 # For measuring suitable habitat, 2s and 3s need to be rolled together into a single class.
+# Everything else needs to be rolled into a single class, too.
 
-## Classify 2s and 3s as 4s ("suitable") and leave everything else unchanged.
+## Classify 2s and 3s as 4s ("suitable") and everything else as 0s.
 f.hsi <- mutate(f.hsi, gridcode=case_when(
   gridcode == 2 ~ 4,
   gridcode == 3 ~ 4,
-  TRUE ~ gridcode
+  TRUE ~ 0
 ))
 
 ## Populate HSI polygon data onto empty raster grid.
 r.f.hsi <- rasterize(f.hsi, r, 'gridcode')
 
 ## And save it.
-writeRaster(r.f.hsi, '../data/processed/foraging_sc_suitable.tif', format='GTiff')
+writeRaster(r.f.hsi, '../data/processed/foraging_sc_suitable.tif', format='GTiff', overwrite=TRUE)
 
 
 
