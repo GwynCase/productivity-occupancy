@@ -8,17 +8,17 @@ library(raster)
 #################
 
 # The first step is to bring the VRI shapefile and prepare the raster.
-shp.vri <- st_read('../data/external/VRI_sc_all/VRI_chilliwack.shp')
+# shp.vri <- st_read('../data/external/VRI_sc_all/VRI_chilliwack.shp')
 # shp.vri <- st_read('../data/external/VRI_sc_all/VRI_harrison.shp')
 # shp.vri <- st_read('../data/external/VRI_sc_all/VRI_lower-mainland.shp')
 # shp.vri <- st_read('../data/external/VRI_sc_all/VRI_pemberton.shp')
-# shp.vri <- st_read('../data/external/VRI_sc_all/VRI_sunshine-coast.shp')
+ shp.vri <- st_read('../data/external/VRI_sc_all/VRI_sunshine-coast.shp')
 
 # Set raster extent based on VRI shapefile.
 ext <- extent(shp.vri)
 
 # Make an empty raster to populate with values.
-r <- raster(ext, res=c(15, 15))
+r <- raster(ext, res=c(100, 100))
 
 
 ## For the landcover raster, assign a numeric code based on cover type and age.
@@ -68,8 +68,9 @@ crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 # And save.
 writeRaster(r.vri, '../data/processed/vri_lower-mainland.tif', format='GTiff')
 
-
+##
 ## For gaps and openings, assign shrubs, burns, and very new clearcuts to one class. 
+##
 
 # Define class levels.
 gap.levels <- data.frame(ID=0:1, class.name=
@@ -96,8 +97,41 @@ levels(r.vri) <- gap.levels
 crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 
 # And save.
-writeRaster(r.vri, '../data/processed/gaps_chilliwack.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/gaps_chilliwack_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/gaps_harrison_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/gaps_lower-mainland_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/gaps_pemberton_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/gaps_sunshine-coast_100.tif', format='GTiff')
 
 
+##
+## For older forest, assign mature and old growth to one class.
 
+# Define class levels.
+older.levels <- data.frame(ID=0:1, class.name=
+                           c('undefined', 'older'))
+
+# Add to VRI.
+shp.vri <- shp.vri %>% mutate(older.cover=case_when(
+  # Coniferous trees
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 70 & PROJ_AGE_1 < 250 ~ 1,
+  BCLCS_LV_4 == 'TC' & PROJ_AGE_1 >= 250 ~ 1,
+  TRUE ~ 0
+))
+
+# Populate VRI polygon data onto empty raster grid.
+r.vri <- rasterize(shp.vri, r, 'older.cover')
+
+# Add levels to raster.
+levels(r.vri) <- older.levels
+
+# Assign CRS.
+crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
+# And save.
+# writeRaster(r.vri, '../data/processed/older_chilliwack_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/older_harrison_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/older_lower-mainland_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/older_pemberton_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/older_sunshine-coast_100.tif', format='GTiff')
 

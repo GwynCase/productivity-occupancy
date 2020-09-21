@@ -129,6 +129,19 @@ levels(r.landcover) <- landcover.levels
 # Assign CRS.
 crs(r.landcover) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 
+# Bring in gap data.
+r.gaps <- raster('../data/processed/gaps_sc_100.tif')
+
+# Define gap levels.
+gap.levels <- data.frame(ID=0:1, class.name=
+                                 c('undefined', 'gap'))
+
+# Add levels to raster.
+levels(r.gaps) <- gap.levels
+
+# Assign CRS.
+crs(r.gaps) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
 # Bring in HSI data.
 r.hsi <- raster('../data/processed/foraging_sc.tif')
 
@@ -276,6 +289,31 @@ landcover.landscape.metrics <- landcover.landscape.metrics %>%
 landcover.landscape.metrics <- select(landscape, radius, size) %>% right_join(landcover.landscape.metrics)
 ```
 
+```{r gap-metrics}
+# Make a list of gap metrics to calculate.
+gap.metrics <- c('lsm_l_ed')
+
+# Make a function to do the calculations and formatting.
+calc.gap.metrics <- function(x) {
+  sample_lsm(r.gaps, y=camera.sites.sf, size=x, plot_id=camera.nests, shape='circle', 
+             what=gap.metrics) %>% 
+    left_join(landcover.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x)
+}
+
+# Run the function for each sample size.
+gap.landscape.metrics <- map_df(landscape$radius, calc.gap.metrics)
+
+# Tidy things up.
+gap.landscape.metrics <- gap.landscape.metrics %>% 
+  select(nest=plot_id, gap.edge.density=ed, radius)
+
+gap.landscape.metrics <- select(landscape, radius, size) %>% right_join(gap.landscape.metrics)
+```
+
 ```{r hsi-metrics}
 # Make a list of metrics to calculate.
 hsi.metrics <- c('lsm_l_ed', 'lsm_l_contag')
@@ -338,8 +376,9 @@ Finally, combine everything together and make the univariate models.
 # Join the data together.
 data <- full_join(camera.diet.variables, bec.landscape.metrics, by=c('nest')) %>% 
   full_join(suitable.landscape.metrics, by=c('nest', 'radius')) %>% 
-  full_join(landcover.landscape.metrics, by=c('nest', 'radius')) %>% 
-  full_join(hsi.landscape.metrics, by=c('nest', 'radius'))
+  full_join(landcover.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(hsi.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(gap.landscape.metrics, by=c('nest', 'radius', 'size'))
 
 # Forest type diversity.
 diet.diversity.by.bec.diversity <- data %>% 
@@ -417,6 +456,17 @@ diet.diversity.by.cover.richness <- data %>%
   bind_rows(.id='size') %>% 
   mutate(variable='landcover richness')
 
+# Gap edge density.
+diet.diversity.by.gap.edge.density <- data %>% 
+  drop_na(diet.diversity) %>% 
+  filter(nest != 'TCR2019') %>% 
+  split(.$size) %>% 
+  map(~lm(diet.diversity ~ gap.edge.density, data=.x)) %>% 
+  map(summary) %>% 
+  map(glance) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='gap edge density')
+
 # HSI edge density.
 diet.diversity.by.hsi.edge.density <- data %>% 
   drop_na(diet.diversity) %>% 
@@ -469,6 +519,7 @@ diet.diversity.statistics <- bind_rows(diet.diversity.by.bec.diversity,
           diet.diversity.by.cover.diversity,
           diet.diversity.by.cover.evenness,
           diet.diversity.by.cover.richness,
+          diet.diversity.by.gap.edge.density,
           diet.diversity.by.hsi.edge.density,
           diet.diversity.by.hsi.contagion,
           diet.diversity.by.proportion.suitable,
@@ -571,6 +622,17 @@ proportion.squirrel.by.cover.richness <- data %>%
   bind_rows(.id='size') %>% 
   mutate(variable='landcover richness')
 
+# Gap edge density.
+proportion.squirrel.by.gap.edge.density <- data %>% 
+  drop_na(proportion.squirrel) %>% 
+  filter(nest != 'TCR2019') %>% 
+  split(.$size) %>% 
+  map(~lm(proportion.squirrel ~ gap.edge.density, data=.x)) %>% 
+  map(summary) %>% 
+  map(glance) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='gap edge density')
+
 # HSI edge density.
 proportion.squirrel.by.hsi.edge.density <- data %>% 
   drop_na(proportion.squirrel) %>% 
@@ -623,6 +685,7 @@ proportion.squirrel.statistics <- bind_rows(proportion.squirrel.by.bec.diversity
           proportion.squirrel.by.cover.diversity,
           proportion.squirrel.by.cover.evenness,
           proportion.squirrel.by.cover.richness,
+          proportion.squirrel.by.gap.edge.density,
           proportion.squirrel.by.hsi.edge.density,
           proportion.squirrel.by.hsi.contagion,
           proportion.squirrel.by.proportion.suitable,
@@ -773,6 +836,17 @@ productivity.by.cover.richness <- data %>%
   bind_rows(.id='size') %>% 
   mutate(variable='landcover richness')
 
+# Gap edge density.
+productivity.by.gap.edge.density <- data %>% 
+  drop_na(n_fledge) %>% 
+  filter(nest != 'TCR2019') %>% 
+  split(.$size) %>% 
+  map(~lm(n_fledge ~ gap.edge.density, data=.x)) %>% 
+  map(summary) %>% 
+  map(glance) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='gap edge density')
+
 # HSI edge density.
 productivity.by.hsi.edge.density <- data %>% 
   drop_na(n_fledge) %>% 
@@ -825,6 +899,7 @@ productivity.landscape.statistics <- bind_rows(productivity.by.bec.diversity,
           productivity.by.cover.diversity,
           productivity.by.cover.evenness,
           productivity.by.cover.richness,
+          productivity.by.gap.edge.density,
           productivity.by.hsi.edge.density,
           productivity.by.hsi.contagion,
           productivity.by.proportion.suitable,

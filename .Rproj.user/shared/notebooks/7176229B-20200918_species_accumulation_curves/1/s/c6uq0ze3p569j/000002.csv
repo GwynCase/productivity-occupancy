@@ -1,0 +1,3 @@
+"0","diet.items %>% filter(binomial != 'Unidentified item' & method == 'remains') %>% "
+"0","  group_by(site) %>% "
+"0","  summarize(n.items=n())"
