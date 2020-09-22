@@ -11,8 +11,8 @@ So I ran my univariate models with the camera data, which was nice and all. But 
 
 1. Add missing models are re-run.
     * Prerequisites:
-      * choose canopy cover categories
-      * make canopy cover rasters
+      * ~~choose canopy cover categories~~
+      * ~~make canopy cover rasters~~
       * ~~make older forest rasters~~
 2. Fix some stuff I've been doing wrong.
     * remake landcover rasters at 100m scale

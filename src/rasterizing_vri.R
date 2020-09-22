@@ -106,6 +106,7 @@ crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 
 ##
 ## For older forest, assign mature and old growth to one class.
+##
 
 # Define class levels.
 older.levels <- data.frame(ID=0:1, class.name=
@@ -134,4 +135,38 @@ crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 # writeRaster(r.vri, '../data/processed/older_lower-mainland_100.tif', format='GTiff')
 # writeRaster(r.vri, '../data/processed/older_pemberton_100.tif', format='GTiff')
 # writeRaster(r.vri, '../data/processed/older_sunshine-coast_100.tif', format='GTiff')
+
+##
+## For canopy cover
+##
+
+# Define class levels.
+canopy.levels <- data.frame(ID=c(-1, 0, 50, 75), 
+                            class.name=c('undefined', 'none', 'moderate', 'high'))
+
+# Add to VRI.
+shp.vri <- shp.vri %>% mutate(canopy.cover=case_when(
+  BCLCS_LV_2 == 'T' & CR_CLOSURE > 75 ~ 75,
+  BCLCS_LV_2 == 'T' & CR_CLOSURE >= 50 & CR_CLOSURE <= 75 ~ 50,
+  BCLCS_LV_2 == 'T' & CR_CLOSURE < 50 ~ 0,
+  BCLCS_LV_2 == 'T' & CR_CLOSURE == NA ~ -1,
+  BCLCS_LV_2 != 'T' ~ 0,
+  TRUE ~ 0
+))
+
+# Populate VRI polygon data onto empty raster grid.
+r.vri <- rasterize(shp.vri, r, 'canopy.cover')
+
+# Add levels to raster.
+levels(r.vri) <- canopy.levels
+
+# Assign CRS.
+crs(r.vri) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
+# And save.
+# writeRaster(r.vri, '../data/processed/canopy_chilliwack_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/canopy_harrison_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/canopy_lower-mainland_100.tif', format='GTiff')
+# writeRaster(r.vri, '../data/processed/canopy_pemberton_100.tif', format='GTiff')
+ writeRaster(r.vri, '../data/processed/canopy_sunshine-coast_100.tif', format='GTiff')
 

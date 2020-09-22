@@ -10,23 +10,10 @@ ggplot(diamonds, aes(cut, price)) +
   stat_summary(fun.data = give.n, geom = "text")
 
 
-test <- diet.items %>% filter(binomial != 'Unidentified item' & method == 'camera') %>% 
-  mutate(count=1, index=1:nrow(.)) %>%
-  dplyr::select(site, index, binomial, count) %>%
-  pivot_wider(names_from=binomial, values_from=count,
-              values_fill=list(count = 0))
-
-temp <- test %>% group_by(site) %>% 
-  group_map(~specaccum(.x[3:17], method="random", permutations=100))
-
-temp %>% map(~plot(.$sites, .$richness,
-              xlab="Number of Items",
-              ylab="Species Richness",
-              main="Camera data"))
-library(ggplot2)
-
-temp %>% ggplot()
-
-diet.items %>% filter(binomial != 'Unidentified item' & method == 'remains') %>% 
-  group_by(site) %>% 
-  summarize(n.items=n())
+# Calculate biomass and counts for mammalian prey.
+diet.items %>% 
+  filter(method == 'remains') %>% 
+  mutate(total.mass=sum(mass, na.rm=TRUE)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), prop.sq.mass=mass.sq/total.mass) %>% 
+  select(prop.sq.mass) %>% distinct() 
