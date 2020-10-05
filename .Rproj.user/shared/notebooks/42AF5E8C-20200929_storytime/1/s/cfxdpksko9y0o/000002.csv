@@ -1,0 +1,1 @@
+"0","lm(n_fledge ~ zone, data=camera.diet.variables) %>% glance()"

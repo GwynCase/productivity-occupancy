@@ -87,7 +87,7 @@ remains.data <- remains.data %>%
   )) %>% 
   
   ## and replace all the "U"s with "Unknown"...
-  mutate_at(c('order', 'family', 'genus'), funs(case_when(
+  mutate_at(c('class', 'order', 'family', 'genus'), funs(case_when(
     . == 'U' ~ 'Unknown',
     TRUE ~ .
   ))) %>% 

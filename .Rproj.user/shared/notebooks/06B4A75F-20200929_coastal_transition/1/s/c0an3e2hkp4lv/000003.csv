@@ -1,0 +1,5 @@
+"0","# Store the camera chi-square results."
+"0","chi.camera <- chisq.test(camera.freq, correct=FALSE, simulate.p.value=TRUE)"
+"0",""
+"0","# Look at the residuals."
+"0","corrplot(chi.camera$residuals, is.cor=FALSE)"

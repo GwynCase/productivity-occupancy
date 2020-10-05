@@ -1,0 +1,5 @@
+"0","writeRDS(occupancy.landscape.statistics, '../data/interim/occupancy_landscape_stats.rds')
+"
+"2","Error in writeRDS(occupancy.landscape.statistics, ""../data/interim/occupancy_landscape_stats.rds"") : 
+  could not find function ""writeRDS""
+"

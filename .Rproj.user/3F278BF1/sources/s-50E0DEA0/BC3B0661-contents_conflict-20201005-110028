@@ -1,0 +1,30 @@
+diet.items %>% filter(genus == 'Larus')
+
+# Create a function to calculate n.
+give.n <- function(x){
+  return(c(y = mean(x), label = length(x)))
+}
+
+ggplot(diamonds, aes(cut, price)) + 
+  geom_boxplot() + 
+  stat_summary(fun.data = give.n, geom = "text")
+
+
+group.quant.camera
+freq.camera
+
+freq.camera %>% rownames_to_column() %>% 
+  pivot_longer(-rowname, names_to='group', values_to='count') %>% 
+  group_by(rowname) %>% 
+  mutate(total=sum(count), proportion=count/total) %>% 
+  
+  ggplot(aes(x=group, y=proportion, group=rowname, fill=group, linetype=rowname)) +
+  geom_bar(position='dodge', stat='identity', color='white') +
+  scale_fill_manual(values=c(bird, corvid, grouse,
+                             hare, mammal, squirrel,
+                             thrush, unknown)) +
+  #scale_alpha_manual(name='rowname', values=c(1, 0.5)) +
+  scale_linetype_manual(values = c("solid", "dotted"), color='black') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.x=element_blank(),
+        legend.position='none')

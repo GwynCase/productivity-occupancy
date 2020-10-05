@@ -1,0 +1,3 @@
+"0",""
+"0","# Look at the distribution."
+"0","qqnorm(proportion.mammal.cameras$value)"

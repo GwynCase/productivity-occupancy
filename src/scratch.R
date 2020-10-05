@@ -10,69 +10,8 @@ ggplot(diamonds, aes(cut, price)) +
   stat_summary(fun.data = give.n, geom = "text")
 
 
-sample.size <- diet.items %>% 
-  group_by(method) %>% 
-  mutate(method.count=n()) %>% 
-  ungroup() %>% group_by(source) %>% 
-  mutate(source.count=n()) %>% 
-  select(method, source, method.count, source.count) %>% 
-  distinct() %>% 
-  pivot_longer(!c(method, source), names_to='group', values_to='count') %>% 
-  mutate(name=case_when(
-    source == 'C' & group == 'method.count' ~ 'camera',
-    source == 'R' & group == 'method.count' ~ 'physical specimens',
-    source == 'R' & group == 'source.count' ~ 'remains only',
-    source == 'P' & group == 'source.count' ~ 'pellets only',
-    TRUE ~ NA_character_
-  )) %>% 
-  drop_na()
-
-
-ggplot(proportion.mammal, aes(x=name, y=proportion)) +
-  geom_point() +
-  geom_segment( aes(x=name, xend=name, y=0, yend=proportion)) +
-  theme_classic() +
-  labs(ylab='proportion mammal by biomass', xlab='method')
-
-
-
-diet.items %>% 
-  group_by(method) %>% 
-  mutate(method.mass=sum(mass, na.rm=TRUE)) %>% 
-  ungroup() %>% group_by(source) %>% 
-  mutate(source.mass=sum(mass, na.rm=TRUE)) %>% 
-  filter(genus == 'Tamiasciurus') %>% 
-  ungroup() %>% group_by(method) %>% 
-  mutate(method.sq=sum(mass, na.rm=TRUE)) %>%
-  ungroup() %>% group_by(source) %>% 
-  mutate(source.sq=sum(mass, na.rm=TRUE)) %>%
-  mutate(method.prop.sq=method.sq/method.mass, source.prop.sq=source.sq/source.mass) %>% 
-  select(method, source, method.prop.sq, source.prop.sq) %>% 
-  distinct() %>% 
-  pivot_longer(!c(method, source), names_to='group', values_to='proportion') %>% 
-  mutate(name=case_when(
-    source == 'C' & group == 'method.prop.sq' ~ 'camera',
-    source == 'R' & group == 'method.prop.sq' ~ 'pellets + remains',
-    source == 'R' & group == 'source.prop.sq' ~ 'remains only',
-    source == 'P' & group == 'source.prop.sq' ~ 'pellets only',
-    TRUE ~ NA_character_
-  )) %>% 
-  drop_na()
-
-proportion.squirrel
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+sankeyNetwork(Links = links, Nodes = nodes,
+              Source = "IDsource", Target = "IDtarget",
+              Value = "value", NodeID = "name", 
+              sinksRight=FALSE, fontFamily='Lato',
+              height=750, width=1000, fontSize=14)

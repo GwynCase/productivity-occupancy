@@ -1,0 +1,227 @@
+---
+title: "storytime"
+output: 
+  html_notebook:
+    toc: true
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+# Introduction
+
+What I did over my summer vacation.
+
+# Goshawk diet
+
+```{r setup, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+options(tidyverse.quiet = TRUE)
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+library(lubridate)
+library(vegan)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+```
+
+## Pellets 
+
+```{r}
+pellets <- diet.items %>% filter(source == 'P')
+```
+
+A total of `r nrow(pellets)` prey items were identified from egested pellets collected from `r distinct(pellets, site) %>% nrow()` sites in 2019 and 2020 (more data from the 2020 season still to come). Most sites had only 1-3 items identified from pellets, though some had 10 or more items identified.
+
+```{r}
+pellets %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill='burlywood3', color='white') +
+  labs(x='number of prey items', y='number of sites', title='Prey items per site identified from pellets') +
+  theme_classic()
+```
+
+`r round(pellets %>% filter(genus != 'Unknown') %>% nrow() / nrow(pellets), digits=2) * 100`% of items could be identified to genus or better, and no item could not at least be identified to class. `r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+```{r}
+class.quant.pellets <- diet.items %>% 
+  filter(source == 'P') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='pellets') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for pellet data.
+proportion.squirrel.pellets <- diet.items %>%
+  filter(source == 'P') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='pellets') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+By both count and biomass, mammals made up a greater proportion of items than birds (`r class.quant.pellets[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass, `r class.quant.pellets[2,3] %>% as.numeric() %>% round(digits=2) * 100`% by count). Squirrels (*Tamiasciurus* sp.) made up `r round(pellets %>% filter(genus == 'Tamiasciurus') %>% nrow() / nrow(pellets), digits=2) * 100`% of the items by count (`r proportion.squirrel.pellets[1,1] %>% as.numeric() %>% round(digits=2) * 100`% by biomass).
+
+## Combined pellets and remains
+
+```{r}
+remains <- diet.items %>% filter(source == 'R')
+
+pellets.remains <- diet.items %>% filter(method == 'remains')
+```
+
+An additional `r nrow(remains)` prey items were identified from prey remains collected from `r distinct(remains, site) %>% nrow()` sites in 2019 and 2020 (more data from the 2020 season still to come), for a total of `r nrow(pellets.remains)` physical prey items from `r distinct(pellets.remains, site) %>% nrow()` sites.
+
+ Most sites had only 1-5 items identified from pellets and remains, though some had more than 20 items identified.
+
+```{r}
+pellets.remains %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill='coral3', color='white') +
+  labs(x='number of prey items', y='number of sites', title='Prey items per site identified from pellets and remains') +
+  theme_classic()
+```
+
+`r round(pellets.remains %>% filter(genus != 'Unknown') %>% nrow() / nrow(pellets.remains), digits=2) * 100`% of items could be identified to genus or better, and only 1 item could not be identified at least to class. `r pellets.remains %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r pellets.remains %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+```{r}
+class.quant.combined <- diet.items %>% 
+  filter(method == 'remains') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='combined') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for pellet data.
+proportion.squirrel.combined <- diet.items %>%
+  filter(method == 'remains') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='combined') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+By both count and biomass, mammals made up a smaller proportion of items than birds (`r class.quant.combined[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass, `r class.quant.combined[2,3] %>% as.numeric() %>% round(digits=2) * 100`% by count). Squirrels (*Tamiasciurus* sp.) made up `r round(pellets.remains %>% filter(genus == 'Tamiasciurus') %>% nrow() / nrow(pellets.remains), digits=2) * 100`% of the items by count (`r proportion.squirrel.combined[1,1] %>% as.numeric() %>% round(digits=2) * 100`% by biomass).
+
+## Cameras
+
+```{r}
+cameras <- diet.items %>% filter(source == 'C')
+```
+
+From cameras, `r nrow(cameras)` prey items were identified from photographs taken at `r distinct(cameras, site) %>% nrow()` sites 2019 (more data from the 2020 season still to come). Nests had between `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(min=min(n)) %>% as.numeric()` and `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(max=max(n)) %>% as.numeric()` (mean = `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(mean=mean(n)) %>% as.numeric() %>% round()`) items identified.
+
+`r round(cameras %>% filter(genus != 'Unknown') %>% nrow() / nrow(cameras), digits=2) * 100`% of items could be identified to genus or better, however `r round(cameras %>% filter(class != 'Unknown') %>% nrow() / nrow(cameras), digits=2)`% of items could not be identified at least to class. `r cameras %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r cameras %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+```{r}
+# Calculate proportion bird/mammal by biomass and count for camera data.
+class.quant.camera <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='camera') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for camera data.
+proportion.squirrel.camera <- diet.items %>%
+  filter(method == 'camera') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='camera') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+By both count and biomass, mammals made up a larger proportion of items than birds (`r class.quant.camera[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass, `r class.quant.camera[2,3] %>% as.numeric() %>% round(digits=2) * 100`% by count). Squirrels (*Tamiasciurus* sp.) made up `r round(cameras %>% filter(genus == 'Tamiasciurus') %>% nrow() / nrow(cameras), digits=2) * 100`% of the items by count (`r proportion.squirrel.camera[1,1] %>% as.numeric() %>% round(digits=2) * 100`% by biomass).
+
+## Comparison of methods
+
+Prey remains greatly overestimated avian prey relative to pellets or cameras, causing the combined pellets and remains data to be skewed. Pellets produced broadly similar estimates of mammalian and squirrel biomass to cameras.
+
+```{r}
+bind_rows(proportion.squirrel.pellets, proportion.squirrel.combined, proportion.squirrel.camera) %>% 
+  rename(prop.mass=prop.sq.mass, prop.count=prop.sq.count) %>% 
+  mutate(class='Tamiasciurus') %>% 
+  bind_rows(class.quant.pellets, class.quant.combined, class.quant.camera) %>% 
+  ggplot(aes(x=class, y=prop.mass, group=data, fill=data)) +
+  geom_bar(position='dodge', stat='identity', color='white') +
+  scale_fill_manual(values=c('cadetblue3', 'coral3', 'burlywood3')) +
+  labs(x='taxa', y='proportion biomass', title='Proportion biomass by method') +
+  theme_classic()
+```
+
+While counts and biomass are broadly similar, counts generally overestimate birds relative to biomass.
+
+```{r}
+bind_rows(class.quant.pellets, class.quant.combined, class.quant.camera) %>% 
+  pivot_longer(cols=starts_with('prop'), names_to='measure', values_to='value') %>% 
+  ggplot(aes(x=class, y=value, group=measure, fill=measure)) +
+  geom_bar(position='dodge', stat='identity', color='white') +
+  scale_fill_manual(values=c('bisque3', 'darkolivegreen3')) +
+  labs(x='class', y='proportion counts or biomass', title='Proportion in class by measure') +
+  facet_wrap(~data) +
+  theme_classic()
+```
+
+```{r}
+source.wide <- diet.items %>% filter(binomial != 'Unidentified item') %>% 
+  group_by(source, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(source, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=source, values_from=count, values_fill=list(count = 0)) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(-binomial, names_to='source', values_to='count') %>% 
+  mutate(source=case_when(
+    source == 'R' ~ 'remains',
+    source == 'P' ~ 'pellets',
+    source == 'RP' ~ 'combined',
+    source == 'C' ~ 'cameras'
+  )) %>% 
+  pivot_wider(names_from=binomial, values_from=count)
+
+source.wide <- column_to_rownames(source.wide, var='source')
+```
+
+Although pellets and cameras are similar in terms of proportions mammals, birds, and squirrels, they have very low overlap in terms of species list. However, keep the very low number of identified species from remains and the nestedness of the combined data. Morisita's index of overlap, based on counts:
+```{r}
+vegdist(source.wide[,-1], method='morisita')
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

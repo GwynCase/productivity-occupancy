@@ -1793,181 +1793,158 @@ summary {
 </ol>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBJbXBvcnQgY29uZmxpY3Qgc2V0dGluZ3MuXG5zb3VyY2UoJy4uL3NyYy9jb25mbGljdGVkLlInKVxuXG4jIExvYWQgc29tZSBsaWJyYXJpZXMuXG5saWJyYXJ5KHRpZHl2ZXJzZSlcbmxpYnJhcnkobHVicmlkYXRlKVxubGlicmFyeSh2ZWdhbilcbmxpYnJhcnkoZ2dwbG90MilcblxuIyBCcmluZyBpbiBkYXRhLlxuc291cmNlKCcuLi9zcmMvcHJleV9hdHRyaWJ1dGVzX3JldmlzZWQuUicpXG5gYGAifQ== -->
-<pre class="r"><code># Import conflict settings.
-source(&#39;../src/conflicted.R&#39;)
-
-# Load some libraries.
-library(tidyverse)
-library(lubridate)
-library(vegan)
-library(ggplot2)
-
-# Bring in data.
-source(&#39;../src/prey_attributes_revised.R&#39;)</code></pre>
-<!-- rnb-source-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Compare biomass and counts for cameras.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDYWxjdWxhdGUgYmlvbWFzcyBhbmQgY291bnRzIGZvciBtYW1tYWxpYW4gcHJleS5cbnByb3BvcnRpb24ubWFtbWFsLmNhbWVyYXMgPC0gZGlldC5pdGVtcyAlPiUgXG4gIGZpbHRlcihtZXRob2QgPT0gJ2NhbWVyYScpICU+JSBcbiAgZ3JvdXBfYnkobmVzdCkgJT4lIFxuICBtdXRhdGUodG90YWwubWFzcz1zdW0obWFzcyksIHRvdGFsLmNvdW50PW4oKSkgJT4lIFxuICBmaWx0ZXIoY2xhc3MgPT0gJ01hbW1hbGlhJykgJT4lIFxuICBtdXRhdGUobWFzcy5tbT1zdW0obWFzcyksIGNvdW50Lm1tPW4oKSwgXG4gICAgICAgICBwcm9wLm1tLm1hc3M9bWFzcy5tbS90b3RhbC5tYXNzLCBwcm9wLm1tLmNvdW50PWNvdW50Lm1tL3RvdGFsLmNvdW50KSAlPiUgXG4gIHNlbGVjdChuZXN0LCBwcm9wLm1tLm1hc3MsIHByb3AubW0uY291bnQpICU+JSBkaXN0aW5jdCgpICU+JSBcbiAgcGl2b3RfbG9uZ2VyKCFuZXN0LCBuYW1lc190bz0nbWV0cmljJywgdmFsdWVzX3RvPSd2YWx1ZScpXG5cbiMgQWxzbyBpbiB3aWRlIGZvcm1hdC5cbnByb3BvcnRpb24ubWFtbWFsLmNhbWVyYXMud2lkZSA8LSBwcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzICU+JSBcbiAgcGl2b3Rfd2lkZXIobmFtZXNfZnJvbT1tZXRyaWMsIHZhbHVlc19mcm9tPXZhbHVlKVxuXG5wcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzLndpZGVcblxuIyBMb29rIGF0IHRoZSBkaXN0cmlidXRpb24uXG5xcW5vcm0ocHJvcG9ydGlvbi5tYW1tYWwuY2FtZXJhcyR2YWx1ZSlcbnFxbGluZShwcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzJHZhbHVlKVxuXG4jIENoZWNrIGZvciBub3JtYWxpdHkuXG5zaGFwaXJvLnRlc3QocHJvcG9ydGlvbi5tYW1tYWwuY2FtZXJhcyR2YWx1ZSlcbmBgYCJ9 -->
-<pre class="r"><code># Calculate biomass and counts for mammalian prey.
-proportion.mammal.cameras &lt;- diet.items %&gt;% 
-  filter(method == &#39;camera&#39;) %&gt;% 
-  group_by(nest) %&gt;% 
-  mutate(total.mass=sum(mass), total.count=n()) %&gt;% 
-  filter(class == &#39;Mammalia&#39;) %&gt;% 
-  mutate(mass.mm=sum(mass), count.mm=n(), 
-         prop.mm.mass=mass.mm/total.mass, prop.mm.count=count.mm/total.count) %&gt;% 
-  select(nest, prop.mm.mass, prop.mm.count) %&gt;% distinct() %&gt;% 
-  pivot_longer(!nest, names_to=&#39;metric&#39;, values_to=&#39;value&#39;)
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjYsIm5jb2wiOjN9LCJyZGYiOiJINHNJQUFBQUFBQUFCZ3R5aVREbWl1QmlZR0JnWm1CaFlHSmdaZ1V5R2RpY0F3eU5USTBZR0ZpWWdEeEdvQXduaUs0QXFoSUdLMlZnRUFBcGcwcXdoNFpFR1JrWVdzSzR2aUhPcUZ3M1pHNkljeEFLMXhkRmNaQ1BONWpMd01BSHNzSCtyZUVMaFFWMjArMWZuSjNVTG5SZXovNDE1OHR6YmsvaTdWL0xsVDFJY3dXS213ZmRPaEt0YS85cUovL2R2U2ZkNFBwZVgrZXlMVmg4M2Y3eG03V1BXYTYwMjc5c1dsOXdvdUdwL2RPMTJWSFh0cTYxdjdjajhIV3IzQTc3cC9PVlpwaEhma0x6S210eVRtSnhNZFNiTUVHdWxNU1NSTDIwb3NUY1ZEVGxuRVg1NVhwNVFIR1FGbDRnWm1vQUV2Ly8vLytGYmk1TWtRQTB4RUdDTEhtcHhTVlFOazlCVVg2QlhtNnVYaTdJZm9nWUwwd3NPYjgwcndRbzhBL05WUGI4Z3BMTS9EeWd1VXlnNk9FQXVSVXNEY0V3TmdNYUc5bHZqRVZvQXZ5bGVTQzNwdWdtWjVUbVplc2FvZW5saGJMWmtOak1FR2V4L0ljYXhRSHpYMnB5Umo3TXFVRHZGeWVtcDhLNDVZbEZlWmw1NlZBdVcycGVlbVllVEpJMUp6RXBOUWZLNFFNR01Uanc5QXFLTXZOZ3djVUZGQzNXSzhrdlNZU3A0MHJPejRHSmdFT0s0UjhBUmlwRGNlUUNBQUE9In0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["nest"],"name":[1],"type":["chr"],"align":["left"]},{"label":["prop.mm.mass"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["prop.mm.count"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"UTZ2019","2":"0.9123421","3":"0.8700000"},{"1":"MTC2019","2":"0.7750943","3":"0.6226415"},{"1":"MTF2019","2":"0.8449601","3":"0.7972028"},{"1":"TCR2019","2":"0.8474688","3":"0.6774194"},{"1":"TMC2019","2":"0.7567534","3":"0.4800000"},{"1":"RLK2019","2":"0.8350906","3":"0.6756757"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
+<p><img src="data:image/png;base64,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" /></p>
+<!-- rnb-plot-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFNoYXBpcm8tV2lsayBub3JtYWxpdHkgdGVzdFxuXG5kYXRhOiAgcHJvcG9ydGlvbi5tYW1tYWwuY2FtZXJhcyR2YWx1ZVxuVyA9IDAuOTE5NzMsIHAtdmFsdWUgPSAwLjI4MzdcbiJ9 -->
+<pre><code>
+    Shapiro-Wilk normality test
 
-# Also in wide format.
-proportion.mammal.cameras.wide &lt;- proportion.mammal.cameras %&gt;% 
-  pivot_wider(names_from=metric, values_from=value)
-
-proportion.mammal.cameras.wide
-
-# Look at the distribution.
-qqnorm(proportion.mammal.cameras$value)
-qqline(proportion.mammal.cameras$value)
-
-# Check for normality.
-shapiro.test(proportion.mammal.cameras$value)</code></pre>
-<!-- rnb-source-end -->
+data:  proportion.mammal.cameras$value
+W = 0.91973, p-value = 0.2837</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>So…. sort of normal-ish? I’ll give it a shot. Is there is a significant difference between using counts or biomass?</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBSdW4gYSB0LXRlc3QuXG50LnRlc3QocHJvcG9ydGlvbi5tYW1tYWwuY2FtZXJhcy53aWRlJHByb3AubW0ubWFzcywgcHJvcG9ydGlvbi5tYW1tYWwuY2FtZXJhcy53aWRlJHByb3AubW0uY291bnQpXG5gYGAifQ== -->
-<pre class="r"><code># Run a t-test.
-t.test(proportion.mammal.cameras.wide$prop.mm.mass, proportion.mammal.cameras.wide$prop.mm.count)</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFdlbGNoIFR3byBTYW1wbGUgdC10ZXN0XG5cbmRhdGE6ICBwcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzLndpZGUkcHJvcC5tbS5tYXNzIGFuZCBwcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzLndpZGUkcHJvcC5tbS5jb3VudFxudCA9IDIuMzUxNywgZGYgPSA2LjY0NDMsIHAtdmFsdWUgPSAwLjA1Mjg2XG5hbHRlcm5hdGl2ZSBoeXBvdGhlc2lzOiB0cnVlIGRpZmZlcmVuY2UgaW4gbWVhbnMgaXMgbm90IGVxdWFsIHRvIDBcbjk1IHBlcmNlbnQgY29uZmlkZW5jZSBpbnRlcnZhbDpcbiAtMC4wMDIzMzM0MDYgIDAuMjg1MjU2NzIwXG5zYW1wbGUgZXN0aW1hdGVzOlxubWVhbiBvZiB4IG1lYW4gb2YgeSBcbjAuODI4NjE4MiAwLjY4NzE1NjYgXG4ifQ== -->
+<pre><code>
+    Welch Two Sample t-test
+
+data:  proportion.mammal.cameras.wide$prop.mm.mass and proportion.mammal.cameras.wide$prop.mm.count
+t = 2.3517, df = 6.6443, p-value = 0.05286
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.002333406  0.285256720
+sample estimates:
+mean of x mean of y 
+0.8286182 0.6871566 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>So the two methods (biomass vs. counts) do give slightly different results. Which is interesting, because Lewis says they don’t. Generally, counts are more widely reported.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEbyB0aGUgc2FtZSB3aXRoIHByb3BvcnRpb24gYXZpYW4gYmlvbWFzcy9jb3VudHMuXG5cbiMgQ2FsY3VsYXRlIGJpb21hc3MgYW5kIGNvdW50cyBmb3IgbWFtbWFsaWFuIHByZXkuXG5wcm9wb3J0aW9uLmF2aWFuLmNhbWVyYXMgPC0gZGlldC5pdGVtcyAlPiUgXG4gIGZpbHRlcihtZXRob2QgPT0gJ2NhbWVyYScpICU+JSBcbiAgZ3JvdXBfYnkobmVzdCkgJT4lIFxuICBtdXRhdGUodG90YWwubWFzcz1zdW0obWFzcyksIHRvdGFsLmNvdW50PW4oKSkgJT4lIFxuICBmaWx0ZXIoY2xhc3MgPT0gJ0F2ZXMnKSAlPiUgXG4gIG11dGF0ZShtYXNzLmF2PXN1bShtYXNzKSwgY291bnQuYXY9bigpLCBcbiAgICAgICAgIHByb3AuYXYubWFzcz1tYXNzLmF2L3RvdGFsLm1hc3MsIHByb3AuYXYuY291bnQ9Y291bnQuYXYvdG90YWwuY291bnQpICU+JSBcbiAgc2VsZWN0KG5lc3QsIHByb3AuYXYubWFzcywgcHJvcC5hdi5jb3VudCkgJT4lIGRpc3RpbmN0KCkgXG5cbnByb3BvcnRpb24uYXZpYW4uY2FtZXJhc1xuXG4jIEFsc28gaW4gbG9uZyBmb3JtYXQuXG5wcm9wb3J0aW9uLmF2aWFuLmNhbWVyYXMubG9uZyA8LSBwcm9wb3J0aW9uLmF2aWFuLmNhbWVyYXMgJT4lIFxuICBwaXZvdF9sb25nZXIoIW5lc3QsIG5hbWVzX3RvPSdtZXRyaWMnLCB2YWx1ZXNfdG89J3ZhbHVlJylcblxuIyBMb29rIGF0IHRoZSBkaXN0cmlidXRpb24uXG5xcW5vcm0ocHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzLmxvbmckdmFsdWUpXG5xcWxpbmUocHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzLmxvbmckdmFsdWUpXG5cbiMgQ2hlY2sgZm9yIG5vcm1hbGl0eS5cbnNoYXBpcm8udGVzdChwcm9wb3J0aW9uLmF2aWFuLmNhbWVyYXMubG9uZyR2YWx1ZSlcblxuIyBSdW4gYSB0LXRlc3QuXG50LnRlc3QocHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzJHByb3AuYXYubWFzcywgcHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzJHByb3AuYXYuY291bnQpXG5gYGAifQ== -->
-<pre class="r"><code># Do the same with proportion avian biomass/counts.
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjYsIm5jb2wiOjN9LCJyZGYiOiJINHNJQUFBQUFBQUFCZ3R5aVREbWl1QmlZR0JnWm1CaFlHSmdaZ1V5R2RpY0F3eU5USTBZR0ZpWWdEeEdvQXduaUs0QXFoSUdLMlZnRUFBcGcwcXdoemdIR1JrWVdzSzR2aUZ1eU56UWtDaFVXV2RrYm9ndkNqZkl4eHZNWldEZ0E5bGd2MzhWUTRuNWhURDdBeXVUR0U1NTY5bHZ6ZExQaUZwVllYOXlXdlZNN1FPcDlxZXUxekhlYzl4dHYvN3FvOUw3UjFuaCtrNjNQZHlSSjkxdXYrdFcrbFdPenhYMk8yZUN3Q3o3Qzg5dlJoL2pYR2wvRThyZnZlYW55TUZkRjlDOHlwcWNrMWhjRFBVbVRKQXJKYkVrVVMrdEtERTNGVTA1WjFGK3VWNGVVQnlraFJlSW1ScUF4UC8vLzMraG13dFRKQUFOY1pBZ1MxNXFjUW1VelZOUWxGK2dsMWltbHd1eUh5TEdDeE5MemkvTkt3RUsvRU16bFQyL29DUXpQdzlvTGhNb2VqaEFiZ1ZMUXpDTXpZREdSdlliWXhHYUFIOXBIc2l0S2JySkdhVjUyYm9tYUhwNW9XdzJKRFl6eEZrcy82RkdjY0Q4bDVxY2tROXpLdEQ3eFlucHFUQnVlV0pSWG1aZU9wVExscHFYbnBrSGsyVE5TVXhLellGeStJQkJEQTQ4dllLaXpEeFljSEVCUll2MVN2SkxFbUhxdUpMemMyQWk0SkJpK0FjQUllR2VDdVFDQUFBPSJ9 -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["nest"],"name":[1],"type":["chr"],"align":["left"]},{"label":["prop.av.mass"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["prop.av.count"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"TCR2019","2":"0.12368777","3":"0.2150538"},{"1":"MTF2019","2":"0.13016915","3":"0.1048951"},{"1":"UTZ2019","2":"0.08365151","3":"0.1000000"},{"1":"MTC2019","2":"0.19990487","3":"0.2641509"},{"1":"TMC2019","2":"0.20970130","3":"0.4000000"},{"1":"RLK2019","2":"0.06217869","3":"0.1081081"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
+<p><img src="data:image/png;base64,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" /></p>
+<!-- rnb-plot-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFNoYXBpcm8tV2lsayBub3JtYWxpdHkgdGVzdFxuXG5kYXRhOiAgcHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzLmxvbmckdmFsdWVcblcgPSAwLjg2NzA3LCBwLXZhbHVlID0gMC4wNlxuXG5cblx0V2VsY2ggVHdvIFNhbXBsZSB0LXRlc3RcblxuZGF0YTogIHByb3BvcnRpb24uYXZpYW4uY2FtZXJhcyRwcm9wLmF2Lm1hc3MgYW5kIHByb3BvcnRpb24uYXZpYW4uY2FtZXJhcyRwcm9wLmF2LmNvdW50XG50ID0gLTEuMTY3MSwgZGYgPSA3LjM0NDcsIHAtdmFsdWUgPSAwLjI3OTdcbmFsdGVybmF0aXZlIGh5cG90aGVzaXM6IHRydWUgZGlmZmVyZW5jZSBpbiBtZWFucyBpcyBub3QgZXF1YWwgdG8gMFxuOTUgcGVyY2VudCBjb25maWRlbmNlIGludGVydmFsOlxuIC0wLjE5MTkwMjI1ICAwLjA2NDI2NDA0XG5zYW1wbGUgZXN0aW1hdGVzOlxubWVhbiBvZiB4IG1lYW4gb2YgeSBcbjAuMTM0ODgyMiAwLjE5ODcwMTMgXG4ifQ== -->
+<pre><code>
+    Shapiro-Wilk normality test
 
-# Calculate biomass and counts for mammalian prey.
-proportion.avian.cameras &lt;- diet.items %&gt;% 
-  filter(method == &#39;camera&#39;) %&gt;% 
-  group_by(nest) %&gt;% 
-  mutate(total.mass=sum(mass), total.count=n()) %&gt;% 
-  filter(class == &#39;Aves&#39;) %&gt;% 
-  mutate(mass.av=sum(mass), count.av=n(), 
-         prop.av.mass=mass.av/total.mass, prop.av.count=count.av/total.count) %&gt;% 
-  select(nest, prop.av.mass, prop.av.count) %&gt;% distinct() 
+data:  proportion.avian.cameras.long$value
+W = 0.86707, p-value = 0.06
 
-proportion.avian.cameras
 
-# Also in long format.
-proportion.avian.cameras.long &lt;- proportion.avian.cameras %&gt;% 
-  pivot_longer(!nest, names_to=&#39;metric&#39;, values_to=&#39;value&#39;)
+    Welch Two Sample t-test
 
-# Look at the distribution.
-qqnorm(proportion.avian.cameras.long$value)
-qqline(proportion.avian.cameras.long$value)
-
-# Check for normality.
-shapiro.test(proportion.avian.cameras.long$value)
-
-# Run a t-test.
-t.test(proportion.avian.cameras$prop.av.mass, proportion.avian.cameras$prop.av.count)</code></pre>
-<!-- rnb-source-end -->
+data:  proportion.avian.cameras$prop.av.mass and proportion.avian.cameras$prop.av.count
+t = -1.1671, df = 7.3447, p-value = 0.2797
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.19190225  0.06426404
+sample estimates:
+mean of x mean of y 
+0.1348822 0.1987013 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Same result here: means not equal. Finally, proprtion squirrel.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEbyB0aGUgc2FtZSB3aXRoIHByb3BvcnRpb24gYXZpYW4gYmlvbWFzcy9jb3VudHMuXG5cbiMgQ2FsY3VsYXRlIGJpb21hc3MgYW5kIGNvdW50cyBmb3IgbWFtbWFsaWFuIHByZXkuXG5wcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMgPC0gZGlldC5pdGVtcyAlPiUgXG4gIGZpbHRlcihtZXRob2QgPT0gJ2NhbWVyYScpICU+JSBcbiAgZ3JvdXBfYnkobmVzdCkgJT4lIFxuICBtdXRhdGUodG90YWwubWFzcz1zdW0obWFzcyksIHRvdGFsLmNvdW50PW4oKSkgJT4lIFxuICBmaWx0ZXIoZ2VudXMgPT0gJ1RhbWlhc2NpdXJ1cycpICU+JSBcbiAgbXV0YXRlKG1hc3Muc3E9c3VtKG1hc3MpLCBjb3VudC5zcT1uKCksIFxuICAgICAgICAgcHJvcC5zcS5tYXNzPW1hc3Muc3EvdG90YWwubWFzcywgcHJvcC5zcS5jb3VudD1jb3VudC5zcS90b3RhbC5jb3VudCkgJT4lIFxuICBzZWxlY3QobmVzdCwgcHJvcC5zcS5tYXNzLCBwcm9wLnNxLmNvdW50KSAlPiUgZGlzdGluY3QoKSBcblxucHJvcG9ydGlvbi5zcXVpcnJlbC5jYW1lcmFzXG5cbiMgQWxzbyBpbiBsb25nIGZvcm1hdC5cbnByb3BvcnRpb24uc3F1aXJyZWwuY2FtZXJhcy5sb25nIDwtIHByb3BvcnRpb24uc3F1aXJyZWwuY2FtZXJhcyAlPiUgXG4gIHBpdm90X2xvbmdlcighbmVzdCwgbmFtZXNfdG89J21ldHJpYycsIHZhbHVlc190bz0ndmFsdWUnKVxuXG4jIExvb2sgYXQgdGhlIGRpc3RyaWJ1dGlvbi5cbnFxbm9ybShwcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMubG9uZyR2YWx1ZSlcbnFxbGluZShwcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMubG9uZyR2YWx1ZSlcblxuIyBDaGVjayBmb3Igbm9ybWFsaXR5Llxuc2hhcGlyby50ZXN0KHByb3BvcnRpb24uc3F1aXJyZWwuY2FtZXJhcy5sb25nJHZhbHVlKVxuXG4jIFJ1biBhIHQtdGVzdC5cbnQudGVzdChwcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMkcHJvcC5zcS5tYXNzLCBwcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMkcHJvcC5zcS5jb3VudClcbmBgYCJ9 -->
-<pre class="r"><code># Do the same with proportion avian biomass/counts.
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbImdyb3VwZWRfZGYiLCJ0YmxfZGYiLCJ0YmwiLCJkYXRhLmZyYW1lIl0sIm5yb3ciOjYsIm5jb2wiOjN9LCJyZGYiOiJINHNJQUFBQUFBQUFCZ3R5aVREbWl1QmlZR0JnWm1CaFlHSmdaZ1V5R2RpY0F3eU5USTBZR0ZpWWdEeEdvQXduaUs0QXFoSUdLMlZnRUFBcGcwcXcrNFk0R3hrWVdpSzRic2pjSUI5dlpHNkljeEFLMXhkRmIyaElGSmpMd01BSHNzSCsyZWNFT1FuZmsvYlAzcy9ZUHUreXZ2MkxpM1BaVnBsUHRYLzVkZTc2QTRzNDdlL3JtOGUvbGUyeWYrN1M4b2ZGL2hWYzN5T1ozOW9WQjAzdEgyKzBGdDVvTFdMLzVPQ3U4eE45Wk95ZkxOWDBDcHF5MVA1SzFVUDNkU0xWOWk4Q1g3Zks3UWhDOHlwcmNrNWljVEhVbXpCQnJwVEVra1M5dEtMRTNGUTA1WnhGK2VWNmVVQnhrQlplSUdacUFCTC8vLy8vaFc0dVRKRUFOTVJCZ2l4NXFjVWxVRFpQUVZGK2dWNXhvVjR1eUg2SUdDOU1MRG0vTks4RUtQQVB6VlQyL0lLU3pQdzhvTGxNb09qaEFMa1ZMQTNCTURZREdodlpiNHhGYUFMOHBYa2d0NmJvSm1lVTVtWHJtcUxwNVlXeTJaRFl6QkJuc2Z5SEdzVUI4MTlxY2tZK3pLbEE3eGNucHFmQ3VPV0pSWG1aZWVsUUxsdHFYbnBtSGt5U05TY3hLVFVIeXVFREJqRTQ4UFFLaWpMellNSEZCUlF0MWl2SkwwbUVxZU5LenMrQmlZQkRpdUVmQUpzWmY5L2tBZ0FBIn0= -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["nest"],"name":[1],"type":["chr"],"align":["left"]},{"label":["prop.sq.mass"],"name":[2],"type":["dbl"],"align":["right"]},{"label":["prop.sq.count"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"MTC2019","2":"0.7172089","3":"0.5660377"},{"1":"MTF2019","2":"0.7167476","3":"0.6153846"},{"1":"RLK2019","2":"0.7755876","3":"0.6486486"},{"1":"TCR2019","2":"0.8112324","3":"0.6451613"},{"1":"TMC2019","2":"0.4872569","3":"0.3200000"},{"1":"UTZ2019","2":"0.7271142","3":"0.7600000"}],"options":{"columns":{"min":{},"max":[10],"total":[3]},"rows":{"min":[10],"max":[10],"total":[6]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-plot-begin eyJoZWlnaHQiOjQzMi42MzI5LCJ3aWR0aCI6NzAwLCJzaXplX2JlaGF2aW9yIjowLCJjb25kaXRpb25zIjpbXX0= -->
+<p><img src="data:image/png;base64,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" /></p>
+<!-- rnb-plot-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5cdFNoYXBpcm8tV2lsayBub3JtYWxpdHkgdGVzdFxuXG5kYXRhOiAgcHJvcG9ydGlvbi5zcXVpcnJlbC5jYW1lcmFzLmxvbmckdmFsdWVcblcgPSAwLjg5ODAyLCBwLXZhbHVlID0gMC4xNDk2XG5cblxuXHRXZWxjaCBUd28gU2FtcGxlIHQtdGVzdFxuXG5kYXRhOiAgcHJvcG9ydGlvbi5zcXVpcnJlbC5jYW1lcmFzJHByb3Auc3EubWFzcyBhbmQgcHJvcG9ydGlvbi5zcXVpcnJlbC5jYW1lcmFzJHByb3Auc3EuY291bnRcbnQgPSAxLjQ4ODMsIGRmID0gOS4zNzIyLCBwLXZhbHVlID0gMC4xNjk1XG5hbHRlcm5hdGl2ZSBoeXBvdGhlc2lzOiB0cnVlIGRpZmZlcmVuY2UgaW4gbWVhbnMgaXMgbm90IGVxdWFsIHRvIDBcbjk1IHBlcmNlbnQgY29uZmlkZW5jZSBpbnRlcnZhbDpcbiAtMC4wNTc4ODE4NCAgMC4yODQ1MjAyN1xuc2FtcGxlIGVzdGltYXRlczpcbm1lYW4gb2YgeCBtZWFuIG9mIHkgXG4wLjcwNTg1NzkgMC41OTI1Mzg3IFxuIn0= -->
+<pre><code>
+    Shapiro-Wilk normality test
 
-# Calculate biomass and counts for mammalian prey.
-proportion.squirrel.cameras &lt;- diet.items %&gt;% 
-  filter(method == &#39;camera&#39;) %&gt;% 
-  group_by(nest) %&gt;% 
-  mutate(total.mass=sum(mass), total.count=n()) %&gt;% 
-  filter(genus == &#39;Tamiasciurus&#39;) %&gt;% 
-  mutate(mass.sq=sum(mass), count.sq=n(), 
-         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count) %&gt;% 
-  select(nest, prop.sq.mass, prop.sq.count) %&gt;% distinct() 
+data:  proportion.squirrel.cameras.long$value
+W = 0.89802, p-value = 0.1496
 
-proportion.squirrel.cameras
 
-# Also in long format.
-proportion.squirrel.cameras.long &lt;- proportion.squirrel.cameras %&gt;% 
-  pivot_longer(!nest, names_to=&#39;metric&#39;, values_to=&#39;value&#39;)
+    Welch Two Sample t-test
 
-# Look at the distribution.
-qqnorm(proportion.squirrel.cameras.long$value)
-qqline(proportion.squirrel.cameras.long$value)
-
-# Check for normality.
-shapiro.test(proportion.squirrel.cameras.long$value)
-
-# Run a t-test.
-t.test(proportion.squirrel.cameras$prop.sq.mass, proportion.squirrel.cameras$prop.sq.count)</code></pre>
-<!-- rnb-source-end -->
+data:  proportion.squirrel.cameras$prop.sq.mass and proportion.squirrel.cameras$prop.sq.count
+t = 1.4883, df = 9.3722, p-value = 0.1695
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.05788184  0.28452027
+sample estimates:
+mean of x mean of y 
+0.7058579 0.5925387 </code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>So those p-values aren’t enormous, which implies the means are broadly similar. I’m not going to give up using biomass because I think it’s more biologically relevant, but I’ll have to be sure to include both mass and counts so I can make comparisons with other authors.</p>
 <p>The next thing to compare is cameras vs. remains. This cannot be grouped by site because the sample size for the remains + pellets data is too small.</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBEbyB0aGUgc2FtZSB3aXRoIHByb3BvcnRpb24gYXZpYW4gYmlvbWFzcy9jb3VudHMuXG5cbiMgQ2FsY3VsYXRlIGJpb21hc3MgZm9yIHNxdWlycmVscy5cbnByb3BvcnRpb24uc3F1aXJyZWwucmVtYWlucyA8LSBkaWV0Lml0ZW1zICU+JSBcbiAgZmlsdGVyKG1ldGhvZCA9PSAncmVtYWlucycpICU+JSBcbiAgbXV0YXRlKHRvdGFsLm1hc3M9c3VtKG1hc3MsIG5hLnJtPVRSVUUpKSAlPiUgXG4gIGZpbHRlcihnZW51cyA9PSAnVGFtaWFzY2l1cnVzJykgJT4lIFxuICBtdXRhdGUobWFzcy5zcT1zdW0obWFzcyksIHByb3Auc3EubWFzcz1tYXNzLnNxL3RvdGFsLm1hc3MpICU+JSBcbiAgc2VsZWN0KHByb3Auc3EubWFzcykgJT4lIGRpc3RpbmN0KCkgXG5cbnByb3BvcnRpb24uc3F1aXJyZWwucmVtYWluc1xuXG5wcm9wb3J0aW9uLnNxdWlycmVsLmNhbWVyYXMkcHJvcC5zcS5tYXNzICU+JSBtZWFuKClcbmBgYCJ9 -->
-<pre class="r"><code># Do the same with proportion avian biomass/counts.
-
-# Calculate biomass for squirrels.
-proportion.squirrel.remains &lt;- diet.items %&gt;% 
-  filter(method == &#39;remains&#39;) %&gt;% 
-  mutate(total.mass=sum(mass, na.rm=TRUE)) %&gt;% 
-  filter(genus == &#39;Tamiasciurus&#39;) %&gt;% 
-  mutate(mass.sq=sum(mass), prop.sq.mass=mass.sq/total.mass) %&gt;% 
-  select(prop.sq.mass) %&gt;% distinct() 
-
-proportion.squirrel.remains
-
-proportion.squirrel.cameras$prop.sq.mass %&gt;% mean()</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVFRVTdETUJEY3VFbHBvN1pVNGgwMW9naXVIT0FCQ0M2OW10U2tFZWs2Mks3S2tYY2hjZUFWL0tidE9ySWwxNUVjejR4M3h1dDllVnJkbHFzU0FBYVFBNE5CUVJDR2o4ODN5N3NsUU02SVpYUXlkdnNYVlYzMUFzRE03UTkvL3orVDMrdlhwTEJBc1pXR3dEd1NKNTFXSFRlZmZDdU1TUXhqcmZZOG1LYTAyRGY5anZTbHlWWGJ1OCtTeTdXd2dyOXI4aE03SkpZTDFkbEdJWm1ZNjMza0RQNE5XWVFod2ZFRm1VNkV5eDI2YnRlTGFyUERqOFY5NHAxRytSRjJiYkdqanhyNXFGeFdHeFZhcFFFWVVjdEE5MEpqZzdXblE0bDFnK0d3YU1XYmJEMlowZno2OGZGT04yakRYRWcxM0NvclFsMVpxVFlvL2FUZ2NBS01vRWpNQVFJQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["prop.sq.mass"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.139396"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuNzA1ODU3OVxuIn0= -->
+<pre><code>[1] 0.7058579</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDYWxjdWxhdGUgYmlvbWFzcyBmb3IgbWFtbWFsc1xucHJvcG9ydGlvbi5tYW1tYWwucmVtYWlucyA8LSBkaWV0Lml0ZW1zICU+JSBcbiAgZmlsdGVyKG1ldGhvZCA9PSAncmVtYWlucycpICU+JSBcbiAgbXV0YXRlKHRvdGFsLm1hc3M9c3VtKG1hc3MsIG5hLnJtPVRSVUUpKSAlPiUgXG4gIGZpbHRlcihjbGFzcyA9PSAnTWFtbWFsaWEnKSAlPiUgXG4gIG11dGF0ZShtYXNzLm1tPXN1bShtYXNzKSwgcHJvcC5tbS5tYXNzPW1hc3MubW0vdG90YWwubWFzcykgJT4lIFxuICBzZWxlY3QocHJvcC5tbS5tYXNzKSAlPiUgZGlzdGluY3QoKSBcblxucHJvcG9ydGlvbi5tYW1tYWwucmVtYWluc1xuXG5wcm9wb3J0aW9uLm1hbW1hbC5jYW1lcmFzLndpZGUkcHJvcC5tbS5tYXNzICU+JSBtZWFuKClcbmBgYCJ9 -->
-<pre class="r"><code># Calculate biomass for mammals
-proportion.mammal.remains &lt;- diet.items %&gt;% 
-  filter(method == &#39;remains&#39;) %&gt;% 
-  mutate(total.mass=sum(mass, na.rm=TRUE)) %&gt;% 
-  filter(class == &#39;Mammalia&#39;) %&gt;% 
-  mutate(mass.mm=sum(mass), prop.mm.mass=mass.mm/total.mass) %&gt;% 
-  select(prop.mm.mass) %&gt;% distinct() 
-
-proportion.mammal.remains
-
-proportion.mammal.cameras.wide$prop.mm.mass %&gt;% mean()</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVF5MDdETUJEY3VFa2ZFUzFJdmZUTXZaWmFoRGh5Z0E5QW5ISjFVNU5HZGV6SWRsV08vQkRmdzgrZ2xuVmtTOGFSSE0rTWQ4YnJmWCt0SHNxcUJJQVI1RUJnVkNDRThjdmJadnU0QmNnSnNneFBabTcveEtybElBQXMzUDc4OC90OVg0bFZVbGhJMW5HRDRDNFNiM3F0ZXRwMXRHUEdKSWFaVm1jYVRITmM1QXQvVi96UzVGb003bi9KNVo1WlJqODArcEZkRXN0RTliWlZFazNFOVQ1MUJ2K0dMTUtRNFBpQ1RDZkM3VW02YnZmcituQ1N4L1ZUNHAxSCtSRjJiWkdyajVyNnFKelhCeFZheFFFWTF2QkF6MHpMVmphZWpybHNXaGtPQzhGMlhIaXl3UGtONDZPOWJxVU5jMEhWVUtzc0MzVmxyVVJRaGtuQjVROXgxTVNKQVFJQUFBPT0ifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["prop.mm.mass"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.3747971"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuODI4NjE4MlxuIn0= -->
+<pre><code>[1] 0.8286182</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuIyBDYWxjdWxhdGUgYmlvbWFzcyBmb3IgYmlyZHNcbnByb3BvcnRpb24uYXZpYW4ucmVtYWlucyA8LSBkaWV0Lml0ZW1zICU+JSBcbiAgZmlsdGVyKG1ldGhvZCA9PSAncmVtYWlucycpICU+JSBcbiAgbXV0YXRlKHRvdGFsLm1hc3M9c3VtKG1hc3MsIG5hLnJtPVRSVUUpKSAlPiUgXG4gIGZpbHRlcihjbGFzcyA9PSAnQXZlcycpICU+JSBcbiAgbXV0YXRlKG1hc3MuYXY9c3VtKG1hc3MpLCBwcm9wLmF2Lm1hc3M9bWFzcy5hdi90b3RhbC5tYXNzKSAlPiUgXG4gIHNlbGVjdChwcm9wLmF2Lm1hc3MpICU+JSBkaXN0aW5jdCgpIFxuXG5wcm9wb3J0aW9uLmF2aWFuLnJlbWFpbnNcblxucHJvcG9ydGlvbi5hdmlhbi5jYW1lcmFzJHByb3AuYXYubWFzcyAlPiUgbWVhbigpXG5gYGAifQ== -->
-<pre class="r"><code># Calculate biomass for birds
-proportion.avian.remains &lt;- diet.items %&gt;% 
-  filter(method == &#39;remains&#39;) %&gt;% 
-  mutate(total.mass=sum(mass, na.rm=TRUE)) %&gt;% 
-  filter(class == &#39;Aves&#39;) %&gt;% 
-  mutate(mass.av=sum(mass), prop.av.mass=mass.av/total.mass) %&gt;% 
-  select(prop.av.mass) %&gt;% distinct() 
-
-proportion.avian.remains
-
-proportion.avian.cameras$prop.av.mass %&gt;% mean()</code></pre>
-<!-- rnb-source-end -->
+<!-- rnb-frame-begin eyJtZXRhZGF0YSI6eyJjbGFzc2VzIjpbInRibF9kZiIsInRibCIsImRhdGEuZnJhbWUiXSwibnJvdyI6MSwibmNvbCI6MX0sInJkZiI6Ikg0c0lBQUFBQUFBQUJsMVF5MDdETUJEY3VFa2ZFUzFJbkhybVhFc1VJU0Z4NEFBZmdIcnFkVWxOR3BIYWtlMVNqdlRUK0JiK28yVWQyWkp4Sk1jejQ1M3hlbGN2Njd0eVhRTEFBSEpnTUNnSXd2RDU5WFo1dndUSUdiR01UaVp1LzZLcTYxNEFtTG45NmZmNE9QODUzaVNGaGNTZE1BU3VJdkdpMDZyaitNbDNhRXhpbUdoMTRNRTBwY1crNlhlbUwwMnUydDc5TDduY29FWCtyc2xQN0pSWVJxcXpqWkprWXE3M3NUUDROMlFSaGdUSEYyUTZFUzczMG5XN1dWVGJ2ZnhZUENUZWFaUWZZZGNXTy91b3NZL0tSYlZWb1ZVYWdNRmFCSHBBTFJ0WmV6b1VzbTVrT0N4YWZCT3RKek9hWHo4KzN1bEcyakFYVWcyM3ltS29LeXZWQnFXZkZKeitBR05JTFRRQkFnQUEifQ== -->
+<div data-pagedtable="false">
+<script data-pagedtable-source type="application/json">
+{"columns":[{"label":["prop.av.mass"],"name":[1],"type":["dbl"],"align":["right"]}],"data":[{"1":"0.6095253"}],"options":{"columns":{"min":{},"max":[10],"total":[1]},"rows":{"min":[10],"max":[10],"total":[1]},"pages":{}}}
+  </script>
+</div>
+<!-- rnb-frame-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiWzFdIDAuMTM0ODgyMlxuIn0= -->
+<pre><code>[1] 0.1348822</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>I don’t even need to do any statistical tests to see these numbers are radically different. Like, horribly different. Like… I don’t even know what to do with these.</p>

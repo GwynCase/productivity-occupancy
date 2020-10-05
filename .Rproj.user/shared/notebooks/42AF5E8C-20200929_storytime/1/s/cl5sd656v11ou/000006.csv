@@ -1,0 +1,3 @@
+"0","bind_rows(productivity.by.diet.diversity, productivity.by.proportion.mammal,"
+"0","          productivity.by.proportion.squirrel) %>% "
+"0","  kable() %>% kable_styling()"

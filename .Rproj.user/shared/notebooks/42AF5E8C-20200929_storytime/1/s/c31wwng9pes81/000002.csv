@@ -1,0 +1,5 @@
+"0","occupancy.landscape.metrics %>% "
+"0","  right_join(camera.sites.2019, by=c('site', 'name')) %>% "
+"0","  filter(size == 'home range') %>% "
+"0","  select(cover.contagion, cover.diversity, cover.evenness, canopy.high) %>% "
+"0","  ggcorr(nbreaks=5, hjust=0.75, layout.exp=1)"

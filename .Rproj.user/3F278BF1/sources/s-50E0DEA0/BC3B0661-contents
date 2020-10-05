@@ -1,0 +1,18 @@
+diet.items %>% filter(genus == 'Larus')
+
+# Create a function to calculate n.
+give.n <- function(x){
+  return(c(y = mean(x), label = length(x)))
+}
+
+ggplot(diamonds, aes(cut, price)) + 
+  geom_boxplot() + 
+  stat_summary(fun.data = give.n, geom = "text")
+
+
+library(GGally)
+
+occupancy.landscape.metrics %>% 
+  filter(size == 'home range' & years.surveyed > 1) %>% 
+  select(cover.diversity, cover.richness, gap.edge.density, proportion.suitable, suitable.edge.density) %>% 
+  ggcorr(nbreaks=5, hjust=0.75, layout.exp=1)

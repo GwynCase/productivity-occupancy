@@ -1,0 +1,7 @@
+"0",""
+"0","# Also in long format."
+"0","proportion.squirrel.cameras.long <- proportion.squirrel.cameras %>% "
+"0","  pivot_longer(!nest, names_to='metric', values_to='value')"
+"0",""
+"0","# Look at the distribution."
+"0","qqnorm(proportion.squirrel.cameras.long$value)"

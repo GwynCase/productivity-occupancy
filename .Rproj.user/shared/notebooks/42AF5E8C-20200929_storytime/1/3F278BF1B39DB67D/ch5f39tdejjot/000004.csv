@@ -1,0 +1,5 @@
+"0","pellets.remains %>% group_by(site) %>% summarize(count=n()) %>%"
+"0","  ggplot(aes(x=count)) +"
+"0","  geom_histogram(binwidth=1, fill='coral3', color='white') +"
+"0","  labs(x='number of prey items', y='number of sites', title='Prey items per site identified from pellets and remains') +"
+"0","  theme_classic()"

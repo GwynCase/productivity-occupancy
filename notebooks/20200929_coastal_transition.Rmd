@@ -1,0 +1,184 @@
+---
+title: "Coastal and transition"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Here's checking whether there's any difference at all between coastal and transition diet.
+
+```{r setup, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+options(tidyverse.quiet = TRUE)
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+library(lubridate)
+library(vegan)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(corrplot)
+
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+```
+
+First bring in data on which sites are coastal and which sites are transition.
+
+```{r message=FALSE, warning=FALSE}
+# Zone data.
+centroids <- read_csv('../data/interim/zone_centroid_sites.csv')
+
+# Add to diet data.
+diet.items <- centroids %>% select(site, zone) %>% right_join(diet.items)
+```
+
+Let's break these up into some categories, roughly based on Lewis et al. 2006:
+
+* grouse
+* corvids
+* thrushes
+* other birds
+* squirrels
+* hares
+* other mammals
+
+```{r}
+# Add grouping variable.
+diet.items <- diet.items %>% mutate(group=case_when(
+  class == 'Aves' & family == 'Phasianidae' ~ 'grouse',
+  class == 'Aves' & family == 'Corvidae' ~ 'corvid',
+  class == 'Aves' & family == 'Turdidae' ~ 'thrush',
+  class == 'Aves' ~ 'bird',
+  class == 'Mammalia' & genus == 'Tamiasciurus' ~ 'squirrel',
+  class == 'Mammalia' & genus == 'Lepus' ~ 'hare',
+  class == 'Mammalia' ~ 'mammal',
+  TRUE ~ 'unknown'
+))
+```
+
+Using just the camera data, how many sites do I have for each zone, and how many items?
+
+```{r}
+# How many sites?
+diet.items %>% filter(method == 'camera') %>% 
+  distinct(site, zone) %>% group_by(zone) %>% 
+  summarize(count=n())
+
+# How many items?
+diet.items %>% filter(method == 'camera') %>% 
+  group_by(zone) %>% summarize(count=n())
+```
+
+What's the breakdown of groups?
+
+```{r}
+# Make a frequency table of groups for camera data.
+camera.freq <- diet.items %>%
+  filter(method == 'camera') %>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  column_to_rownames(var='zone')
+
+camera.freq
+```
+
+Just eyeballing them, they don't look particularly different. But I can do something formal to check.
+
+```{r}
+# Chi-square test for difference in counts by zones.
+chisq.test(camera.freq, correct=FALSE, simulate.p.value=TRUE)
+```
+
+So this actually produces a significant p value. But! It also throws an error because of the small sample size. I used the simulate p value option to help with that, but still...
+
+Also, doing it this way looses some of the detail about which groups, precisely, differ between the zones. Obviously the number of corvids is truly different, but it's hard to tell if the number of squirrels is different from this.
+
+Let's run it again for pellet data.
+
+```{r}
+# How many sites?
+diet.items %>% filter(source == 'P') %>% 
+  distinct(site, zone) %>% group_by(zone) %>% 
+  summarize(count=n())
+
+# How many items?
+diet.items %>% filter(source == 'P') %>% 
+  group_by(zone) %>% summarize(count=n())
+
+# Make a frequency table of groups for pellet data.
+pellet.freq <- diet.items %>%
+  filter(source == 'P') %>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  column_to_rownames(var='zone')
+
+pellet.freq
+```
+
+Oh dear, that's a small number of categories.
+
+```{r}
+# Chi-square test for difference in counts by zones.
+chisq.test(pellet.freq, correct=FALSE, simulate.p.value=TRUE)
+```
+
+So that one's not significant, which makes sense when just looking at it. Here's the problem: I'm wary about using the remains data because it's so heavily skewed... but the pellet data, though less skewed, is really showing it's skewiness here. *Lepus* will never show up in pellets, so if hare is one of the ways cs and tz differ, then the pellet method will never show any difference between zones. So I can give it a shot with the combined pellets and remains, just for the hell of it.
+
+```{r}
+# Make a frequency table of groups for pellet + remains data.
+combined.freq <- diet.items %>%
+  drop_na(zone) %>% 
+  filter(method == 'remains')%>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  column_to_rownames(var='zone')
+
+combined.freq
+
+# Chi-square test for difference in counts by zones.
+chisq.test(combined.freq, correct=FALSE, simulate.p.value=TRUE)
+```
+
+Well, still on the fence about the remains vs pellets-only thing...
+
+Breaking down the difference seen in the camera data more:
+
+```{r}
+# Store the camera chi-square results.
+chi.camera <- chisq.test(camera.freq, correct=FALSE, simulate.p.value=TRUE)
+
+# Look at the residuals.
+corrplot(chi.camera$residuals, is.cor=FALSE)
+```
+
+If I'm interpreting the residuals correctly, the transition zone has less thrushes and corvids, but more other mammals, which the coastal zones has more thrushes and corvids but less other mammals. There's not a big difference between squirrels, grouse, and hare, which are the groups expected to be really important for breeding success. There's also not a big difference in other birds, but that's a group expected to be pretty unimportant to breeding success.
+
+Maybe actually a super cool result (finally!) because this is somewhat similar to what I was expecting to see, with coastal sites being more bird-heavy and transition sites more mammal-heavy.
+
+I can also calculate the contribution of each prey category...
+
+```{r}
+contrib.camera <- 100*chi.camera$residuals^2/chi.camera$statistic
+
+corrplot(contrib.camera, is.cor = FALSE)
+```
+
+
+
+
+

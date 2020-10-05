@@ -1,0 +1,16 @@
+"0","# Bind it all together.
+diet.diversity.statistics <- bind_rows(diet.diversity.by.bec.diversity, 
+          diet.diversity.by.proportion.cover.mature,
+          diet.diversity.by.cover.edge.density,
+          diet.diversity.by.cover.contagion,
+          diet.diversity.by.cover.diversity,
+          diet.diversity.by.cover.evenness,
+          diet.diversity.by.cover.richness,
+          diet.diversity.by.gap.edge.density,
+          diet.diversity.by.canopy.cover
+          diet.diversity.by.hsi.edge.density,
+"
+"2","Error: unexpected symbol in:
+""          diet.diversity.by.canopy.cover
+          diet.diversity.by.hsi.edge.density""
+"

@@ -1,0 +1,7 @@
+"0","occupied.by.diet.diversity <- glm(proportion.occupied ~ diet.diversity, "
+"0","                                  data=camera.diet.variables, family=binomial, weights=years.surveyed)"
+"0",""
+"0","occupied.by.proportion.squirrel <- glm(proportion.occupied ~ prop.sq.mass, "
+"0","                                       data=camera.diet.variables, family=binomial, weights=years.surveyed)"
+"0",""
+"0","occupied.by.diet.diversity %>% tidy()"

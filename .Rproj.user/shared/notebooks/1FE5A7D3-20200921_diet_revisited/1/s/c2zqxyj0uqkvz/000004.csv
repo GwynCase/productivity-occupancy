@@ -1,0 +1,7 @@
+"0",""
+"0","# Also in long format."
+"0","proportion.avian.cameras.long <- proportion.avian.cameras %>% "
+"0","  pivot_longer(!nest, names_to='metric', values_to='value')"
+"0",""
+"0","# Look at the distribution."
+"0","qqnorm(proportion.avian.cameras.long$value)"

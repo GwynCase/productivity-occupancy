@@ -1,0 +1,4 @@
+"0","# How many sites?"
+"0","diet.items %>% filter(method == 'camera') %>% "
+"0","  distinct(site, zone) %>% group_by(zone) %>% "
+"0","  summarize(count=n())"

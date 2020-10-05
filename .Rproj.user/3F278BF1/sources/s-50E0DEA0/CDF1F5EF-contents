@@ -1,0 +1,995 @@
+---
+output: html_document
+---
+
+# nogo diet: a menu of variables {.tabset}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+## Introduction
+
+Effective wildlife conservation requires an understanding of diet and its consequences for population demographics. Generalist predators are less sensitive to fluctuations in prey abundance than specialists, as their broad diet reduces the likelihood that prey species will fluctuate synchronously. Their ability to switch between alternate prey species when one becomes rare increases population stability and decreases the risk of population decline. Despite this flexibility, a single key prey species or limited suite of species may still have a major influence on productivity, site occupancy, and other demographic drivers.
+
+The northern goshawk (*Accipiter gentilis*) is a forest-dwelling raptor with a wide distribution and generalist diet. However, the number and identity of key prey species varies across its range, with consequences for demographic parameters. In the Yukon, goshawks dependend on snowshoe hare (*Lepus americanus*) and show strong variation in productivity, mortality, and space use in response to cyclical changes in hare abundance (Doyle and Smith 1994). Goshawks in Scandinavia likewise rely heavily on a single narrow prey group, grouse (subfamily Tetraoninae), and show changes in productivity and occupancy based on grouse abundance (Tornberg et al. 2005). In contrast, goshawks in the American Southwest have a wide prey base, regularly taking some fourteen different species. Population fluctuations are small and driven by total prey abundance, though the most influential single species is red squirrel (*Tamiasciurus hudsonicus*) (Salafsky et al. 2007). For such an adaptable predator, the identity and influence of key prey species on population demographics may be specific to each population.
+
+Like many raptors, goshawks in both Europe and North America appear to be limited primarily by nest site availability and food availability (Reynolds, Wiens, and Salafsky 2006; Rutz et al. 2006). For this reason, longstanding guidelines in the American Southwest suggest managing forests for both goshawks and goshawk prey (Reynolds et al. 1992). Under this plan, the majority of managed forest is recommended to remain in the older age classes preferred by goshawks for nesting and foraging. However, a portion should be managed as a mosaic of differently-aged stands and small gaps for the benefit of goshawk prey species. This approach remains controversial (Greenwald et al. 2005), but by manipulating the amount and character of forest habitat managers seek to affect occupancy and productivity, two key drivers of breeding density.
+
+In British Columbia, the coastal population of northern goshawks is the object of federal and provincial management that focuses on the protection of nesting habitat. This strategy is due, in part, to a lack of knowledge regarding goshawk foraging behavior and foraging habitat requirements. Goshawks in this region are known to consume a diverse range of birds and small mammals, but their diet has never been quantified. There is also little known about variation in diet in response to landscape characteristics. The consequences of such habitat-driven variation in diet may have significant–-or negligible-–effects on goshawk productivity and site occupancy. Here we describe goshawk diet at the nest during the breeding season. We evaluate whether landscape characteristics are correlated with variation in breeding season diet across this ecologically diverse region. Finally, we explore whether occupancy and reproductive success vary with diet and landscape characteristics. Addressing these fundamental knowledge gaps will assist in improving existing forest management strategies.
+
+## Setup
+
+Before I get too deep in the weeds of the analysis for the first part of my thesis, I thought I'd see **if anyone has any suggestions regarding the variables I will be using**, like how I've divided up my landcover classes or which landscape configuration metrics I chose. The following is a quick and largely pictorial guide to the variables I will be using **to answer the following research questions:**
+
+1. What do goshawks eat and how does it vary?
+2. What, if any, are the consequences of dietary variation on reproductive succes?
+3. Which, if any, landscape characteristics explain dietary variation?
+4. Do these same variables explain variation in site occupancy?
+
+
+```{r load-libraries}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(vegan)
+library(AICcmodavg)
+library(lubridate)
+library(vegan)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(ggplot2)
+library(rnaturalearth)
+library(rgeos)
+library(GGally)
+library(ggridges)
+library(stringr)
+```
+
+### Sample size
+
+```{r load-sites}
+# Load in camera sites from 2019 and 2020.
+camera.sites.2019 <- read_csv('../data/raw/camera_nests_2019.csv')
+camera.sites.2020 <- read_csv('../data/raw/camera_nests_2020.csv')
+
+# Join together to get total camera site set.
+camera.sites <- bind_rows(camera.sites.2019, camera.sites.2020) %>% mutate(method='camera + remains')
+
+# Temporarily, use just 2019 data.
+# camera.sites <- camera.sites.2019 %>% mutate(method='camera')
+
+# Load in remains sites from 2019 and 2020.
+remains.sites.2019 <- read_csv('../data/interim/remains_sites_2019.csv')
+# remains.sites.2020 <- read_csv('../data/raw/remains_sites_2020.csv')
+
+# Join them together to get total remains site set.
+# remains.sites <- bind_rows(remains.sites.2019, remains.sites.2020) %>% mutate(method='rem')
+
+# Temporarily, use just 2019 data.
+remains.sites <- remains.sites.2019 %>% mutate(method='remains only')
+
+# Join them together for the full site set.
+sites <- bind_rows(camera.sites, remains.sites) %>%
+  arrange(year, site, desc(method == 'camera + remains')) %>% 
+  distinct(nest, .keep_all=TRUE)
+
+# Make site table a spatial object and make it UTMs.
+sites.sf <-sites %>% st_as_sf(coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# For now, also make a spatial object of camera sites only.
+cameras.sf <-camera.sites.2019 %>% st_as_sf(coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+```
+
+Different numbers of sites are available for different analysis; for example, there are many more sites with occupancy data than with diet data. Generally, "site" refers to a NOGO territory which may contain multiple nests used in multiple years, and "nest" refers to a single nest used in a single year. Here are the **nests with diet data:**
+
+```{r site-table}
+# How many sites in each category for each year?
+# Note that "cam" really means both cameras and remains, since all camera sites have remains but not all remains sites have cameras.
+sites %>% group_by(year, method) %>% 
+  summarize(`number of sites`=n()) %>% kable() %>% 
+  kable_styling()
+```
+
+(Note that the remains-only site numbers are incomplete because I haven't finished processing all the material from 2019 and 2020 yet. Also, although technically incorrect, I use "remains only" to really mean remains and pellets, but no cameras.)
+
+```{r site-map, eval=FALSE}
+# Get base data for map.
+world <- ne_countries(scale='medium', returnclass='sf')
+
+# Get xlims from nest locations.
+xlim <- sites %>% summarize(xmin=min(lon), xmax=max(lon)) %>% 
+  mutate(xmin=xmin + xmin*.005, xmax=xmax - xmax*.005) %>% 
+  as.numeric()
+
+# Get ylims from nest locations.
+ylim <- sites %>% summarize(ymin=min(lat), ymax=max(lat)) %>% 
+  mutate(ymin=ymin - ymin*.005, ymax=ymax + ymax*.005) %>% 
+  as.numeric()
+
+# Make a map.
+ggplot(data=world) +
+  geom_sf() +
+  coord_sf(xlim=xlim, ylim=ylim) +
+  geom_jitter(data=sites, aes(x=lon, y=lat, color=method, shape=factor(year))) +
+  scale_color_brewer(palette='Set2') +
+  theme_classic()
+```
+
+### Scale
+
+```{r define-scale}
+# Start with numbers from the literature on Vancouver Island.
+# Area is in hectares.
+landscape <- data.frame(
+  size=c('PFA', 'breeding area', 'breeding home range'),
+  area=c(60, 175, 3800)
+)
+
+# Convert area in hectares to radii in meters.
+landscape <- landscape %>% mutate(radius=sqrt(area*10000/pi))
+```
+
+```{r maximum-range}
+# As an additional, larger size, use the maximum distance birds are observed to travel, using telemetry data.
+
+# Load in the telemetry data.
+telemetry <- read_csv('../data/processed/telemetry_2018-2019.csv') %>%  drop_na('lat')
+
+# Convert telemetry data to a spatial object.
+telemetry <- st_as_sf(telemetry, coords=c('lon', 'lat')) %>%
+  st_set_crs('+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs') %>%
+  st_transform("+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs")
+
+# Define the dates of the breeding season.
+# Incubation starts about April 15 and fledglings leave the nest area around September 1.
+# These dates come from Vancouver Island again.
+breeding.2018 <- interval(ymd(20180415), ymd(20180901))
+breeding.2019 <- interval(ymd(20190415), ymd(20190901))
+
+# Which birds are males?
+# Since males do the foraging, it makes sense to define maximum foraging area by male, not female, movement.
+tagged.males <- c('HAR07', 'HAR09', 'HAR04', 'HAR05')
+
+# Filter telemetry locations to those from males during the breeding season.
+telemetry <- telemetry %>% filter(datetime %within% breeding.2018 | breeding.2019) %>% 
+  filter(id %in% tagged.males) %>% 
+  mutate(nest=paste(site, year(datetime), sep=''))
+
+# Break the geometry column into separate x and y coordinates.
+telemetry <- st_coordinates(telemetry) %>% data.frame() %>% 
+  bind_cols(telemetry)
+
+# Load the locations of the telemetry nests.
+telemetry.sites <- read_csv('../data/raw/telemetry_sites.csv') %>% 
+  select(nest, x_coord, y_coord)
+
+# Join the data sets together and do some math.
+telemetry <- left_join(telemetry, telemetry.sites, by='nest') %>% 
+  mutate(distance=sqrt((x_coord-X)^2 + (y_coord-Y)^2)) %>% 
+  group_by(nest) %>% 
+  arrange(desc(distance)) %>% slice(1) 
+
+# Add the mean distance to the landscapes data frame.
+landscape <- data.frame(size='maximum range', area=NA, radius=mean(telemetry$distance)) %>% 
+  bind_rows(landscape) %>% 
+  arrange(radius)
+
+# Calculate area of maximum range.
+landscape[4,2] <- (pi*landscape[4,3]^2)*0.0001
+```
+
+I'll be calculating landscape metrics at **four nested scales** around each site centroid. The smaller three come from Erica McClaren's work on Vancouver Island. The largest scale is calculated from the mean maximum distance traveled from the nest by tagged males during the breeding season.
+
+```{r landscape-table}
+landscape %>% kable(col.names=c('size', 'area (ha)', 'radius (m)')) %>% kable_styling()
+```
+
+## Response variables 
+
+### Diet variables
+
+```{r diet-items}
+# Load in diet data from cameras.
+source('../src/prey_attributes_revised.R')
+
+# Take only items identified to genus and twist to a wide format.
+diet.wide <- diet.items %>% filter(genus != 'Unknown') %>% 
+  group_by(nest, genus, species) %>% 
+  mutate(count=n()) %>% 
+  dplyr::select(nest, genus, species, count) %>% 
+  unite(name, 2:3, sep=' ') %>% 
+  distinct() %>% 
+  pivot_wider(names_from=name, values_from=count,
+                         values_fill=list(count = 0)) %>% 
+  drop_na()
+```
+
+```{r diet-variables, message=FALSE}
+# Calculate diet diversity.
+diet.diversity <- plyr::ddply(diet.wide, ~nest, function(x) {
+           data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+   })
+
+# Calculate diet richness
+# Can't seem to calculate this right now, given my sample size.
+# Can do n spp just for something to do.
+diet.richness <- diet.items %>% filter(genus != 'Unknown') %>% 
+  select(nest, binomial) %>% 
+  distinct() %>% 
+  group_by(nest) %>% 
+  summarize(n=n())
+
+# Calculate diet evenness
+diet.evenness <- plyr::ddply(diet.wide, ~nest, function(x) {
+  data.frame(diet.evenness=diversity(x[-1], index='simpson')/log(sum(x[-1]>0)))
+})
+
+# Proportion of diet made up of squirrel, by biomass.
+proportion.squirrel <-diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), proportion.squirrel=amount.sq/total) %>% 
+  select(nest, proportion.squirrel) %>% distinct()
+
+# Proportion of diet made up of mammal, by biomass.
+proportion.mammal <-diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.mm=sum(mass), proportion.mammal=amount.mm/total) %>% 
+  select(nest, proportion.mammal) %>% distinct()
+
+# Proportion of diet made up of bird, by biomass.
+proportion.bird <-diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Aves') %>% 
+  mutate(amount.av=sum(mass), proportion.bird=amount.av/total) %>% 
+  select(nest, proportion.bird) %>% distinct()
+
+# Proportion of diet made up of grouse, by biomass.
+proportion.grouse <-diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(family == 'Phasianidae') %>% 
+  mutate(amount.av=sum(mass), proportion.grouse=amount.av/total) %>% 
+  select(nest, proportion.grouse) %>% distinct()
+
+# Join together.
+diet.variables <- full_join(diet.diversity, proportion.squirrel) %>% 
+  full_join(proportion.mammal) %>% 
+  full_join(proportion.bird) %>% 
+  full_join(proportion.grouse) %>% 
+  #full_join(diet.richness) %>% 
+  full_join(diet.evenness)
+```
+
+These are **six possible diet-related metrics** that *might* be included as response (to landscape) or predictor (to productivity & occupancy) variables. Some could easily be tweaked--for example, instead of proportion grouse, I could use proportion of some other major bird group, such as proportion thrushes.
+
+Some notes:
+
+* Proportions are calculated out of total biomass.
+* Diversity and evenness are calculated from items identified to genus and/or species.
+
+Currently I am planning to use only **diet diversity** and **proportion squirrel** in my analysis.
+
+```{r diet-graph, message=FALSE, warning=FALSE}
+diet.variables %>% pivot_longer(-nest, names_to='variable', values_to='value') %>% 
+  ggplot(aes(x=value, y=variable, fill=variable)) + 
+  geom_density_ridges() +
+  theme_ridges() +
+  xlim(0, 1) +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic()
+```
+
+It's obviously not necessary to include them all, since some are highly correlated with one another:
+
+```{r diet-correlation}
+diet.variables %>% 
+  select(-nest) %>% 
+  ggcorr(nbreaks=5, hjust=0.75, layout.exp=1, label=TRUE)
+```
+
+As you can see, some of these variables look dramatically different when calculated using data from different methods. Lewis et al (2004) and Garcia-Salgado et al (2015) both found that pooling pellets and remains yielded similar results to camera data, so this wrinkle may iron out with more data (note the small and very different sample sizes in this graph). Just something to keep an eye on....
+
+```{r compare-methods, message=FALSE, warning=FALSE}
+# Create a function to calculate n.
+give.n <- function(x){
+  return(c(y = mean(x), label = length(x)))
+}
+
+# Calculate diet diversity separately for camera and remains methods.
+camera.only.diversity <- diet.items %>% filter(genus != 'Unknown') %>% 
+  group_by(nest, binomial, method) %>% 
+  mutate(count=n()) %>% 
+  dplyr::select(nest, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count,
+              values_fill=list(count = 0)) %>% 
+  drop_na() %>% 
+  filter(method == 'camera') %>% ungroup() %>% 
+  select(-method) %>% 
+  plyr::ddply(., ~nest, function(x) {
+    data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+  }) %>% 
+  mutate(method='camera')
+
+remains.only.diversity <- diet.items %>% filter(genus != 'Unknown') %>% 
+  group_by(nest, binomial, method) %>% 
+  mutate(count=n()) %>% 
+  dplyr::select(nest, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count,
+              values_fill=list(count = 0)) %>% 
+  drop_na() %>% 
+  filter(method == 'remains') %>% ungroup() %>% 
+  select(-method) %>% 
+  plyr::ddply(., ~nest, function(x) {
+    data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+  }) %>% 
+  mutate(method='remains')
+
+# Calculate proportion squirrel separately for camera and remains methods.
+method.split.proportion <- diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  group_by(method, nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), proportion.squirrel=amount.sq/total) %>% 
+  select(nest, method, proportion.squirrel) %>% distinct()
+
+```
+
+```{r comparison-graph, warning=FALSE, message=FALSE}
+# Join together and graph.
+full_join(remains.only.diversity, camera.only.diversity, by=c('nest', 'diet.diversity', 'method')) %>% 
+  full_join(method.split.proportion, by=c('nest', 'method')) %>% 
+  pivot_longer(-c(method, nest), names_to='variable', values_to='value') %>% 
+  ggplot(aes(x=method, y=value, fill=variable)) + 
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  facet_wrap(~variable) +
+  stat_summary(fun.data = give.n, geom = "text")
+```
+
+P.S.: if you're interested in seeing a breakdown of diet data (so far for just the 2019 cameras), you might like [this graph](https://gwyncase.github.io/sunburst.html).
+
+### Productivity
+
+Currently productivity information is only available for the 6 camera sites from 2019. Productivity will (hopefully) be available for the 2020 camera sites as well, making a total of 14 nests with productivity data.
+
+Productivity is simply the number of chicks that successfully fledge and will be used as a response variable to diet and landscape.
+
+```{r productivity}
+# Number of fledglings.
+
+n.fledglings <- camera.sites %>% 
+  select(nest, n_fledge) %>% rename(n.fledglings=n_fledge)
+
+n.fledglings %>% drop_na() %>% 
+  ggplot(aes(x=n.fledglings)) +
+  geom_histogram(binwidth=1, color='white', fill='lightblue') +
+  theme_classic() +
+  labs(x='n chicks fledged', y='n nests')
+```
+
+### Occupancy
+
+I'm not trying to confirm true absence because that's notoriously difficult, even for a species much easier to find than goshawks. These numbers are based on South Coast survey data and shows sites with at least one known nest. Years where the site was surveyed a goshawk was detected are considered "occupied" and years where the site was surveyed but no goshawks were detected are considered "unoccupied."
+
+Occupancy will be used as a response variable to diet and landscape.
+
+```{r occupancy, message=FALSE}
+# Number of years occupied/number of years surveyed.
+
+years.occupied <- read_csv('../data/processed/occupancy_sc.csv')
+
+years.occupied <- years.occupied %>% pivot_longer(-c(site, name), names_to='year', values_to='status') %>% 
+  filter(status > 0) %>% 
+  group_by(site, status) %>% 
+  add_tally() %>% 
+  distinct(site, status, .keep_all=TRUE) %>% 
+  select(-year) %>% 
+  pivot_wider(names_from=status, values_from=n, values_fill=0) %>% 
+  ungroup() %>% rowwise(site, name) %>% 
+  mutate(years.surveyed=sum(c(`3`, `2`, `1`)),
+         years.occupied=sum(c(`3`, `2`)),
+         proportion.occupied=years.occupied/years.surveyed) %>% 
+  select(site, name, years.surveyed, years.occupied, proportion.occupied) %>% 
+  arrange(desc(years.surveyed, years.occupied))
+
+years.occupied$index <- 1:nrow(years.occupied)
+```
+
+```{r occupancy-graph}
+years.occupied %>% 
+  mutate(years.empty=years.surveyed-years.occupied) %>% 
+  pivot_longer(-c(site, name, index), names_to='metric', values_to='value') %>% 
+  filter(metric %in% c('years.occupied', 'years.empty')) %>% 
+  ggplot(aes(x=index, y=value, fill=metric)) +
+  geom_bar(stat='identity', position='stack', color='white') +
+  theme_classic() +
+  coord_flip() +
+  labs(x='site', y='number of years surveyed') +
+  scale_fill_brewer(palette='Set2')
+```
+
+## Predictor variables
+
+There are obviously a lot of different ways to describe a landscape. I'll be using several layers of data:
+
+* **zone** (transition/coastal)
+* **forest type** (BEC subzone/variant)
+* **landcover** (forest age & composition)
+* **habitat suitability** (foraging HSI score)
+
+I'll also be using several landscape metrics to quantify each of these. Here's a list of the metrics I plan to use:
+
+  * Edge density (total for landscape and also select classes)
+* Proportion of landscape in select classes
+* Contagion (a measure of intermixing)
+* Simpson's diversity index
+* patch richness density (richness of patch types, controlling for plot size)
+* Simpson's evenness index
+  
+Not all metrics will be calculated for all data. For example, it makes sense to calculate edge density for the foraging HSI but not for forest type.
+
+**The metrics will be calculated at each of the four scales** (PFA, breeding area, home range, maximum range).
+
+There are many, many other possible metrics. It's obviously not necessary to include them all, since some are highly correlated with one another at the PFA level...
+
+```{r metrics-table, eval=FALSE}
+options(knitr.kable.NA = '')
+
+metric.table <- read_csv('../data/processed/landscape_metrics.csv') %>% 
+  select(-Type)
+
+kable(metric.table) %>% 
+  kable_styling() %>% 
+  add_header_above(c(' '=1, 'Variable'=3)) %>% 
+  pack_rows('Core area', 1, 3) %>% 
+  pack_rows('Area and edge', 4, 9) %>% 
+  pack_rows('Aggregation', 10, 17) %>% 
+  pack_rows('Diversity', 18, 20)
+```
+
+```{r bec-variables, eval=FALSE}
+# Import raster data for BEC zones.
+r.bec <- raster('../data/external/bec_raster_full.tif')
+
+# Get BEC levels.
+bec.levels <- levels(r.bec) %>% data.frame()
+
+# Assign CRS.
+crs(r.bec) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
+# Make a vector of the nest names.
+nests <- sites.sf$nest
+
+# Make a list of metrics to calculate.
+bec.metrics <- c('lsm_c_ca', 'lsm_l_contag', 'lsm_l_iji', 'lsm_l_prd', 'lsm_l_sidi', 'lsm_l_siei')
+
+# Make a function to do the calculations and formatting.
+calc.bec.metrics <- function(x) {
+  sample_lsm(r.bec, y=sites.sf, size=x, plot_id=nests, shape='circle', what=bec.metrics) %>% 
+    left_join(bec.levels, by=c('class'='ID')) %>% 
+    group_by(plot_id, metric) %>% 
+    top_n(1, value) %>% ungroup() %>%  
+    fill(category) %>% 
+    filter(level == 'landscape') %>% 
+    pivot_wider(names_from=metric, values_from=value) %>% 
+    mutate(radius=x)
+}
+
+# Run the function for each sample size.
+bec.landscape.metrics <- map_df(landscape$radius, calc.bec.metrics)
+
+# Tidy things up.
+bec.landscape.metrics <- bec.landscape.metrics %>% 
+  select(nest=plot_id, dominant.bec=category, 
+         bec.contagion=contag, bec.interspersion=iji,
+         bec.richness=prd, bec.diversity=sidi, bec.evenness=siei, 
+         radius)
+
+bec.landscape.metrics <- select(landscape, radius, size) %>% right_join(bec.landscape.metrics, by='radius')
+
+save(bec.landscape.metrics, file='../data/interim/bec_landscape_metrics.rda')
+```
+
+```{r load-metrics}
+load(file='../data/interim/bec_landscape_metrics.rda')
+load(file='../data/interim/landcover_landscape_metrics.rda')
+load(file='../data/interim/hsi_landscape_metrics.rda')
+```
+
+```{r data}
+# Finally, join everything together.
+data <- sites %>% select(site, nest, year, lat, lon) %>% 
+  right_join(bec.landscape.metrics, by='nest') %>% 
+  left_join(landcover.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  left_join(hsi.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  left_join(diet.diversity, by='nest') %>% 
+  left_join(proportion.squirrel, by='nest') %>% 
+  left_join(n.fledglings, by='nest') %>% 
+  right_join(landscape, by=c('radius', 'size'))
+```
+
+```{r correlation-pfa}
+data %>% filter(size == 'PFA') %>% 
+  select(-site, -nest, -year, -radius, -size, -mature, -old, -rock, -young, -shrub, -regen, -deciduous,
+         -freshwater, -undefined, -ocean, -hsi.freshwater, -hsi.ocean, -hsi.river,
+         -diet.diversity, -proportion.squirrel, -n.fledglings, -nil, -moderate, -high, -low, -area) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+<!-- At the breeding area level...-->
+
+```{r correlation-breeding-area, eval=FALSE}
+data %>% filter(size == 'breeding area') %>% 
+  select(-site, -nest, -year, -radius, -size, -mature, -old, -rock, -young, -shrub, -regen, -deciduous,
+         -freshwater, -undefined, -ocean, -hsi.freshwater, -hsi.ocean, -hsi.river,
+         -diet.diversity, -proportion.squirrel, -n.fledglings, -nil, -moderate, -high, -low, -area) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+
+<!-- At the breeding home range level... -->
+
+```{r correlation-home-range, eval=FALSE}
+data %>% filter(size == 'breeding home range') %>% 
+  select(-site, -nest, -year, -radius, -size, -mature, -old, -rock, -young, -shrub, -regen, -deciduous,
+         -freshwater, -undefined, -ocean, -hsi.freshwater, -hsi.ocean, -hsi.river,
+         -diet.diversity, -proportion.squirrel, -n.fledglings, -nil, -moderate, -high, -low, -area) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+
+...and at the maximum range level...
+
+```{r correlation-max-range}
+data %>% filter(size == 'maximum range') %>% 
+  select(-site, -nest, -year, -radius, -size, -mature, -old, -rock, -young, -shrub, -regen, -deciduous,
+         -freshwater, -undefined, -ocean, -hsi.freshwater, -hsi.ocean, -hsi.river,
+         -diet.diversity, -proportion.squirrel, -n.fledglings, -nil, -moderate, -high, -low, -area) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+Here's what all these things are:
+
+  * **bec-** are forest type metrics
+* **cover-** are landcover metrics
+* **hsi-** are habitat suitability metrics
+* **amount suitable** is the *proportion* of suitable habitat under th HSI, and **amount mature** is the *proportion* of older mature and old forest
+  
+and also:
+  
+  * **-contagion** is contagion, a measure of intermixing
+* **-interspersion** is the interspersion and juxtaposition index, also a measure of intermixing
+* **-evenness** is Simpson's evennes index
+* **-diversity** is Simpson's diversity index
+* **-richness** and **-patch.density** are patch richness density
+* **-n.neighbor** is the nearest-neighbor distance, the average distance between patches of the same type, a measure of fragmentation
+* **-size** is mean patch area, a measure of fragmentation (but does not control for plot size)
+* **-core** is mean core area, the same as above but less some defined edge
+* **-edge.density** is the total length of edges between all classes, controlling for plot size
+
+### Zone
+
+Whether birds in the transition zone forage differently, and so have different foraging habitat requirements, than birds in coastal zone, is an especially interesting question. In the event that the binomial coastal/transition classification does not prove informative, I may give some alternative variables a shot, to see if they do better at capturing "coastalness" and "interiorness" of the sites. One option is the dominant forest type of the site.
+
+```{r dominant-forest-type, message=FALSE}
+# Dominant forest type of territory.
+bec.landscape.metrics %>% 
+  mutate(size=fct_reorder(size, radius)) %>% 
+  select(nest, size, radius, dominant.bec) %>% 
+  group_by(size, dominant.bec) %>% 
+  summarize(count=n()) %>% 
+  ggplot(aes(x=dominant.bec, y=count, fill=size)) +
+  geom_bar(stat='identity') +
+  facet_wrap(~size) +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  theme(legend.position='none') +
+  coord_flip()
+```
+
+Another option is latitude and longitude.
+
+```{r lat-lon, eval=FALSE}
+# Latitude & longitude of nest.
+
+sites %>% select(nest, lat, lon) %>% 
+ # pivot_longer(-nest, names_to='coord', values_to='value') %>% 
+  ggplot(aes(x=lon, y=lat)) +
+  geom_point() +
+  theme_classic()
+```
+
+### Forest type
+
+Given that species ranges often map to BEC zones, it makes sense that prey species composition will vary with forest type.
+
+```{r, forest-type-diversity}
+# Diversity of forest types within territory.
+select(bec.landscape.metrics, nest, radius, bec.diversity) %>% 
+  ggplot(aes(x=factor(radius), y=bec.diversity, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Diversity of forest types')
+```
+
+```{r, forest-type-richness, eval=FALSE}
+# Richness of forest types within territory.
+select(bec.landscape.metrics, nest, radius, bec.richness) %>% 
+  ggplot(aes(x=factor(radius), y=bec.richness, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Richness density of forest types', 
+       caption='Patch richness density controls for plot size. Alternately, absolute richness could be used.')
+```
+
+```{r, forest-type-evenness, message=FALSE, warning=FALSE}
+# Evenness of forest types within territory.
+select(bec.landscape.metrics, nest, radius, bec.evenness) %>% 
+  ggplot(aes(x=factor(radius), y=bec.evenness, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none')+
+  labs(title='Evenness of forest types')
+```
+
+```{r, forest-type-contagion, eval=FALSE}
+# Intermixing of forest types within territory.
+select(bec.landscape.metrics, nest, radius, bec.contagion) %>% 
+  ggplot(aes(x=factor(radius), y=bec.contagion, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none')
+```
+
+### Landcover
+
+Landcover is taken from the VRI and classified as follows: 
+
+* Undefined
+* Bare ground/rock
+* Ocean
+* Freshwater
+* Alpine
+* Wetland
+* Shrub & burns (ie natural openings)
+* Deciduous forest
+* Regen/clearcut forest (<20)
+* Young forest (20-70)
+* Mature forest (70-250)
+* Old forest (>250)
+
+The break between mature & old forest follows McClaren (2005).
+
+```{r landcover-variables, message=FALSE, eval=FALSE}
+# Diversity of land cover.
+
+# Bring in land cover data.
+r.landcover <- raster('../data/processed/vri_sc_all-sites.tif')
+
+# Define land cover levels.
+landcover.levels <- data.frame(ID=0:11, class.name=
+                                     c('undefined', 'rock', 'ocean', 'freshwater',
+                                       'alpine', 'wetland',
+                                       'shrub', 'deciduous', 'regen',
+                                       'young', 'mature', 'old'))
+
+# Add levels to raster.
+levels(r.landcover) <- landcover.levels
+
+# Assign CRS.
+crs(r.landcover) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
+# Make a vector of the nest names.
+nests <- sites.sf$nest
+
+# Make a list of metrics to calculate.
+landcover.metrics <- c('lsm_l_core_mn', 'lsm_l_area_mn', 'lsm_c_pland', 'lsm_l_ed',
+                       'lsm_l_enn_mn', 'lsm_l_pd', 'lsm_l_contag', 'lsm_l_iji',
+                       'lsm_l_prd', 'lsm_l_sidi', 'lsm_l_siei')
+
+# Make a function to do the calculations and formatting.
+# For now stick to camera sites only.
+calc.landcover.metrics <- function(x) {
+  sample_lsm(r.landcover, y=sites.sf, size=x, plot_id=nests, shape='circle', what=landcover.metrics) %>% 
+    left_join(landcover.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x)
+}
+
+# Run the function for each sample size.
+landcover.landscape.metrics <- map_df(landscape$radius, calc.landcover.metrics)
+
+# Do some cleanup: fill NAs with zeros and rename columns, calculate mature forest.
+landcover.landscape.metrics <- landcover.landscape.metrics %>% #replace(is.na(.), 0) %>% 
+  select(nest=plot_id, 
+         cover.core=core_mn, cover.size=area_mn, cover.edge.density=ed,
+         cover.n.neighbor=enn_mn, cover.patch.density=pd, cover.contagion=contag, cover.interspersion=iji,
+         cover.richness=prd, cover.diversity=sidi, cover.evenness=siei,
+         everything(), 
+         -layer, -id, -percentage_inside) %>% 
+  mutate(amount.cover.mature=mature + old)
+
+landcover.landscape.metrics <- select(landscape, radius, size) %>% right_join(landcover.landscape.metrics)
+
+save(landcover.landscape.metrics, file='../data/interim/landcover_landscape_metrics.rda')
+```
+
+To give you a feel for how landcover is distributed:
+
+```{r cover-comp, message=FALSE, warning=FALSE}
+landcover.landscape.metrics %>% 
+  mutate(size=fct_reorder(size, radius)) %>% 
+  filter(nest != 'TCR2019') %>% 
+  select(nest, size, undefined, rock, ocean, freshwater,
+                                       shrub, deciduous, regen,
+                                       young, mature, old) %>% 
+  pivot_longer(-c(nest, size), names_to='metric', values_to='values') %>% 
+  ggplot(aes(x=metric, y=values, fill=size)) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  facet_wrap(~size) +
+  theme(legend.position='none') +
+  coord_flip() +
+  labs(title='Proportion of landcover classes')
+```
+
+Goshawks generally forage in mature, closed-canopy forest where prey is *available.* However, they are also known to use gaps, edges, etc. where prey is *abundant.* And features like gaps and edges which goshawks don't use directly may affect foraging in adjacent forest that goshawks do use. So the landcover variables are mainly looking at whether things that are "bad" foraging habitat have an impact on what and how well goshawks eat.
+
+```{r, landcover-diversity, eval=FALSE}
+# Diversity of land cover types within territory.
+select(landcover.landscape.metrics, nest, radius, cover.diversity) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=cover.diversity, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Diversity of landcover classes')
+```
+
+```{r, landcover-edge-density, eval=FALSE}
+# Edge density of land cover.
+select(landcover.landscape.metrics, nest, radius, cover.edge.density) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=cover.edge.density, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none')+
+  labs(title='Landcover edge density', caption='Edge density controls for plot size.')
+```
+
+```{r, cover-contagion, message=FALSE, warning=FALSE}
+# Interspersion of land cover.
+select(landcover.landscape.metrics, nest, radius, cover.contagion) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=cover.contagion, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Landcover contagion', caption='Contagion measures mixing and clumping. IJI is a very similar metric that could be used instead.')
+```
+
+Some metrics will be calculated for particular landcover classes. For example, if goshawks forage at the edge of gaps, then the edge density of shrub and regen may be informative. On the other hand, if goshwks only forage in "good" habitat, then the amount of older (mature + old) forest would be more informative.
+
+```{r, proportion-mature, message=FALSE, warning=FALSE}
+# Amount of mature forest.
+select(landcover.landscape.metrics, nest, radius, amount.cover.mature) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=amount.cover.mature, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Proportion of site in older forest')
+```
+
+### Habitat suitability index
+
+The foraging HSI incorporates both BEC subzone/variant and VRI landcover class. The foraging HSI is simpler, less robust, and less tested than the nesting HSI (with very good reason, since not much is known about foraging habitat). Including it here is to test whether the model output might be good predictor of diet, occupancy, and reproductive success.
+
+```{r HSI-variables, message=FALSE, eval=FALSE}
+# Bring in HSI data.
+r.hsi <- raster('../data/processed/foraging_sc.tif')
+
+# Define levels for HSI raster.
+hsi.levels <- data.frame(ID=c(-10, -2, -1, 0, 1, 2, 3), 
+                           class.name=c('ocean', 'freshwater', 'river', 'nil', 'low', 'moderate', 'high'))
+
+# Add to raster.
+levels(r.hsi) <- hsi.levels
+
+# Assign CRS.
+crs(r.hsi) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+
+# Make a list of metrics to calculate.
+hsi.metrics <- c('lsm_l_core_mn', 'lsm_l_area_mn', 'lsm_c_pland', 'lsm_l_ed',
+                 'lsm_l_enn_mn', 'lsm_l_pd', 'lsm_l_contag', 'lsm_l_iji',
+                 'lsm_l_prd', 'lsm_l_sidi', 'lsm_l_siei')
+
+# Make a function to do the calculations and formatting.
+
+calc.hsi.metrics <- function(x) {
+  sample_lsm(r.hsi, y=sites.sf, size=x, plot_id=nests, shape='circle', 
+             what=hsi.metrics) %>% 
+    left_join(hsi.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x)
+}
+
+# Run the function for each sample size.
+hsi.landscape.metrics <- map_df(landscape$radius, calc.hsi.metrics)
+
+# Do some cleanup: fill NAs with zeros and rename columns, calculate mature forest.
+hsi.landscape.metrics <- hsi.landscape.metrics %>% #replace(is.na(.), 0) %>% 
+  select(nest=plot_id, 
+         hsi.core=core_mn, hsi.size=area_mn, hsi.edge.density=ed,
+         hsi.n.neighbor=enn_mn, hsi.patch.density=pd, hsi.contagion=contag, hsi.interspersion=iji,
+         hsi.richness=prd, hsi.diversity=sidi, hsi.evenness=siei, 
+         hsi.freshwater=freshwater, hsi.ocean=ocean, hsi.river=river, everything(), 
+         -layer, -id, -percentage_inside) %>% 
+  mutate(amount.suitable = moderate + high)
+
+hsi.landscape.metrics <- select(landscape, radius, size) %>% right_join(hsi.landscape.metrics)
+
+save(hsi.landscape.metrics, file='../data/interim/hsi_landscape_metrics.rda')
+```
+
+```{r, amount-suitable, message=FALSE, warning=FALSE}
+# Amount of high or moderate habitat under the HSI.
+select(hsi.landscape.metrics, nest, radius, amount.suitable) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=amount.suitable, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Proportion of site in suitable habitat', caption='Suitable habitat is forest scored 2 or 3 by the model.')
+```
+
+```{r, HSI-edge-density, message=FALSE, warning=FALSE}
+# Edge density of HSI.
+select(hsi.landscape.metrics, nest, radius, hsi.edge.density) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=hsi.edge.density, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Edge density between HSI classes')
+```
+
+```{r, HSI-contagion, warning=FALSE, message=FALSE}
+# Interspersion of HSI.
+select(hsi.landscape.metrics, nest, radius, hsi.contagion) %>% 
+  filter(nest != 'TCR2019') %>% 
+  ggplot(aes(x=factor(radius), y=hsi.contagion, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Contagion of HSI classes', caption='Contagion captures the mixing and clumping of classes. IJI is another very similar metric.')
+```
+
+```{r, eval=FALSE}
+data %>% select(diet.diversity, proportion.squirrel, bec.diversity, bec.richness, cover.diversity,
+                cover.edge.density, cover.interspersion, amount.cover.mature, amount.suitable,
+                hsi.edge.density, hsi.interspersion, lat, lon) %>% 
+  drop_na(cover.diversity) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=3)
+```
+
+
+
+## Models
+
+I have **a large number of variables and small number of data**, so to start with I will run a number of **univariate models** to see what pops out. However, **the final analysis will include both univariate and multivariate models** that use a subset of the potential explanatory variables.
+
+Here are the univariate models I will start with to explore the data and identify informative variables:
+
+### Diet diversity models
+
+* diet diversity ~ forest type diversity
+* diet diversity ~ forest type richness
+* diet diversity ~ zone
+* diet diversity ~ landcover diversity
+* diet diversity ~ landcover interspersion
+* diet diversity ~ landcover edge density
+* diet diversity ~ HSI edge density
+* diet diversity ~ HSI interspersion/contagion
+* diet diversity ~ year (null)
+
+Possible combinations not modeled:
+
+* ~ amount older forest
+* ~ amount suitable habitat
+
+### Squirrel biomass models
+
+* proportion squirrel ~ zone
+* proportion squirrel ~ landcover diversity
+* proportion squirrel ~ landcover edge density
+* proportion squirrel ~ landcover interspersion
+* proportion squirrel ~ proportion older forest
+* proportion squirrel ~ proportion suitable habitat
+* proportion squirrel ~ HSI edge density
+* proportion squirrel ~ HSI interspersion/contagion
+* proportion squirrel ~ year (null)
+
+Possible combinations not modeled:
+
+* ~ forest type diversity/richness
+
+### Productivity models
+
+* productivity ~ diet diversity
+* productivity ~ proportion squirrel
+* productivity ~ amount suitable habitat
+* productivity ~ zone
+* productivity ~ year (null)
+
+### Occupancy models
+
+* occupancy ~ ?
+
+*This will depend on which landscape variables prove informative at explaining variation in diet.* 
+

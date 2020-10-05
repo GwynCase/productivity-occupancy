@@ -1,0 +1,62 @@
+---
+title: "storytime"
+output: 
+  html_notebook:
+    toc: true
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+# Introduction
+
+What I did over my summer vacation.
+
+# Goshawk diet
+
+```{r setup}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+options(tidyverse.quiet = TRUE)
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+library(lubridate)
+library(vegan)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+```
+
+## Pellets 
+
+```{r}
+pellets <- diet.items %>% filter(source == 'P')
+```
+
+A total of `r nrow(pellets)` prey items were identified from egested pellets collected from `r distinct(pellets, site) %>% nrow()` sites in 2019 and 2020 (more data from the 2020 season still to come). Most sites had only 1-3 items identified from pellets, though some had 10 or more items identified.
+
+```{r}
+pellets %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill='burlywood3', color='white') +
+  labs(x='number of prey items', y='number of sites', title='Prey items per site identified from pellets') +
+  theme_classic()
+```
+
+`r round(pellets %>% filter(genus != 'Unknown') %>% nrow() / nrow(pellets), digits=2) * 100`% of items could be identified to genus or better. `r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+
+
+
+
+
+
+

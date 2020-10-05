@@ -1,0 +1,5 @@
+"0","# Bring in zone data."
+"0","centroids <- read_csv('../data/interim/zone_centroid_sites.csv')"
+"0",""
+"0","# Add to camera diet data."
+"0","camera.diet.variables <- centroids %>% select(site, zone) %>% right_join(camera.diet.variables, by=c('site'))"
