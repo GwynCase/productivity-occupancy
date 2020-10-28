@@ -3,7 +3,7 @@
     "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20200929_storytime.Rmd",
     "project_path": "notebooks/20200929_storytime.Rmd",
     "type": "r_markdown",
-    "hash": "0",
+    "hash": "3385311146",
     "contents": "",
     "dirty": false,
     "created": 1601742715980.0,
@@ -12,9 +12,9 @@
     "properties": {
         "tempName": "Untitled1",
         "chunk_output_type": "inline",
-        "cursorPosition": "14,350",
+        "cursorPosition": "260,54",
         "scrollLine": "0",
-        "last_setup_crc32": "50E0DEA032263c1c",
+        "last_setup_crc32": "",
         "ignored_words": "egested\n"
     },
     "folds": "",

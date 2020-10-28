@@ -1,0 +1,5 @@
+"0","data <- loadRDS('../data/interim/diet_landscape_data.rds')
+"
+"2","Error in loadRDS(""../data/interim/diet_landscape_data.rds"") : 
+  could not find function ""loadRDS""
+"

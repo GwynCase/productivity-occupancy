@@ -605,6 +605,7 @@ diet.diversity.statistics <- bind_rows(diet.diversity.by.bec.diversity,
 
 ```{r eval=FALSE}
 saveRDS(diet.diversity.statistics, '../data/interim/diet_diversity_stats.rds')
+saveRDS(data, '../data/interim/diet_landscape_data.rds')
 ```
 
 And let's put it in a beautiful table. Currently showing significance at the 0.10 level just so I can test how to add asterisks to significant things.
