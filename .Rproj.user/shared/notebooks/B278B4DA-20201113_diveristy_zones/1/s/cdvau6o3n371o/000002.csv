@@ -1,0 +1,32 @@
+"0","# Overlap within transition zone.
+camera.data %>% filter(binomial != 'Unidentified item') %>% 
+  filter(zone == 'tz') %>% 
+  group_by(site, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(site, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0)) %>% 
+  column_to_rownames(var='site') %>% 
+  vegdist(., method='morisita')
+"
+"1","   "
+"1","        MTF"
+"1","        TCR"
+"1","        TMC"
+"1","
+TCR"
+"1"," 0.04346302"
+"1","           "
+"1","           "
+"1","
+TMC"
+"1"," 0.13996852"
+"1"," 0.11808832"
+"1","           "
+"1","
+UTZ"
+"1"," 0.30157151"
+"1"," 0.30282280"
+"1"," 0.35179337"
+"1","
+"

@@ -1,0 +1,18 @@
+"0","# Overlap within coastal zone.
+camera.data %>% filter(binomial != 'Unidentified item') %>% 
+  filter(zone == 'cs') %>% 
+  group_by(site, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(site, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0)) %>% 
+  column_to_rownames(var='site') %>% 
+  vegdist(., method='morisita')
+"
+"1","   "
+"1","        MTC"
+"1","
+RLK"
+"1"," 0.05415021"
+"1","
+"

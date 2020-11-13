@@ -1,0 +1,10 @@
+"0","camera.data.zone %>% column_to_rownames(var='zone') %>% 
+  vegdist(., method='morisita')
+"
+"1","  "
+"1","         tz"
+"1","
+cs"
+"1"," 0.03831484"
+"1","
+"

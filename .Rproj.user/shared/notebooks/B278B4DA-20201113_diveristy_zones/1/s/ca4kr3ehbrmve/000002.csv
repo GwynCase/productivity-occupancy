@@ -1,0 +1,3 @@
+"0","# How many different species identified from the transition zone?"
+"0","camera.data %>% filter(binomial != 'Unidentified item' & zone == 'tz') %>% "
+"0","  distinct(binomial, common) %>% summarize(n())"
