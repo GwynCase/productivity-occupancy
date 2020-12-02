@@ -1,0 +1,8 @@
+"0","# Load the data."
+"0","data <- readRDS('../data/interim/occupancy_landscape_metrics.rds')"
+"0",""
+"0","# Filter out the problematic Stewart Island site."
+"0","data <- data %>% filter(site != 'SIS')"
+"0",""
+"0","# Load all the rasters."
+"0","source('../src/load_rasters.R')"

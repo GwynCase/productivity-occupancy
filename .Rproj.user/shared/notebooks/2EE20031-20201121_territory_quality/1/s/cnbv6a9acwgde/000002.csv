@@ -1,0 +1,14 @@
+"0","```r
+# Import conflict settings.
+source('../src/conflicted.R')
+
+#Load some libraries.
+library(tidyverse)
+library(vegan)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(broom)
+library(knitr)
+library(kableExtra)
+```"

@@ -1,6 +1,6 @@
 ---
 title: "Chapter One: Introduction 0.3"
-output: word_document
+output: html_notebook
 always_allow_html: true
 bibliography: chapter-one.bib
 ---

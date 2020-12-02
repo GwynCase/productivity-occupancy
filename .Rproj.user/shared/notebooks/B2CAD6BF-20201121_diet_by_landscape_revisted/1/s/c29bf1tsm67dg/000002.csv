@@ -1,0 +1,15 @@
+"0","# Calculate metrics for each site.
+source('../src/calc_land_metrics.R')
+"
+"2","Number of classes must be >= 2: CONTAG = NA."
+"2","Joining, by = ""radius""
+"
+"2","Joining, by = ""radius""
+"
+"2","Joining, by = ""radius""
+"
+"2","Number of classes must be >= 2: CONTAG = NA."
+"2","Joining, by = ""radius""
+"
+"2","Joining, by = c(""radius"", ""size"")
+"

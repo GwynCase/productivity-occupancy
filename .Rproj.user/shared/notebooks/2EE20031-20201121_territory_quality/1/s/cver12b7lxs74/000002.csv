@@ -1,0 +1,20 @@
+"0","# Calculate metrics for each site.
+source('../src/calc_land_metrics.R')
+"
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","Joining, by = ""radius""
+"
+"2","Joining, by = ""radius""
+"
+"2","Joining, by = ""radius""
+"
+"2","Number of classes must be >= 2: CONTAG = NA."
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","Joining, by = ""radius""
+"
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","The 'perecentage_inside' is below 90% for at least one buffer."
+"2","Joining, by = c(""radius"", ""size"")
+"

@@ -17,20 +17,26 @@ r.suitable <- raster('../data/processed/foraging_sc_suitable.tif')
 
 # Define levels for each raster.
 bec.levels <- levels(r.bec) %>% data.frame()
+
 landcover.levels <- data.frame(ID=0:11, class.name=
                                  c('undefined', 'rock', 'ocean', 'freshwater',
                                    'alpine', 'wetland',
                                    'shrub', 'deciduous', 'regen',
                                    'young', 'mature', 'old'))
+
 older.levels <- data.frame(ID=0:1, class.name=
                              c('undefined', 'older'))
+
 gap.levels <- data.frame(ID=0:1, class.name=
                            c('undefined', 'gap'))
+
 canopy.levels <- data.frame(ID=c(-1, 0, 50, 75), 
                             class.name=c('undefined', 'none', 'moderate', 'high'))
+
 hsi.levels <- data.frame(ID=c(-10, -2, -1, 0, 1, 2, 3), 
                          class.name=c('ocean', 'freshwater', 'river', 
                                       'nil', 'low', 'moderate', 'high'))
+
 suitable.levels <- data.frame(ID=c(0, 4), 
                               class.name=c('unsuitable', 'suitable'))
 

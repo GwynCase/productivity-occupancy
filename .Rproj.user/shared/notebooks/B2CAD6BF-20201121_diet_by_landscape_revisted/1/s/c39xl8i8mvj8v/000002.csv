@@ -1,0 +1,22 @@
+"0","lm(diet.diversity ~ proportion.suitable, data=data)"
+"1","
+Call:
+"
+"1",""
+"1","lm(formula = diet.diversity ~ proportion.suitable, data = data)"
+"1",""
+"1","
+
+"
+"1","Coefficients:
+"
+"1","        (Intercept)  "
+"1","proportion.suitable  "
+"1","
+"
+"1","           0.298299  "
+"1","           0.002056  "
+"1","
+"
+"1","
+"

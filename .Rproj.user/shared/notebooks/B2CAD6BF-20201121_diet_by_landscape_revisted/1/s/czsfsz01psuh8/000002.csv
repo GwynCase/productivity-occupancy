@@ -1,0 +1,3 @@
+"0","data %>% filter(size == 'maximum range') %>% "
+"0","  select(cover.contagion, cover.diversity, cover.evenness) %>% "
+"0","  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)"

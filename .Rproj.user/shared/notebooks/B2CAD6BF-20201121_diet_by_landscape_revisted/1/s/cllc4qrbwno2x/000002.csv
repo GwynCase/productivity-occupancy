@@ -1,0 +1,4 @@
+"0","data <- data %>% mutate(cover.evenness=case_when("
+"0","  cover.evenness == 'NaN' ~ NA_real_,"
+"0","  TRUE ~ cover.evenness"
+"0","))"

@@ -1,0 +1,5 @@
+"0",""
+"0","data %>% filter(size == 'home range') %>% "
+"0","  ggplot(aes(x=cover.richness, y=proportion.squirrel)) +"
+"0","  geom_point() +"
+"0","  theme_classic() "

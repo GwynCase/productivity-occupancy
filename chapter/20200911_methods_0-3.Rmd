@@ -1,6 +1,6 @@
 ---
 title: "Chapter One: Methods 0.2"
-output: word_document
+output: html_notebook
 always_allow_html: true
 bibliography: chapter-one.bib
 ---
@@ -39,17 +39,15 @@ We reconstructed prey remains and pellets following a modification of Lewis et a
 
 Prey items identified to species were assigned mass using data from the literature. We assigned mass to mammal species from Nagorsen (2002) and birds from Birds of World (2020), using the geographically closest estimates and averaging the mass of males and females. When unable to differentiate between species within a single, relatively homogeneous genus (such as *Eutamias* or *Myotis*), we assigned mass by averaging the masses of all possible species, based on range maps. Red squirrels (*Tamiasciurus hudsonicus*) were present at a single site within out study area; when unable to distinguish between the two members of the genus *Tamiasciurus* we assigned the item to the more common *T. douglasii*. Unidentified items were assigned mass by averaging the masses of the identified species in that size and class. <!-- does this need an example? --> As very few items could be successfully aged, we did not include prey age in our analysis. We report diet composition as both percent of items and percent of biomass.
 
-Data from prey remains and egested pellets are known to be heavily biased indices of diet. <!-- citation needed --> Some authors have found combining data from both sources to produce relatively unbiased results that can serve as a helpful supplement to camera data (Lewis et al. 2004). However, after testing for differences between pooled pellets-and-remains and camera data we found significant differences between these two sources. We therefore <!-- WTF did we do???? --> uhhhhhhh idk what we did.
+Data from prey remains and egested pellets are known to be heavily biased indices of diet. <!-- citation needed --> Some authors have found combining data from both sources to produce relatively unbiased results that can serve as a helpful supplement to camera data (Lewis et al. 2004). However, after testing for differences between pooled pellets-and-remains and camera data we found significant differences between these two sources. We therefore report results from pellets and pooled pellets-and-remains separately. We do not report results from prey remains alone, as these are rarely used in raptor diet studies.
 
 Nest camera photos were reviewed and each new prey item delivered to the nest was recorded and identified to species when possible. When items could not be identified to species, they were identified to the lowest possible taxonomic level. Prey items identified from photos were assigned a size class and biomass by the same method used for remains and pellets. Partial items were assigned the average mass for that size and class. 
 
-Using data from nest cameras, we quantified the diet of each nest in several ways. We calculated the relative proportion of avian and mammalian biomass delivered to the nest. We also calculated the proportion of total biomass composed of squirrels (genus *Tamiasciurus*), which are known to be an important source of prey for goshawks in the British Columbia (Ethier 1999, Lewis et al. 2006). We also calculated diet diversity for items identified to genus and species using Simpson's Diversity Index and diet overlap between nests using Morisita's Index of Similarity.
+Using data from nest cameras, we quantified the diet of each nest in several ways. We calculated the relative proportion of avian and mammalian biomass delivered to the nest. We also calculated the proportion of total biomass composed of squirrels (genus *Tamiasciurus*), which are known to be an important source of prey for goshawks in the British Columbia (Ethier 1999, Lewis et al. 2006). We also calculated diet diversity for counts of items identified to genus or better using Simpson's Diversity Index and diet overlap between nests using Morisita's Index of Similarity. 
 
-We used pooled pellets and remains to calculate prey species richness for the entire study area. And ?????
+Sites were classified as either coastal or transition based on whether the site centroid fell within the transition zone defined by the NGRT (citation). We calculated the site centroid as the central point between all known nests within that site. Proportion mammal, proportion squirrel, diet diversity, and diet overlap were also calculated for the coastal and transition zone.
 
 ### Statistical Analysis
-
-Sites were classified as either coastal or transition based on whether the site centroid fell within the transition zone defined by the NGRT (citation). We calculated the site centroid as the central point between all known nests within that site.
 
 To simplify comparison of diet between coastal and transition sites, we condensed prey items identified from nest cameras, pellets, and remains into eight broad categories: squirrel (genus *Tamiasciurus*), hare (genus *Lepus*), all other mammals, grouse (family Tetraoninae), thrush (family Turdidae), corvid (family Corvidae), all other birds, and unidentified items. We pooled all data from each source (cameras, pellets, and pellets-and-remains) within each zone and tested for differences between the zones with a chi-squared test using proportional counts of items.
 

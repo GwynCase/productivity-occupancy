@@ -1,0 +1,26 @@
+{
+    "id": "C0A2CF1E",
+    "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20201130_better_glms.Rmd",
+    "project_path": "notebooks/20201130_better_glms.Rmd",
+    "type": "r_markdown",
+    "hash": "1267070309",
+    "contents": "",
+    "dirty": false,
+    "created": 1606078876778.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "tempName": "Untitled1",
+        "chunk_output_type": "inline",
+        "cursorPosition": "38,1",
+        "scrollLine": "25"
+    },
+    "folds": "140|29|260|0|\n",
+    "lastKnownWriteTime": 1606948349,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1606948349562,
+    "read_only": false,
+    "read_only_alternatives": []
+}

@@ -1,0 +1,125 @@
+---
+title: "Univariables"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+See what I did there? Let's look at all the landscape variables used in the landscape analysis.
+
+```{r message=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+#Load some libraries.
+library(tidyverse)
+library(vegan)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(extrafont)
+```
+
+Since this is just for making pretty pictures, I'll take a shortcut and bring in some previously calculated data.
+
+```{r}
+# Load the data.
+data <- readRDS('../data/interim/occupancy_landscape_metrics.rds')
+
+# Filter out the problematic Stewart Island site.
+data <- data %>% filter(site != 'SIS')
+
+# Load all the rasters.
+source('../src/load_rasters.R')
+
+# Pull out one site as a demo.
+utz <- centroids %>% filter(site == 'UTZ') %>% select(MEAN_X, MEAN_Y)
+```
+
+Then start making a lot of graphs.
+
+## Forest type
+
+```{r}
+# Convert raster to data frame for easier plotting.
+df.bec <- raster::as.data.frame(r.bec, xy=TRUE)
+
+# Plot a demo.
+ggplot(df.bec, aes(x=x, y=y, fill=bec_raster_full_category)) +
+  geom_raster() +
+  xlim(utz$MEAN_X-7050, utz$MEAN_X+7050) +
+  ylim(utz$MEAN_Y-7050, utz$MEAN_Y+7050) +
+  labs(title='Forest types at site UTZ') +
+  theme_void()
+
+```
+
+### Diversity of forest types
+
+The diversity of BEC subzones/variants within the landscape.
+
+```{r warning=FALSE}
+# Show for all sites.
+select(bec.landscape.metrics, nest, radius, bec.diversity) %>% 
+  ggplot(aes(x=factor(radius), y=bec.diversity, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Diversity of forest types') +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+## Land cover
+
+```{r}
+# Convert raster to data frame for easier plotting.
+df.landcover <- raster::as.data.frame(r.landcover, xy=TRUE)
+
+# Plot a demo.
+ggplot(df.landcover, aes(x=x, y=y, fill=bec_raster_full_category)) +
+  geom_raster() +
+  xlim(utz$MEAN_X-7050, utz$MEAN_X+7050) +
+  ylim(utz$MEAN_Y-7050, utz$MEAN_Y+7050) +
+  labs(title='Forest types at site UTZ') +
+  theme_void()
+
+```
+
+### Diversity of forest types
+
+The diversity of BEC subzones/variants within the landscape.
+
+```{r warning=FALSE}
+# Show for all sites.
+select(bec.landscape.metrics, nest, radius, bec.diversity) %>% 
+  ggplot(aes(x=factor(radius), y=bec.diversity, fill=factor(radius))) +
+  geom_boxplot() +
+  geom_jitter() +
+  scale_fill_brewer(palette='Set2') +
+  theme_classic() +
+  scale_x_discrete(labels=c('PFA', 'Breeding area', 'Breeding home range', 'maximum range')) +
+  theme(axis.title.x=element_blank(), legend.position='none') +
+  labs(title='Diversity of forest types') +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+

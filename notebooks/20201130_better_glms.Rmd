@@ -1,0 +1,512 @@
+---
+title: "Occupancy univariates revisited"
+output: 
+  html_notebook
+always_allow_html: true
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Running the same landscape variables I used for diet and productivity, but this time for occupancy. 
+
+```{r message=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+#Load some libraries.
+library(tidyverse)
+library(vegan)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(GGally)
+library(extrafont)
+library(arm)
+```
+
+Start by defining the four nested scales. In the last version I used 32902.97 ha for the maximum area, which is completely incorrect and I have no idea where it came from. I re-did the calculation and came out with a radius of about 7047 m (mean maximum distance travelled by males during the breeding season). This works out to an area of 15602.21, which I can round to 15600 ha.
+
+```{r landscape-scales}
+# Area is in hectares.
+landscape <- data.frame(
+  size=c('PFA', 'breeding area', 'home range', 'maximum range'),
+  area=c(60, 200, 3800, 15600)
+)
+
+# Convert area in hectares to radii in meters.
+landscape <- landscape %>% mutate(radius=sqrt(area*10000/pi))
+
+landscape
+```
+
+Then load in occupancy data. Note that this is largely missing data from 2020. I also filter out all sites with a single year of survey data, since occupied sites are more likely to be detected so there is a bias towards one-year-occupieds.
+
+In this data set, 0 = no surveys conducted, 1 = surveyed but no NOGO detected, 2 = NOGO detected but no breeding, and 3 = breeding.
+
+```{r message=FALSE}
+# Read in the data.
+occupancy <- read_csv('../data/processed/occupancy_sc.csv')
+
+# Calculate number of years NOGO detected out of number of years surveyed.
+occupied <- occupancy %>% pivot_longer(-c(site, name), names_to='year', values_to='status') %>%
+  filter(status > 0) %>% 
+  group_by(site, status) %>% 
+  add_tally() %>% 
+  distinct(site, status, .keep_all=TRUE) %>% 
+  select(-year) %>% 
+  pivot_wider(names_from=status, values_from=n, values_fill=0) %>% 
+  ungroup() %>% rowwise(site, name) %>% 
+  mutate(years.surveyed=sum(c(`3`, `2`, `1`)),
+         years.occupied=sum(c(`3`, `2`)),
+         years.empty=years.surveyed-years.occupied,
+         proportion.occupied=years.occupied/years.surveyed) %>% 
+  select(site, name, years.surveyed, years.occupied, years.empty, proportion.occupied) %>% 
+  filter(years.surveyed > 1)
+
+# Look at it.
+occupied
+```
+
+To summarize:
+
+```{r}
+# How many sites have occupancy data?
+nrow(occupied)
+
+# How many years have sites been surveyed?
+mean(occupied$years.surveyed)
+range(occupied$years.surveyed)
+```
+
+Now bring in the centroids for all of these sites. The centroids are just calculated from all the known nests for a given site and provide a stable, central "capital" for the territory. Which is BS but whatever.
+
+```{r message=FALSE}
+# Bring in centroid data.
+centroids <- read_csv('../data/interim/zone_centroid_sites.csv')
+
+# Join to occupancy data. Not all sites have occupancy data, so we'll keep just the ones that do.
+occupied <- left_join(occupied, centroids, by=c('site')) %>% 
+  rename(xcoord=MEAN_X, ycoord=MEAN_Y) %>% 
+  drop_na()
+
+# Make it a spatial object for later.
+sites.sf <- occupied %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord')) %>% 
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Also make a list of site names for later.
+site.names <- occupied$site
+```
+
+Next step is to bring in the landscape rasters and calculate all the metrics.
+
+```{r eval=FALSE}
+# Load all the rasters.
+source('../src/load_rasters.R')
+
+# Calculate metrics for each site.
+source('../src/calc_land_metrics.R')
+
+# Join the data together.
+data <- full_join(occupied, bec.landscape.metrics, by=c('site' = 'nest')) %>%
+  full_join(suitable.landscape.metrics, by=c('site' = 'nest', 'radius')) %>% 
+  full_join(landcover.landscape.metrics, by=c('site' = 'nest', 'radius', 'size')) %>% 
+  full_join(hsi.landscape.metrics, by=c('site' = 'nest', 'radius', 'size')) %>% 
+  full_join(gap.landscape.metrics, by=c('site' = 'nest', 'radius', 'size')) %>% 
+  full_join(canopy.landscape.metrics, by=c('site' = 'nest', 'radius', 'size'))
+```
+
+Looks like Stewart Island (SIS) has less than 90% coverage for BEC, and for the HSI. So I'll remove it.
+
+```{r message=FALSE}
+data <- data %>% filter(site != 'SIS')
+```
+
+Now... finally make the models?
+
+Here's what one looks like, just to show the simple code:
+
+```{r}
+glm(cbind(years.occupied, years.empty) ~ proportion.suitable, data=data, 
+    family=binomial(logit), weights=years.surveyed)
+```
+
+And here's the whole slew of them:
+
+```{r eval=FALSE, echo=FALSE}
+# Proportion suitable.
+occupancy.by.bec.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ bec.diversity, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='forest type diversity')
+
+occupancy.by.proportion.cover.mature <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ proportion.cover.mature, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='proportion older forest')
+
+occupancy.by.cover.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='landcover edge density')
+
+occupancy.by.cover.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.contagion, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='landcover contagion')
+
+occupancy.by.cover.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.diversity, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='landcover diversity')
+
+occupancy.by.cover.richness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.richness, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='landcover richness')
+
+occupancy.by.cover.evenness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.evenness, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='landcover evenness')
+
+occupancy.by.gap.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ gap.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='gap edge density')
+
+occupancy.by.canopy.cover <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ canopy.high, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='high canopy cover')
+
+occupancy.by.hsi.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ hsi.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='hsi edge density')
+
+occupancy.by.hsi.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ hsi.contagion, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='hsi contagion')
+
+occupancy.by.proportion.suitable <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ proportion.suitable, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='proportion suitable')
+
+occupancy.by.suitable.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ suitable.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) %>% 
+  map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(variable='suitable habitat edge density')
+
+# Bind it all together.
+occupancy.landscape.statistics <- bind_rows(occupancy.by.bec.diversity, 
+          occupancy.by.proportion.cover.mature,
+          occupancy.by.cover.edge.density,
+          occupancy.by.cover.contagion,
+          occupancy.by.cover.diversity,
+          occupancy.by.cover.evenness,
+          occupancy.by.cover.richness,
+          occupancy.by.gap.edge.density,
+          occupancy.by.canopy.cover,
+          occupancy.by.hsi.edge.density,
+          occupancy.by.hsi.contagion,
+          occupancy.by.proportion.suitable,
+          occupancy.by.suitable.edge.density)
+```
+
+```{r}
+# Proportion suitable.
+occupancy.by.bec.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ bec.diversity, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.proportion.cover.mature <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ proportion.cover.mature, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.cover.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.cover.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.contagion, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.cover.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.diversity, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.cover.richness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.richness, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.cover.evenness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ cover.evenness, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.gap.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ gap.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.canopy.cover <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ canopy.high, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.hsi.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ hsi.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.hsi.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ hsi.contagion, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+occupancy.by.proportion.suitable <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ proportion.suitable, data=.x, 
+           family=binomial(logit), weights=years.surveyed)) 
+
+occupancy.by.suitable.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.occupied, years.empty) ~ suitable.edge.density, data=.x, 
+           family=binomial(logit), weights=years.surveyed))
+
+# Bind it all together.
+occupancy.models <- c(occupancy.by.bec.diversity, 
+          occupancy.by.proportion.cover.mature,
+          occupancy.by.cover.edge.density,
+          occupancy.by.cover.contagion,
+          occupancy.by.cover.diversity,
+          occupancy.by.cover.evenness,
+          occupancy.by.cover.richness,
+          occupancy.by.gap.edge.density,
+          occupancy.by.canopy.cover,
+          occupancy.by.hsi.edge.density,
+          occupancy.by.hsi.contagion,
+          occupancy.by.proportion.suitable,
+          occupancy.by.suitable.edge.density)
+```
+
+Stick it all in a beautiful table of p-values.
+
+```{r occupancy-landscape-table}
+occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+    p.value < 0.05 ~ paste(as.character(sig), '*'),
+    TRUE ~  paste(as.character(sig))
+  )) %>% 
+  filter(term != '(Intercept)') %>% 
+  select(size, sig, term) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(term, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+So way more significant variable now that I'm (hopefully) doing the models properly. No real pattern to how they're distributed, size-wise. No real pattern at all, honestly.
+
+To look a little closer...
+
+```{r}
+# Set some knitr options.
+options(knitr.kable.NA = '-')
+
+# Round up the significant terms at each scale.
+sig.terms <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)')
+
+# Standardize coefficients of significant terms.
+occupancy.models %>% 
+  map(lm.beta) %>% 
+  bind_rows(.id='size') %>% 
+  select(!`(weights)`) %>% 
+  pivot_longer(!size, names_to='term', values_to='coef') %>%
+  drop_na() %>% 
+  anti_join(sig.terms, by=c('size', 'term')) %>% 
+  pivot_wider(names_from=size, values_from=coef) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+This is showing the **standardized** coefficients for variables/scales that are significant, and yes, sure enough, the edge/fragmentation metrics have a negative effect, while proportion suitable has a positive effect. Interesting that the richness/diversity are only beneficial at larger scales.
+
+And how about a correlation matrix?
+
+```{r}
+# For the smallest scale, PFA.
+sig.pfa <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)') %>% 
+  filter(size == 'PFA') %>% 
+  select(term, p.value) %>% 
+  pivot_wider(names_from=term, values_from=p.value)
+
+sig.pfa <-intersect(names(data), names(sig.pfa))
+
+data %>% select(all_of(sig.pfa)) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='PFA')
+
+
+# For the breeding area.
+sig.breeding <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)') %>% 
+  filter(size == 'breeding area') %>% 
+  select(term, p.value) %>% 
+  pivot_wider(names_from=term, values_from=p.value)
+
+sig.breeding <-intersect(names(data), names(sig.breeding))
+
+data %>% select(all_of(sig.breeding)) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Breeding area')
+
+# For the home range.
+sig.hr <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)') %>% 
+  filter(size == 'home range') %>% 
+  select(term, p.value) %>% 
+  pivot_wider(names_from=term, values_from=p.value)
+
+sig.hr <-intersect(names(data), names(sig.hr))
+
+data %>% select(all_of(sig.hr)) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Home range')
+
+# For the max range.
+sig.max <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)') %>% 
+  filter(size == 'maximum range') %>% 
+  select(term, p.value) %>% 
+  pivot_wider(names_from=term, values_from=p.value)
+
+sig.max <-intersect(names(data), names(sig.max))
+
+data %>% select(all_of(sig.max)) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Maximum range')
+```
+
+Yes, unsurprisingly, many are quite correlated.
+
+To be very thorough, how about a full set of correlation matrices?
+
+```{r}
+data %>% filter(size == 'PFA') %>% 
+  select(12:26) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='PFA')
+
+data %>% filter(size == 'breeding area') %>% 
+  select(12:26) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Breeding area')
+
+data %>% filter(size == 'home range') %>% 
+  select(12:26) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Home range')
+
+data %>% filter(size == 'maximum range') %>% 
+  select(12:26) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5) +
+  labs(title='Maximum range')
+```
+
+We can plot some of them, to see if any are pretty.
+
+```{r}
+data %>% filter(size == 'home range') %>% 
+  ggplot(aes(x=cover.richness, y=proportion.occupied, weight=years.surveyed)) +
+  geom_point() +
+  geom_smooth(formula='y ~ x', method='lm', se=TRUE, col='black', fill='lightgrey') +
+  labs(title='Territory quality at home range scale') +
+  ylab('Territory quality index') +
+  xlab('Richness of landcover types') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"))
+
+data %>% filter(size == 'home range') %>% 
+  ggplot(aes(x=cover.diversity, y=proportion.occupied)) +
+  geom_point() +
+  theme_classic()  
+
+data %>% filter(size == 'home range') %>% 
+  ggplot(aes(x=cover.evenness, y=proportion.occupied)) +
+  geom_point() +
+  theme_classic()
+
+data %>% filter(size == 'home range') %>% 
+  ggplot(aes(x=bec.diversity, y=proportion.occupied)) +
+  geom_point() +
+  theme_classic()
+```
+
+But none of them are pretty :(

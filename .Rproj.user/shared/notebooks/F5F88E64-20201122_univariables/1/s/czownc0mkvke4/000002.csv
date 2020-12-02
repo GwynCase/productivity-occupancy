@@ -1,0 +1,5 @@
+"0","# Convert raster to data frame for easier plotting.
+df.landcover <- raster::as.data.frame(r.landcover, xy=TRUE)
+"
+"2","Error: cannot allocate vector of size 2.6 Gb
+"

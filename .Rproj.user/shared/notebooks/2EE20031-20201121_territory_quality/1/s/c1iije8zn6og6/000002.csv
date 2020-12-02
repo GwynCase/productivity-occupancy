@@ -1,0 +1,9 @@
+"0","data <- data %>% filter(site != 'SIS')"
+"2","`filter_()` is deprecated as of dplyr 0.7.0.
+Please use `filter()` instead.
+See vignette('programming') for more help
+[90mThis warning is displayed once every 8 hours.[39m
+[90mCall `lifecycle::last_warnings()` to see where this warning was generated.[39m"
+"2","Error in UseMethod(""filter_"") : 
+  no applicable method for 'filter_' applied to an object of class ""function""
+"
