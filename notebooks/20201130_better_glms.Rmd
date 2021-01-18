@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
 
 Running the same landscape variables I used for diet and productivity, but this time for occupancy. 
 
-```{r message=FALSE}
+```{r message=FALSE, warning=FALSE}
 # Import conflict settings.
 source('../src/conflicted.R')
 
@@ -26,7 +26,7 @@ library(knitr)
 library(kableExtra)
 library(GGally)
 library(extrafont)
-library(arm)
+library(QuantPsyc)
 ```
 
 Start by defining the four nested scales. In the last version I used 32902.97 ha for the maximum area, which is completely incorrect and I have no idea where it came from. I re-did the calculation and came out with a radius of about 7047 m (mean maximum distance travelled by males during the breeding season). This works out to an area of 15602.21, which I can round to 15600 ha.
@@ -265,67 +265,67 @@ occupancy.landscape.statistics <- bind_rows(occupancy.by.bec.diversity,
 occupancy.by.bec.diversity <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ bec.diversity, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.proportion.cover.mature <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ proportion.cover.mature, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.cover.edge.density <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ cover.edge.density, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.cover.contagion <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ cover.contagion, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.cover.diversity <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ cover.diversity, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.cover.richness <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ cover.richness, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.cover.evenness <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ cover.evenness, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.gap.edge.density <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ gap.edge.density, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.canopy.cover <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ canopy.high, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.hsi.edge.density <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ hsi.edge.density, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.hsi.contagion <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ hsi.contagion, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 occupancy.by.proportion.suitable <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ proportion.suitable, data=.x, 
-           family=binomial(logit), weights=years.surveyed)) 
+           family=binomial(logit))) 
 
 occupancy.by.suitable.edge.density <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.occupied, years.empty) ~ suitable.edge.density, data=.x, 
-           family=binomial(logit), weights=years.surveyed))
+           family=binomial(logit)))
 
 # Bind it all together.
 occupancy.models <- c(occupancy.by.bec.diversity, 
@@ -378,7 +378,6 @@ sig.terms <- occupancy.models %>% map(tidy) %>%
 occupancy.models %>% 
   map(lm.beta) %>% 
   bind_rows(.id='size') %>% 
-  select(!`(weights)`) %>% 
   pivot_longer(!size, names_to='term', values_to='coef') %>%
   drop_na() %>% 
   anti_join(sig.terms, by=c('size', 'term')) %>% 
@@ -395,7 +394,7 @@ And how about a correlation matrix?
 # For the smallest scale, PFA.
 sig.pfa <- occupancy.models %>% map(tidy) %>% 
   bind_rows(.id='size') %>% 
-  filter(p.value >= 0.05) %>% 
+  filter(p.value <= 0.05) %>% 
   filter(term != '(Intercept)') %>% 
   filter(size == 'PFA') %>% 
   select(term, p.value) %>% 
@@ -411,7 +410,7 @@ data %>% select(all_of(sig.pfa)) %>%
 # For the breeding area.
 sig.breeding <- occupancy.models %>% map(tidy) %>% 
   bind_rows(.id='size') %>% 
-  filter(p.value >= 0.05) %>% 
+  filter(p.value <= 0.05) %>% 
   filter(term != '(Intercept)') %>% 
   filter(size == 'breeding area') %>% 
   select(term, p.value) %>% 
@@ -426,7 +425,7 @@ data %>% select(all_of(sig.breeding)) %>%
 # For the home range.
 sig.hr <- occupancy.models %>% map(tidy) %>% 
   bind_rows(.id='size') %>% 
-  filter(p.value >= 0.05) %>% 
+  filter(p.value <= 0.05) %>% 
   filter(term != '(Intercept)') %>% 
   filter(size == 'home range') %>% 
   select(term, p.value) %>% 
@@ -441,7 +440,7 @@ data %>% select(all_of(sig.hr)) %>%
 # For the max range.
 sig.max <- occupancy.models %>% map(tidy) %>% 
   bind_rows(.id='size') %>% 
-  filter(p.value >= 0.05) %>% 
+  filter(p.value <= 0.05) %>% 
   filter(term != '(Intercept)') %>% 
   filter(size == 'maximum range') %>% 
   select(term, p.value) %>% 

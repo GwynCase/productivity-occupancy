@@ -1,0 +1,46 @@
+---
+title: "Chapter One: Discussion 0.1"
+output: html_notebook
+always_allow_html: true
+bibliography: chapter-one.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+During 2019-2020 we used nest cameras to assess reproductive success and breeding season diet at goshawk nests on the south coast of British Columbia. We supplemented dietary data from nest cameras with egested pellets and prey remains collected from goshawk territories. Goshawks in our study area consumed a wide variety of prey species, consistent with the species' generalist foraging strategy. Despite this high dietary richness dietary diversity was relatively low, due to the dominance of a single taxa, tree squirrels of the genus *Tamiasciurus*. We found the degree of dominance of this taxa, rather than dietary diversity, drove goshawk reproductive success, indicating a specialist-like reliance on a single resource.
+
+Goshawks are a generalist predator, though a single key species or narrow suite of species often makes up a large portion of the diet. Overall, goshawks in North America consume more mammals relative to goshawks in Europe, with a continent-wide median of x% mammal in Europe and x% mammal in North America [@rutz_population_2006]. In the Interior West and Northwest of North America, the dominant goshawk prey species is almost always a mammal, often snowshoe hare (*Lepus americanus*) or another member of the family Leporidae. <!-- Studies in the Yukon, Arizona, and Idaho have linked the abundance of a dominant mammalian prey species (snowshoe hare, red squirrel, and ground squirrel, respectively) to reproductive success and other demographic parameters. --> However, in the coastal Pacific Northwest, goshawk diet generally contains more birds than mammals and the key prey species is generally a species of grouse (subfamily Tetraoninae). <!-- No studies have linked grouse abundance to reproductive success in the Pacific Northwest, but in Finland, where goshawks similarly rely on grouse, this link has been well documented. -->In contrast to this regional pattern, goshawks on Vancouver Island, British Columbia, were found to consume primarily red squirrels (*T. hudsonicus*), with this single species making up x% of the diet. Similarly, we found tree squirrels to make up, on average, x% of goshawk diet within our study area.
+
+Several possible explanations for this trend suggest themselves. Relative to avian prey, most mammal species taken by goshawks are larger, denser, and require less handling time. This translates to more biomass and less processing per capture event, making mammals an especially high-quality prey resource. Indeed, goshawks appear to preferentially select mammalian over avian prey across their range. The relative reliance on birds in the coastal Pacific Northwest may be due, not to a region preference for birds, but simply an attempt to compensate for the relatively lower abundance and diversity of mammal species in the temperate rainforests which dominate this region. However, the south coast of BC and the east side of Vancouver Island are slightly drier than elsewhere in the temperate rainforest zone, a fact reflected in the presence of tree species such as Garry's oak (*Quercus garryana*) arbutus (*Arbutus menziesii*), and pine (*Pinus sp.*). This  microclimate may support an unusually high abundance tree squirrels, compared with other parts of the coastal Pacific Northwest. Other mammal species, such as snowshoe hare, occur at lower densities in coastal BC than tree squirrels and are often less diurnal, reducing the encounter rate between goshawks and these alternate species. Thus, tree squirrels appear to represent an abundant, available, and efficient food resource on the BC south coast.
+
+Within our study area, a *transition zone* bridges the wet coastal forests and the arid interior, creating a narrow region where goshawk prey may be intermediate between the two ecoregions. This provided us with a fortuitous opportunity to examine dietary variation over finer scales. We found significant differences between the diet of birds in the transition and coastal zones. Goshawks in the transition zone consumed more corvids and other mammals (neither tree squirrel nor hare) but fewer thrushes, by count, than birds on the coast. This supports the suggestion that goshawks in wetter coastal rainforests have access to fewer mammalian prey and may compensate by consuming more avian prey. However, the dominant prey taxa, tree squirrels, were consumed equally between the two zones.
+
+Despite their generalist diet, the key prey species which dominates goshawk diet may be a major driver of productivity. The most dramatic examples come from interior Alaska and the Yukon, where the cyclical abundance of snowshoe hare has a strong influence on reproductive success. Provide a direct example from Doyle etal. Here we find goshawk reproductive success predicted by the degree of dominance of the key prey taxa, tree squirrels. Nests which received a greater proportion of their diet from tree squirrels fledged more chicks. Because productivity is determined by many factors, including clutch size and hatch success, it is impossible, from the limited scope of our study, to untangle the mechanism behind this relationship.
+
+<!-- Similar to the Kaibab, we found a strong relationship between goshawk reproductive success and tree squirrels. Nests which received a greater proportion of their diet from squirrels fledged more young than those which received less. Tree squirrels have several characteristics which make them ideal goshawk prey, including their size, quick processing time, and diurnal activity patterns. Although we observed differences in diet between the coastal and transition zones, we did not observe any difference in the amount of squirrels consumed, nor did observe any difference in goshawk productivity. This supports the conclusion that squirrels have the greatest influence on reproductive success. -->
+
+Several sources of bias complicate our conclusions. The greatest of these stems from the source of diet data. We used three sources of data on goshawk diet--egested pellets, prey remains, and nest cameras--and found significant differences between the results they produced. Cameras are widely considered one of the least biased methods for measuring diet at the nest. We therefore consider our results from the nest cameras to be the truest approximation of goshawk diet, although we acknowledge that cameras are not entirely free of bias. Compared to cameras, prey remains were the most biased, grossly overestimating the proportion of diet composed of avian prey. On the other hand, pellets allowed few prey items to be identified to species, while remains captured a large number of species, including several--primarily birds--not captured by cameras. These complex and contradictory results highlight the importance of clearly reporting the source of raptor diet data. Because each of these sources has been used in past diet studies, we believe there is value in reporting the results of each, for ease of comparison. However, we recommend future diet studies prioritize collecting data via cameras, either video or still images, rather than physical specimens. 
+
+Unfortunately, we were not able to collect data on prey density due to time constraints and the challenges of accessing many of our sites. Furthermore, while nest cameras are an effective way to measure prey delivered to the nest, they are clearly limited in that this is all they are able to measure. Cameras cannot capture prey consumed by adults away from the nest, nor prey consumed by juveniles after they have fledged. As a result, cameras capture an incomplete picture of breeding season diet and offer no insight into winter diet. This lack is especially troubling as female diet during the winter is likely a major determinant of whether breeding will occur the following spring. However, nest cameras can also offer a fascinating glimpse into behavior at the nest. We observed several instances of siblicide recorded on nest cameras. Siblicide is common in raptors but has rarely been observed in goshawks, likely to due to the relative paucity of studies which observe chick survival over time. While our observations are themselves unsurprising, they highlight the value of nest cameras for making observations of chick survival and behavior in difficult-to-study birds like the northern goshawk.
+
+
+
+Incorporating prey density into future studies of goshawk diet would illuminate this final link between prey abundance, prey selection, and productivity. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

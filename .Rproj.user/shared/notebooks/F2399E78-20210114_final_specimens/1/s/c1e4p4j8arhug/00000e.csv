@@ -1,0 +1,4 @@
+"0",""
+"0","# Biomass per year."
+"0","sc %>% group_by(year) %>% "
+"0","  summarize(sum(mass))"

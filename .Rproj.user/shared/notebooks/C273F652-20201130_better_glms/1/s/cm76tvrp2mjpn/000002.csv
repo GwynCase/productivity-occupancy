@@ -12,4 +12,4 @@
 "0","library(kableExtra)"
 "0","library(GGally)"
 "0","library(extrafont)"
-"0","library(arm)"
+"0","library(QuantPsyc)"

@@ -20,4 +20,33 @@ Using the package *landscapemetrics* in R, <!-- don't forget version --> we calc
 
 We examined pairwise Pearson's correlation coefficients among x landscape variables at each spatial scale. For strongly correlated variables, both variables were not included in the same multivariate model.
 
+<!-- Collinearity among independent variables was checked with Pearson correlations, and we avoided including highly correlated variables (r > 0.7) simultaneously in models. - Beardsell et al 2016 -->
+
 Due to the large number of explanatory landscape variables and small number of nests with sufficient diet data, we developed a set of *a priori* univariate models to examine how landscape characteristics at multiple scales influence two aspects of diet, diversity and proportion squirrel. We selected significant variables (p < 0.05) and tested all univariate and multivariate combinations within each scale. We used Aikake's Information Criterion (AIC) to rank competing models.
+
+<!-- We used generalized linear mixed-effects models (GLMM) with a binomial
+distribution to model nest-use probability, hatching success, and nesting
+success, and with a Poisson distribution to model brood size.We built a set of
+candidate models describing multiple hypotheses to investigate the effect of
+environmental variables on nest use, hatching success, nesting success, and
+brood size. Collinearity among independent variables was checked with Pearson
+correlations, and we avoided including highly correlated variables (r  0.7)
+simultaneously in models (i.e. these variables were tested in alternatives
+models). Distance was log transformed to improve the distribution of the
+residuals, and all continuous variables were centered (x  ¯x) to simplify
+calculations. Models were ranked according to Akaike’s Information Criterion
+corrected for small sample size (AICc). When no single model had a strong
+support (i.e. Akaike weights ,0.90), model-averaged estimates and 95% confidence
+intervals (CIs) were computed with multimodel inference on the most parsimonious
+models (i.e. DAICc , 4) (Burnham and Anderson 2002). Because the same nests were
+visited repeatedly over the years, nest ID was added as a random effect on the
+intercept in all models.We also used GLMM to model reproductive-success
+parameters according to nest and territory reuse (newly occupied territory [the
+reference category], new nest in a previously occupied territory, and
+preexisting nest in a previously occupied territory) and included nest ID and
+year as random effects. In this case, clutch size was modeled with a
+zero-truncated Poisson and hatching date with a Gaussian distribution.
+Relationships were considered statistically significant when the 95% CIs of the
+slope excluded zero. To assess the amount of variation explained by our models,
+we report the marginal R2 (for fixed effects) calculated with the method
+proposed by Nakagawa and Schielzeth (2013) for mixedeffects models. -->

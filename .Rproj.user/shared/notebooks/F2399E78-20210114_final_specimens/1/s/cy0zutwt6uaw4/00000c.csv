@@ -1,0 +1,4 @@
+"0",""
+"0","# For 2020."
+"0","sp.2020 <- sc %>% filter(year=='2020') %>% distinct (binomial) %>% arrange()"
+"0","sp.2020"
