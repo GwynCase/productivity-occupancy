@@ -1,0 +1,7 @@
+"0",""
+"0","# Proportion biomass tree squirrel:everything else for pooled sample."
+"0","sc %>% mutate(total.mass=sum(mass)) %>% "
+"0","  group_by(genus) %>% "
+"0","  mutate(genus.mass=sum(mass), prop.mass=genus.mass/total.mass*100) %>% "
+"0","  filter(genus == 'Tamiasciurus') %>% "
+"0","  distinct(genus, prop.mass)"

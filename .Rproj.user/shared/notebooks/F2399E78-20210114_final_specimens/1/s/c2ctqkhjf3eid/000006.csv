@@ -1,0 +1,7 @@
+"0",""
+"0","# Proportion biomass avian:mammalian for pooled sample."
+"0","sc %>% filter(source == 'P') %>% "
+"0","  mutate(total.mass=sum(mass)) %>% "
+"0","  group_by(class) %>% "
+"0","  mutate(class.mass=sum(mass), prop.mass=class.mass/total.mass*100) %>% "
+"0","  distinct(class, prop.mass)"

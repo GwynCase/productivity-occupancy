@@ -1,15 +1,10 @@
----
-title: "Final specimens"
-output: html_notebook
----
+Final specimens
+================
 
-```{r options, include=FALSE}
-knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
-```
+Fantastic news is that I have finished processing all of my physical
+remains. So let’s see what the final results are.
 
-Fantastic news is that I have finished processing all of my physical remains. So let's see what the final results are.
-
-```{r message=FALSE, warning=FALSE}
+``` r
 # Import conflict settings.
 source('../src/conflicted.R')
 
@@ -116,59 +111,164 @@ diet.items <- left_join(diet.items, average.sizes, by='category') %>%
 
 There are a few odd cases to clear up:
 
-* There are specimens from a site called Comsock that has no nest associated with it. Since there's no strong reason to suppose these are NOGO prey remains, I'll drop them.
-* There are several NOGO remains, some of which may represent prey and some which may not. 
-  * Item 1120 (MTF2019) was previously IDed as a SSHA, but after closer examination of the remains and the camera footage, is probably the chick that fell from the nest and not actually a prey item. So it should be dropped.
-  * Item 1171 (GRC2020) looks to be a shed feather and not prey remains. (Although this nest def saw some cannibalism!) So it should be dropped.
-  
-```{r}
+  - There are specimens from a site called Comsock that has no nest
+    associated with it. Since there’s no strong reason to suppose these
+    are NOGO prey remains, I’ll drop them.
+  - There are several NOGO remains, some of which may represent prey and
+    some which may not.
+      - Item 1120 (MTF2019) was previously IDed as a SSHA, but after
+        closer examination of the remains and the camera footage, is
+        probably the chick that fell from the nest and not actually a
+        prey item. So it should be dropped.
+      - Item 1171 (GRC2020) looks to be a shed feather and not prey
+        remains. (Although this nest def saw some cannibalism\!) So it
+        should be dropped.
+
+<!-- end list -->
+
+``` r
 sc <- diet.items %>% filter(id != 1120) %>% 
   filter(id != 1171) %>% 
   filter(site != 'COM')
 ```
 
-Let's start with some basic summaries.
+Let’s start with some basic summaries.
 
-```{r message=FALSE}
+``` r
 # Total number of items.
 summarize(sc, n())
+```
 
+    ## # A tibble: 1 x 1
+    ##   `n()`
+    ##   <int>
+    ## 1   250
+
+``` r
 # Number of items per year.
 sc %>% group_by(year) %>% 
   summarize(n())
+```
 
+    ## # A tibble: 2 x 2
+    ##    year `n()`
+    ##   <dbl> <int>
+    ## 1  2019   133
+    ## 2  2020   117
+
+``` r
 # Biomass per year.
 sc %>% group_by(year) %>% 
   summarize(sum(mass))
+```
 
+    ## # A tibble: 2 x 2
+    ##    year `sum(mass)`
+    ##   <dbl>       <dbl>
+    ## 1  2019      40640.
+    ## 2  2020      47764.
+
+``` r
 # Weird. Mean biomass of items for each year?
 sc %>% group_by(year) %>% 
   summarize(mean(mass))
 ```
 
-So about the same number of things in both years, though slightly fewer and slightly heavier things in 2020 than 2019. Probs all those hare from PCR.
+    ## # A tibble: 2 x 2
+    ##    year `mean(mass)`
+    ##   <dbl>        <dbl>
+    ## 1  2019         306.
+    ## 2  2020         408.
 
-Let's look at the species list for each year.
+So about the same number of things in both years, though slightly fewer
+and slightly heavier things in 2020 than 2019. Probs all those hare from
+PCR.
 
-```{r}
+Let’s look at the species list for each year.
+
+``` r
 # For 2019.
 sp.2019 <- sc %>% filter(year=='2019') %>% distinct (binomial) %>% arrange()
 sp.2019
+```
 
+    ## # A tibble: 21 x 1
+    ##    binomial              
+    ##    <chr>                 
+    ##  1 Larus canus           
+    ##  2 Patagoienas fasciata  
+    ##  3 Corvus caurinus       
+    ##  4 Cyanocitta stelleri   
+    ##  5 Pipilo maculatus      
+    ##  6 Dendragapus fulignosus
+    ##  7 Tetraoninae sp        
+    ##  8 Catharus sp           
+    ##  9 Ixoreus naevius       
+    ## 10 Colaptes auratus      
+    ## # ... with 11 more rows
+
+``` r
 # For 2020.
 sp.2020 <- sc %>% filter(year=='2020') %>% distinct (binomial) %>% arrange()
 sp.2020
+```
 
+    ## # A tibble: 17 x 1
+    ##    binomial              
+    ##    <chr>                 
+    ##  1 Cyanocitta stelleri   
+    ##  2 Pipilo maculatus      
+    ##  3 Bonasa umbellus       
+    ##  4 Dendragapus fulignosus
+    ##  5 Tetraoninae sp        
+    ##  6 Ixoreus naevius       
+    ##  7 Picoides villosus     
+    ##  8 Picoides sp           
+    ##  9 Colaptes auratus      
+    ## 10 Dryocopus pileatus    
+    ## 11 Sphyrapicus ruber     
+    ## 12 Accipiter gentilis    
+    ## 13 Anas sp               
+    ## 14 Lepus americanus      
+    ## 15 Tamiasciurus douglasii
+    ## 16 Arvicolinae sp        
+    ## 17 Unidentified item
+
+``` r
 # Unique to 2019.
 anti_join(sp.2019, sp.2020, by='binomial')
+```
 
+    ## # A tibble: 9 x 1
+    ##   binomial               
+    ##   <chr>                  
+    ## 1 Larus canus            
+    ## 2 Patagoienas fasciata   
+    ## 3 Corvus caurinus        
+    ## 4 Catharus sp            
+    ## 5 Anas platyrhynchos     
+    ## 6 Strix varia            
+    ## 7 Neotoma cinerea        
+    ## 8 Tamiasciurus hudsonicus
+    ## 9 Neotamias sp
+
+``` r
 # Unique to 2020.
 anti_join(sp.2020, sp.2019, by='binomial')
 ```
 
-Let's see if there are any major differences between prey groups.
+    ## # A tibble: 5 x 1
+    ##   binomial          
+    ##   <chr>             
+    ## 1 Bonasa umbellus   
+    ## 2 Picoides villosus 
+    ## 3 Picoides sp       
+    ## 4 Dryocopus pileatus
+    ## 5 Accipiter gentilis
 
-```{r}
+Let’s see if there are any major differences between prey groups.
+
+``` r
 # Add grouping variable.
 by.group <- sc %>% mutate(group=case_when(
   class == 'Aves' & family == 'Phasianidae' ~ 'grouse',
@@ -195,11 +295,19 @@ chi.year <- chisq.test(freq.by.year, correct=FALSE, simulate.p.value=TRUE)
 chi.year
 ```
 
+    ## 
+    ##  Pearson's Chi-squared test with simulated p-value (based on 2000
+    ##  replicates)
+    ## 
+    ## data:  freq.by.year
+    ## X-squared = 5.3592, df = NA, p-value = 0.4893
+
 Profoundly insignificant, which is great news.
 
-That's enough comparisons, let's look at the final numbers for the total data. Start with the combined pellets + remains:
+That’s enough comparisons, let’s look at the final numbers for the total
+data. Start with the combined pellets + remains:
 
-```{r}
+``` r
 by.group %>% 
   mutate(total.mass=sum(mass)) %>% 
   group_by(group) %>% 
@@ -219,11 +327,15 @@ by.group %>%
         legend.position='none')
 ```
 
-A lot more grouse than seen here previously, because I finally got the knack of identifying grouse keelbones and went back through a lot of previously unidentified things and identified them.
+![](20210114_final_specimens_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+A lot more grouse than seen here previously, because I finally got the
+knack of identifying grouse keelbones and went back through a lot of
+previously unidentified things and identified them.
 
 And then pellets only:
 
-```{r}
+``` r
 by.group %>% filter(source == 'P') %>% 
   mutate(total.mass=sum(mass)) %>% 
   group_by(group) %>% 
@@ -243,39 +355,88 @@ by.group %>% filter(source == 'P') %>%
         legend.position='none')
 ```
 
+![](20210114_final_specimens_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+
 Total species list:
 
-```{r}
+``` r
 sc %>% distinct (binomial) %>% arrange()
 ```
 
-It's pretty obvious here how my sp issue screws up everything. Voles are very distinctive, it doesn't make sense to classify them as "unidentified small mammal" when they're clearly a vole, especially because that makes my biomass calculation much sloppier. But because voles span multiple genera, it's impossible to classify them properly here, which screws up my richness/diversity calculations.
+    ## # A tibble: 26 x 1
+    ##    binomial              
+    ##    <chr>                 
+    ##  1 Larus canus           
+    ##  2 Patagoienas fasciata  
+    ##  3 Corvus caurinus       
+    ##  4 Cyanocitta stelleri   
+    ##  5 Pipilo maculatus      
+    ##  6 Bonasa umbellus       
+    ##  7 Dendragapus fulignosus
+    ##  8 Tetraoninae sp        
+    ##  9 Catharus sp           
+    ## 10 Ixoreus naevius       
+    ## # ... with 16 more rows
 
-The obvious solution is just to not do any kind of diversity/richness calculations with the specimen data, which is fine.
+It’s pretty obvious here how my sp issue screws up everything. Voles are
+very distinctive, it doesn’t make sense to classify them as
+“unidentified small mammal” when they’re clearly a vole, especially
+because that makes my biomass calculation much sloppier. But because
+voles span multiple genera, it’s impossible to classify them properly
+here, which screws up my richness/diversity calculations.
+
+The obvious solution is just to not do any kind of diversity/richness
+calculations with the specimen data, which is fine.
 
 One last thing is biomass.
 
-```{r}
+``` r
 # Proportion biomass avian:mammalian for pooled sample.
 sc %>% mutate(total.mass=sum(mass)) %>% 
   group_by(class) %>% 
   mutate(class.mass=sum(mass), prop.mass=class.mass/total.mass*100) %>% 
   distinct(class, prop.mass)
+```
 
+    ## # A tibble: 2 x 2
+    ## # Groups:   class [2]
+    ##   class    prop.mass
+    ##   <chr>        <dbl>
+    ## 1 Aves          63.5
+    ## 2 Mammalia      36.5
+
+``` r
 # Proportion biomass tree squirrel:everything else for pooled sample.
 sc %>% mutate(total.mass=sum(mass)) %>% 
   group_by(genus) %>% 
   mutate(genus.mass=sum(mass), prop.mass=genus.mass/total.mass*100) %>% 
   filter(genus == 'Tamiasciurus') %>% 
   distinct(genus, prop.mass)
+```
 
+    ## # A tibble: 1 x 2
+    ## # Groups:   genus [1]
+    ##   genus        prop.mass
+    ##   <chr>            <dbl>
+    ## 1 Tamiasciurus      13.8
+
+``` r
 # Proportion biomass avian:mammalian for pooled sample.
 sc %>% filter(source == 'P') %>% 
   mutate(total.mass=sum(mass)) %>% 
   group_by(class) %>% 
   mutate(class.mass=sum(mass), prop.mass=class.mass/total.mass*100) %>% 
   distinct(class, prop.mass)
+```
 
+    ## # A tibble: 2 x 2
+    ## # Groups:   class [2]
+    ##   class    prop.mass
+    ##   <chr>        <dbl>
+    ## 1 Aves          27.7
+    ## 2 Mammalia      72.3
+
+``` r
 # Proportion biomass tree squirrel for pellets only.
 sc %>% filter(source == 'P') %>% 
   mutate(total.mass=sum(mass)) %>% 
@@ -284,3 +445,9 @@ sc %>% filter(source == 'P') %>%
   filter(genus == 'Tamiasciurus') %>% 
   distinct(genus, prop.mass)
 ```
+
+    ## # A tibble: 1 x 2
+    ## # Groups:   genus [1]
+    ##   genus        prop.mass
+    ##   <chr>            <dbl>
+    ## 1 Tamiasciurus      60.7
