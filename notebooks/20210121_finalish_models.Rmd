@@ -1,0 +1,159 @@
+---
+title: "Finalish models, univariate edition"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Again, basically redoing part of a previous notebook.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+#Load some libraries.
+library(tidyverse)
+library(vegan)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(GGally)
+library(extrafont)
+library(QuantPsyc)
+
+# Load in the processed data from last time.
+data <- read_csv('../data/processed/landscape_metrics.csv')
+```
+
+Now make all those models.
+
+```{r}
+occupancy.by.bec.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ bec.diversity, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.proportion.cover.mature <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.contagion, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.diversity, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.richness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.richness, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.evenness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.evenness, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.gap.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ gap.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.canopy.cover <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ canopy.high, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.hsi.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.hsi.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.contagion, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.proportion.suitable <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.suitable, data=.x, 
+           family=binomial(logit))) 
+
+occupancy.by.suitable.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ suitable.edge.density, data=.x, 
+           family=binomial(logit)))
+
+# Bind it all together.
+occupancy.models <- c(occupancy.by.bec.diversity, 
+          occupancy.by.proportion.cover.mature,
+          occupancy.by.cover.edge.density,
+          occupancy.by.cover.contagion,
+          occupancy.by.cover.diversity,
+          occupancy.by.cover.evenness,
+          occupancy.by.cover.richness,
+          occupancy.by.gap.edge.density,
+          occupancy.by.canopy.cover,
+          occupancy.by.hsi.edge.density,
+          occupancy.by.hsi.contagion,
+          occupancy.by.proportion.suitable,
+          occupancy.by.suitable.edge.density)
+```
+
+Make a beautiful table of p-values.
+
+```{r}
+occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+    p.value < 0.05 ~ paste(as.character(sig), '*'),
+    TRUE ~  paste(as.character(sig))
+  )) %>% 
+  filter(term != '(Intercept)') %>% 
+  select(size, sig, term) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(term, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+And look closer at standardized effect sizes.
+
+```{r}
+# Set some knitr options.
+options(knitr.kable.NA = '-')
+
+# Round up the significant terms at each scale.
+sig.terms <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)')
+
+# Standardize coefficients of significant terms.
+occupancy.models %>% 
+  map(lm.beta) %>% 
+  bind_rows(.id='size') %>% 
+  pivot_longer(!size, names_to='term', values_to='coef') %>%
+  drop_na() %>% 
+  anti_join(sig.terms, by=c('size', 'term')) %>% 
+  pivot_wider(names_from=size, values_from=coef) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+
+

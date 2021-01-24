@@ -1,0 +1,119 @@
+---
+title: "Return to reproductive success"
+output: html_notebook
+always_allow_html: true
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+With a larger sample size, how do environmental variables do with reproductive success?
+
+This isn't a very sensible question. It makes more sense to ask whether environmental variables affect diet, but I don't have my full diet dataset yet. Or to ask wether diet affects reproductive success, but I don't have my full diet dataset yet. Plus it looks like my environmental variables are about to become useless if I can't find something helpful to do with them. So.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lme4)
+library(broom)
+library(modelr)
+library(MuMIn)
+library(knitr)
+library(kableExtra)
+
+# Load in the habitat variables prepped earlier.
+ls <- read_csv('../data/processed/landscape_metrics_full.csv')
+
+# And load in the productivity data.
+pd <- read_csv('../data/raw/productivity.csv')
+
+# Join them together, keeping just sites with productivity data.
+df <- left_join(pd, ls)
+```
+
+<!-- The first interesting this is that there is, in fact, high overlap between the productivity data and the occupancy data. This is because Gravell doesn't actually have productivity data, so only TMC is missing occupancy. So that's a very, very fast analysis I can do. -->
+
+```{r echo=FALSE, eval=FALSE}
+pr.qi <- distinct(df, site, n.fledge, quality.index)
+
+pr.b.qi <- lmer(n.fledge ~ quality.index + (1|site), data=pr.qi)
+
+summary(pr.b.qi)
+```
+
+Create a bunch of functions for creating a bunch of models.
+
+```{r}
+# Cover diversity
+landcover.model <- function(df) {
+  lmer(n.fledge ~ cover.diversity + (1|site), data=df)
+}
+
+# High canopy cover
+canopy.model <- function(df) {
+  lmer(n.fledge ~ canopy.high + (1|site), data=df)
+}
+
+# BEC diversity
+bec.model <- function(df) {
+  lmer(n.fledge ~ bec.diversity + (1|site), data=df)
+}
+
+# Proportion suitable
+suitable.model <- function(df) {
+  lmer(n.fledge ~ proportion.suitable + (1|site), data=df)
+}
+
+# Gap edge density
+gap.model <- function(df) {
+  lmer(n.fledge ~ gap.edge.density + (1|site), data=df)
+}
+```
+
+Then nest the data frame for ease of coding and apply each function to generate a disturbingly large number of models really fast.
+
+```{r warning=FALSE}
+# Nest the data frame.
+nf <- df %>% group_by(size) %>% nest()
+
+# Apply the functions.
+nf <- nf %>% 
+  mutate(
+    landcover=map(data, landcover.model),
+    canopy=map(data, canopy.model),
+    bec=map(data, bec.model),
+    suitable=map(data, suitable.model),
+    gap=map(data, gap.model)
+         )
+```
+
+Aaaaaaand that generates a ton of "singular" error messages. God knows.
+
+I'll make it long and add some model quality assessors.
+
+```{r}
+# Twist and assess.
+nf.long <- nf %>% 
+  pivot_longer(-c(size, data), names_to='modname', values_to='model') %>% 
+  mutate(glance=map(model, glance)) %>% 
+  mutate(rsq=map(model, r.squaredGLMM)) %>% 
+  mutate(rsq=map(rsq, as.data.frame))
+
+# Take a look.
+nf.long %>% unnest(glance) %>% 
+  unnest(rsq) %>% 
+  select(-model, -data) %>% 
+  arrange(AIC) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+
+
+
+
+
+

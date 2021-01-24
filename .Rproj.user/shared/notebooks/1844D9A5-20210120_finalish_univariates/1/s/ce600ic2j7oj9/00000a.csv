@@ -1,0 +1,9 @@
+"0","# Load in a list of site names.
+site.names <- read_csv('../data/processed/site_abbreviations.csv')
+"
+"2","Parsed with column specification:
+cols(
+  site = [31mcol_character()[39m,
+  name = [31mcol_character()[39m
+)
+"

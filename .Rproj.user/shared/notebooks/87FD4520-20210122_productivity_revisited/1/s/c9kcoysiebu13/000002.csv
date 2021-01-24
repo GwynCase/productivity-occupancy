@@ -1,0 +1,48 @@
+"0","# Nest the data frame."
+"0","nf <- df %>% group_by(size) %>% nest()"
+"0",""
+"0","# Apply the functions."
+"0","nf <- nf %>% "
+"0","  mutate("
+"0","    landcover=map(data, landcover.model),"
+"0","    canopy=map(data, canopy.model),"
+"0","    bec=map(data, bec.model),"
+"0","    suitable=map(data, suitable.model),"
+"0","    gap=map(data, gap.model)"
+"0","         )"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
+"2","boundary (singular) fit: see ?isSingular
+"
