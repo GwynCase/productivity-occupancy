@@ -1,16 +1,9 @@
----
-title: "Finalish models, univariate edition"
-output: html_notebook
-always_allow_html: true
----
-
-```{r options, include=FALSE}
-knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
-```
+Finalish models, univariate edition
+================
 
 Again, basically redoing part of a previous notebook.
 
-```{r message=FALSE, warning=FALSE}
+``` r
 # Import conflict settings.
 source('../src/conflicted.R')
 
@@ -33,7 +26,7 @@ data <- read_csv('../data/processed/landscape_metrics.csv')
 
 Now make all those models.
 
-```{r}
+``` r
 occupancy.by.bec.diversity <- data %>% 
   split(.$size) %>% 
   map(~glm(cbind(years.detect, years.no.detect) ~ bec.diversity, data=.x, 
@@ -117,7 +110,7 @@ occupancy.models <- c(occupancy.by.bec.diversity,
 
 Make a beautiful table of p-values.
 
-```{r}
+``` r
 occupancy.models %>% map(tidy) %>% 
   bind_rows(.id='size') %>% 
   mutate(sig=round(p.value, digits=2)) %>% 
@@ -132,9 +125,497 @@ occupancy.models %>% map(tidy) %>%
   kable() %>% kable_styling(bootstrap_options=c('striped'))
 ```
 
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+
+<thead>
+
+<tr>
+
+<th style="text-align:left;">
+
+term
+
+</th>
+
+<th style="text-align:left;">
+
+PFA
+
+</th>
+
+<th style="text-align:left;">
+
+breeding area
+
+</th>
+
+<th style="text-align:left;">
+
+home range
+
+</th>
+
+<th style="text-align:left;">
+
+maximum range
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:left;">
+
+bec.diversity
+
+</td>
+
+<td style="text-align:left;">
+
+0.21
+
+</td>
+
+<td style="text-align:left;">
+
+0.62
+
+</td>
+
+<td style="text-align:left;">
+
+0.49
+
+</td>
+
+<td style="text-align:left;">
+
+0.26
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+proportion.cover.mature
+
+</td>
+
+<td style="text-align:left;">
+
+0.87
+
+</td>
+
+<td style="text-align:left;">
+
+0.9
+
+</td>
+
+<td style="text-align:left;">
+
+0.83
+
+</td>
+
+<td style="text-align:left;">
+
+0.84
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+cover.edge.density
+
+</td>
+
+<td style="text-align:left;">
+
+0.29
+
+</td>
+
+<td style="text-align:left;">
+
+0.17
+
+</td>
+
+<td style="text-align:left;">
+
+0.4
+
+</td>
+
+<td style="text-align:left;">
+
+0.47
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+cover.contagion
+
+</td>
+
+<td style="text-align:left;">
+
+0.42
+
+</td>
+
+<td style="text-align:left;">
+
+0.5
+
+</td>
+
+<td style="text-align:left;">
+
+0.07
+
+</td>
+
+<td style="text-align:left;">
+
+0.29
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+cover.diversity
+
+</td>
+
+<td style="text-align:left;">
+
+0.72
+
+</td>
+
+<td style="text-align:left;">
+
+0.75
+
+</td>
+
+<td style="text-align:left;">
+
+0.66
+
+</td>
+
+<td style="text-align:left;">
+
+0.79
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+cover.evenness
+
+</td>
+
+<td style="text-align:left;">
+
+0.57
+
+</td>
+
+<td style="text-align:left;">
+
+0.7
+
+</td>
+
+<td style="text-align:left;">
+
+0.17
+
+</td>
+
+<td style="text-align:left;">
+
+0.34
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+cover.richness
+
+</td>
+
+<td style="text-align:left;">
+
+0.5
+
+</td>
+
+<td style="text-align:left;">
+
+0.87
+
+</td>
+
+<td style="text-align:left;">
+
+0.38
+
+</td>
+
+<td style="text-align:left;">
+
+0.82
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+gap.edge.density
+
+</td>
+
+<td style="text-align:left;">
+
+0.03 \*
+
+</td>
+
+<td style="text-align:left;">
+
+0.03 \*
+
+</td>
+
+<td style="text-align:left;">
+
+0.54
+
+</td>
+
+<td style="text-align:left;">
+
+0.43
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+canopy.high
+
+</td>
+
+<td style="text-align:left;">
+
+0.64
+
+</td>
+
+<td style="text-align:left;">
+
+0.99
+
+</td>
+
+<td style="text-align:left;">
+
+0.58
+
+</td>
+
+<td style="text-align:left;">
+
+0.38
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+hsi.edge.density
+
+</td>
+
+<td style="text-align:left;">
+
+0.81
+
+</td>
+
+<td style="text-align:left;">
+
+0.95
+
+</td>
+
+<td style="text-align:left;">
+
+0.61
+
+</td>
+
+<td style="text-align:left;">
+
+0.26
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+hsi.contagion
+
+</td>
+
+<td style="text-align:left;">
+
+0.85
+
+</td>
+
+<td style="text-align:left;">
+
+0.75
+
+</td>
+
+<td style="text-align:left;">
+
+0.27
+
+</td>
+
+<td style="text-align:left;">
+
+0.35
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+proportion.suitable
+
+</td>
+
+<td style="text-align:left;">
+
+0.83
+
+</td>
+
+<td style="text-align:left;">
+
+0.89
+
+</td>
+
+<td style="text-align:left;">
+
+0.68
+
+</td>
+
+<td style="text-align:left;">
+
+0.6
+
+</td>
+
+</tr>
+
+<tr>
+
+<td style="text-align:left;">
+
+suitable.edge.density
+
+</td>
+
+<td style="text-align:left;">
+
+0.38
+
+</td>
+
+<td style="text-align:left;">
+
+0.31
+
+</td>
+
+<td style="text-align:left;">
+
+0.28
+
+</td>
+
+<td style="text-align:left;">
+
+0.09
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
+
 And look closer at standardized effect sizes.
 
-```{r}
+``` r
 # Set some knitr options.
 options(knitr.kable.NA = '-')
 
@@ -156,5 +637,58 @@ occupancy.models %>%
   kable() %>% kable_styling(bootstrap_options=c('striped'))
 ```
 
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
 
+<thead>
 
+<tr>
+
+<th style="text-align:left;">
+
+term
+
+</th>
+
+<th style="text-align:right;">
+
+PFA
+
+</th>
+
+<th style="text-align:right;">
+
+breeding area
+
+</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<td style="text-align:left;">
+
+gap.edge.density
+
+</td>
+
+<td style="text-align:right;">
+
+\-0.2429436
+
+</td>
+
+<td style="text-align:right;">
+
+\-0.2508171
+
+</td>
+
+</tr>
+
+</tbody>
+
+</table>
