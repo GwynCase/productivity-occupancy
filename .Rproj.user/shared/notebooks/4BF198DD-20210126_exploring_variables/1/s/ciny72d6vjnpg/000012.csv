@@ -1,0 +1,7 @@
+"0","ggplot(transform(data,"
+"0","                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +"
+"0","  geom_histogram(aes(x=cover.evenness), binwidth=0.1, color='white', fill='darkolivegreen3') +"
+"0","  facet_wrap(~size) +"
+"0","  labs(title='New dataset - Landcover evenness') +"
+"0","  ylim(0, 25) +"
+"0","  theme_classic()"

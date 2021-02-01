@@ -1,0 +1,7 @@
+"0",""
+"0","ggplot(transform(original.data,"
+"0","                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range'))), aes(proportion.suitable, quality.index)) +"
+"0","  geom_point(color='coral3') +"
+"0","  labs(title='Reconstructed dataset - Proportion suitable habitat') +"
+"0","  theme_classic() +"
+"0","  facet_wrap(~size)"

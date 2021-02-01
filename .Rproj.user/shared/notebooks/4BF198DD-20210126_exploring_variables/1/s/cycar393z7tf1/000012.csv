@@ -1,0 +1,6 @@
+"0","ggplot(transform(data,"
+"0","                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +"
+"0","  geom_histogram(aes(x=gap.edge.density), binwidth=5, color='white', fill='darkolivegreen3') +"
+"0","  facet_wrap(~size) +"
+"0","  labs(title='New dataset - Gap edge density') +"
+"0","  theme_classic()"

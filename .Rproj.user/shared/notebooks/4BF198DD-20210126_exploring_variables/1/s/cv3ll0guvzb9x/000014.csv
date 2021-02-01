@@ -1,0 +1,5 @@
+"0",""
+"0","ggplot(original.data) +"
+"0","  geom_histogram(aes(x=years.surveyed), binwidth=1, color='white', fill='coral3') +"
+"0","  labs(title='Reconstructed dataset') +"
+"0","  theme_classic()"

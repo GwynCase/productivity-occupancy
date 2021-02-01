@@ -1,0 +1,8 @@
+"0",""
+"0","ggplot(transform(original.data,"
+"0","                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +"
+"0","  geom_histogram(aes(x=cover.richness), binwidth=0.5, color='white', fill='coral3') +"
+"0","  facet_wrap(~size) +"
+"0","  labs(title='Reconstructed dataset - Landcover richness') +"
+"0","  ylim(0, 45) +"
+"0","  theme_classic()"

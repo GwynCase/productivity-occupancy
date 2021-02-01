@@ -1,0 +1,6 @@
+"0",""
+"0","ggplot(original.data, aes(x=years.detect, y=years.no.detect)) +"
+"0","  geom_point(color='coral3', position='jitter') +"
+"0","  labs(title='Reconstructed dataset') +"
+"0","  xlim(0, 6) +"
+"0","  theme_classic()"

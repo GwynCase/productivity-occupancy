@@ -28,7 +28,7 @@ library(extrafont)
 library(QuantPsyc)
 
 # Load in the processed data from last time.
-data <- read_csv('../data/processed/landscape_metrics.csv')
+data <- read_csv('../data/processed/landscape_metrics_index.csv')
 ```
 
 Now make all those models.

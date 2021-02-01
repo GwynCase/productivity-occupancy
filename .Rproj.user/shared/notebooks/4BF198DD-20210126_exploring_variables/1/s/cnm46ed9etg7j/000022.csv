@@ -1,0 +1,3 @@
+"0","occupancy.by.cover.richness %>% map(tidy)"
+"1","$`breeding area`
+"

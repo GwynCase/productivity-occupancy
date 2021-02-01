@@ -1,0 +1,7 @@
+"0","# Plot it."
+"0","raster::as.data.frame(mtc.gaps, xy=TRUE) %>% "
+"0","  ggplot() +"
+"0","  geom_raster(aes(x=x, y=y, fill=gaps_sc_100_class.name)) +"
+"0","  geom_sf(data=mtc.mr, fill=NA) +"
+"0","  labs(title='Mount Currie gaps (maximum range)') +"
+"0","  theme_void()"

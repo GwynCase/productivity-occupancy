@@ -1,0 +1,947 @@
+---
+title: "Exploring variables"
+output:
+  html_notebook:  
+    toc: true
+    toc_float: true
+    code_folding: 'hide' 
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+Since the univariate models run with the new-and-improved data set turned up new but not improved results, I'm going to dig deeper into the data to see what went wrong.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(ggplot2)
+library(raster)
+library(sf)
+library(landscapemetrics)
+library(knitr)
+library(kableExtra)
+library(GGally)
+library(broom)
+library(QuantPsyc)
+
+# Load in the processed data from last time.
+data <- read_csv('../data/processed/landscape_metrics_index.csv')
+
+# Remove problematic TCR.
+data <- data %>% filter(site != 'TCR')
+
+# Also load in the reconstructed data set.
+original.data <- read_csv('../data/processed/landscape_metrics_full.csv')
+
+# Read in occupancy data.
+occupancy <- read_csv('../data/processed/occupancy_sc.csv')
+
+# Calcuate the original occupancy set.
+original.occupancy <- occupancy %>% 
+  select(-status.2020) %>% 
+  pivot_longer(-c(site, name), names_to='year', values_to='status') %>%
+  filter(status > 0) %>% 
+  group_by(site, status) %>% 
+  add_tally() %>% 
+  distinct(site, status, .keep_all=TRUE) %>% 
+  select(-year) %>% 
+  pivot_wider(names_from=status, values_from=n, values_fill=0) %>% 
+  ungroup() %>% rowwise(site, name) %>% 
+  mutate(years.surveyed=sum(c(`3`, `2`, `1`)),
+         years.detect=sum(c(`3`, `2`)),
+         years.no.detect=years.surveyed-years.detect,
+         quality.index=years.detect/years.surveyed) %>% 
+  select(site, name, years.surveyed, years.detect, years.no.detect, quality.index) %>% 
+  filter(years.surveyed > 1)
+
+# Join to habitat variables.
+original.data <- original.data %>% select(-c(years.surveyed, years.detect, years.no.detect, quality.index)) %>% 
+  left_join(original.occupancy) %>% drop_na(years.surveyed)
+
+# Remove problematic TCR.
+original.data <- original.data %>% filter(site != 'TCR')
+```
+
+# The data sets
+
+I don't have the "original" data set I first used to run the preliminary analysis which turned up such a promising number of significant variables. I have reconstructed it by dropping all 2020 data, which gives similar but slightly different results to the original data set.
+
+Original data set:
+
+* 2020 data for some sites
+* includes 0s
+* excludes onesies
+* Excludes TCR for VRI-based metrics
+
+Reconstructed data set:
+
+* no 2020 data
+* includes 0s
+* excludes onesies
+* excludes TCR entirely
+
+Refined (new) data set:
+
+* 2020 data for all sites
+* excludes 0s
+* excludes onesies
+* excludes TCR entirely
+
+```{r}
+# Make the models so we can have some p-values. THESE ARE WITH NEW DATA.
+occupancy.by.bec.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ bec.diversity, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.proportion.cover.mature <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.contagion, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.diversity <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.diversity, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.richness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.richness, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.cover.evenness <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.evenness, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.gap.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ gap.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.canopy.cover <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ canopy.high, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.hsi.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.edge.density, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.hsi.contagion <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.contagion, data=.x, 
+           family=binomial(logit)))
+
+occupancy.by.proportion.suitable <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.suitable, data=.x, 
+           family=binomial(logit))) 
+
+occupancy.by.suitable.edge.density <- data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ suitable.edge.density, data=.x, 
+           family=binomial(logit)))
+
+# Bind it all together.
+occupancy.models <- c(occupancy.by.bec.diversity, 
+          occupancy.by.proportion.cover.mature,
+          occupancy.by.cover.edge.density,
+          occupancy.by.cover.contagion,
+          occupancy.by.cover.diversity,
+          occupancy.by.cover.evenness,
+          occupancy.by.cover.richness,
+          occupancy.by.gap.edge.density,
+          occupancy.by.canopy.cover,
+          occupancy.by.hsi.edge.density,
+          occupancy.by.hsi.contagion,
+          occupancy.by.proportion.suitable,
+          occupancy.by.suitable.edge.density)
+
+
+# Make the models so we can have some p-values. THESE ARE WITH RECONSTRUCTED DATA
+original.by.bec.diversity <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ bec.diversity, data=.x, 
+           family=binomial(logit)))
+
+original.by.proportion.cover.mature <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=.x, 
+           family=binomial(logit)))
+
+original.by.cover.edge.density <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.edge.density, data=.x, 
+           family=binomial(logit)))
+
+original.by.cover.contagion <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.contagion, data=.x, 
+           family=binomial(logit)))
+
+original.by.cover.diversity <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.diversity, data=.x, 
+           family=binomial(logit)))
+
+original.by.cover.richness <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.richness, data=.x, 
+           family=binomial(logit)))
+
+original.by.cover.evenness <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ cover.evenness, data=.x, 
+           family=binomial(logit)))
+
+original.by.gap.edge.density <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ gap.edge.density, data=.x, 
+           family=binomial(logit)))
+
+original.by.canopy.cover <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ canopy.high, data=.x, 
+           family=binomial(logit)))
+
+original.by.hsi.edge.density <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.edge.density, data=.x, 
+           family=binomial(logit)))
+
+original.by.hsi.contagion <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ hsi.contagion, data=.x, 
+           family=binomial(logit)))
+
+original.by.proportion.suitable <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ proportion.suitable, data=.x, 
+           family=binomial(logit))) 
+
+original.by.suitable.edge.density <- original.data %>% 
+  split(.$size) %>% 
+  map(~glm(cbind(years.detect, years.no.detect) ~ suitable.edge.density, data=.x, 
+           family=binomial(logit)))
+
+# Bind it all together.
+original.occupancy.models <- c(original.by.bec.diversity, 
+          original.by.proportion.cover.mature,
+          original.by.cover.edge.density,
+          original.by.cover.contagion,
+          original.by.cover.diversity,
+          original.by.cover.evenness,
+          original.by.cover.richness,
+          original.by.gap.edge.density,
+          original.by.canopy.cover,
+          original.by.hsi.edge.density,
+          original.by.hsi.contagion,
+          original.by.proportion.suitable,
+          original.by.suitable.edge.density)
+```
+
+## New data set
+
+Note that this *new* new data set is slightly different than the *old* new data set in that it excludes the site TCR, which should never have been included due to known corruption of the VRI data for that site. This makes the results *even more depressing*. (For example, suitable edge density is no longer significant at the maximum range.)
+
+Significant terms and p-values for new data set:
+
+```{r}
+# Get the p-values.
+occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+    p.value < 0.05 ~ paste(as.character(sig), '*'),
+    TRUE ~  paste(as.character(sig))
+  )) %>% 
+  filter(term != '(Intercept)') %>% 
+  select(size, sig, term) %>% 
+  filter(sig <= 0.2) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+Standardized effect sizes of significant terms in new data set:
+
+```{r}
+# Get the significant terms and their standardized effect sizes.
+new.sig <- occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)')
+
+occupancy.models %>% 
+  map(lm.beta) %>% 
+  bind_rows(.id='size') %>% 
+  pivot_longer(!size, names_to='term', values_to='coef') %>%
+  drop_na() %>% 
+  anti_join(new.sig, by=c('size', 'term')) %>% 
+  pivot_wider(names_from=size, values_from=coef) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+## Reconstructed data set
+
+Significant terms and p-values for the reconstructed data set.
+
+```{r}
+# Get the p-values.
+original.occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+    p.value <= 0.05 ~ paste(as.character(sig), '*'),
+    TRUE ~  paste(as.character(sig))
+  )) %>% 
+  filter(term != '(Intercept)') %>% 
+  select(size, sig, term) %>% 
+  filter(sig <= 0.1) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+Standardized effect sizes for significant terms of reconstructed data set.
+
+```{r}
+old.sig <- original.occupancy.models %>% map(tidy) %>% 
+  bind_rows(.id='size') %>% 
+  filter(p.value >= 0.05) %>% 
+  filter(term != '(Intercept)')
+
+original.occupancy.models %>% 
+  map(lm.beta) %>% 
+  bind_rows(.id='size') %>% 
+  pivot_longer(!size, names_to='term', values_to='coef') %>%
+  drop_na() %>% 
+  anti_join(old.sig, by=c('size', 'term')) %>% 
+  pivot_wider(names_from=size, values_from=coef) %>% 
+  select(term, PFA, `breeding area`, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+# Occupancy & Effort
+
+Starting with survey effort: how many years are sites surveyed?
+
+```{r message=FALSE, warning=FALSE}
+ggplot(data) +
+  geom_histogram(aes(x=years.surveyed), binwidth=1, color='white', fill='darkolivegreen3') +
+  labs(title='New dataset') +
+  theme_classic()
+
+ggplot(original.data) +
+  geom_histogram(aes(x=years.surveyed), binwidth=1, color='white', fill='coral3') +
+  labs(title='Reconstructed dataset') +
+  theme_classic()
+```
+
+And territory quality. This isn't directly used in the models.
+
+```{r message=FALSE, warning=FALSE}
+ggplot(data, aes(x=years.detect, y=years.no.detect)) +
+  geom_point(color='darkolivegreen3', position='jitter') +
+  xlim(0, 6) +
+  labs(title='New dataset') +
+  theme_classic()
+
+ggplot(original.data, aes(x=years.detect, y=years.no.detect)) +
+  geom_point(color='coral3', position='jitter') +
+  labs(title='Reconstructed dataset') +
+  xlim(0, 6) +
+  theme_classic()
+```
+
+# Habitat variables
+
+The variables that showed as significant in the reconstructed analysis are:
+
+* Proportion mature forest cover
+* Landcover contagion
+* Landcover diversity
+* Landcover evenness
+* Landcover richness
+* Gap edge density
+* Proportion suitable habitat
+* Suitable habitat edge density
+
+so I'll just focus on those. The other variables are dead to me.
+
+```{r}
+vars <- data %>% select(bec.diversity, cover.diversity, cover.evenness, cover.richness, gap.edge.density, proportion.suitable, suitable.edge.density) %>% names()
+```
+
+## Proportion suitable
+
+The strangest thing that popped up in the new version is that the amount of suitable foraging habitat (as defined by the f-HSI) was extremely nonsignificant.
+
+```{r message=FALSE}
+# Bring in a list of nests and calculate a centroid for each territory.
+centroids <- read_csv('../data/processed/sc_nests.csv') %>% 
+  group_by(site) %>% 
+  mutate(mean.x=mean(xcoord), mean.y=mean(ycoord)) %>% 
+  distinct(site, name, mean.x, mean.y)
+
+# Make it spatial.
+centroids.sf <- centroids %>% rename(xcoord=mean.x, ycoord=mean.y)
+
+centroids.sf <- centroids.sf %>% st_as_sf(coords=c('xcoord', 'ycoord')) %>% 
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Define some radii.
+hr <- 3477.8982
+mr <- 7046.7256
+
+# Load suitable habitat raster.
+r.suitable <- raster('../data/processed/foraging_sc_suitable.tif')
+
+# Define levels.
+suitable.levels <- data.frame(ID=c(0, 4), 
+                              class.name=c('unsuitable', 'suitable'))
+
+# Add to the raster.
+levels(r.suitable) <- suitable.levels
+
+# Pull one site.
+gmt <- centroids.sf %>% filter(site == 'GMT')
+
+# Convert to polygon with max range radius.
+gmt.mr <- st_buffer(gmt$geometry, mr) %>% st_sf()
+
+# Also make a smaller one with home range radius.
+gmt.hr <- st_buffer(gmt$geometry, hr) %>% st_sf()
+
+# Crop raster to larger extent.
+gmt.suitable <- crop(r.suitable, gmt.mr)
+
+# Plot it.
+raster::as.data.frame(gmt.suitable, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=foraging_sc_suitable_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain suitable habitat (home range)') +
+  theme_void()
+```
+This is Granite Mountain at the home range scale, where the proportion suitable is `r data %>% filter(site == 'GMT' & size == 'home range') %>% select(proportion.suitable) %>% as.numeric()`.
+
+Here's how it's distributed in the new and reconstructed data set:
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=proportion.suitable), binwidth=10, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset') +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=proportion.suitable), binwidth=10, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset') +
+  theme_classic()
+```
+
+That is... not even a little bit the pattern I was expecting. I really thought it would be straight across--this is quite a lot of variation.
+
+What's that weird 0 doing in the breeding area?
+
+```{r}
+data %>% filter(proportion.suitable < 10 & size == 'breeding area')
+```
+
+Oh, it's effing Turbid Creek, which can't be used because the VRI data is all screwed up for that site. 
+
+And models:
+
+### New data set
+
+```{r}
+occupancy.by.proportion.suitable %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.proportion.suitable %>% map(tidy)
+```
+
+## Landcover diversity
+
+```{r message=FALSE}
+# Load landcover raster.
+r.landcover <- raster('../data/processed/vri_sc_all-sites.tif')
+
+# Define levels.
+landcover.levels <- data.frame(ID=0:11, class.name=
+                                 c('undefined', 'rock', 'ocean', 'freshwater',
+                                   'alpine', 'wetland',
+                                   'shrub', 'deciduous', 'regen',
+                                   'young', 'mature', 'old'))
+
+# Add to the raster.
+levels(r.landcover) <- landcover.levels
+
+# Crop raster to larger extent.
+gmt.landcover <- crop(r.landcover, gmt.mr)
+
+# Plot it.
+raster::as.data.frame(gmt.landcover, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=vri_sc_all.sites_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain landcover (home range)') +
+  theme_void()
+```
+
+Again, this is Granite Mountain, with a diversity score of `r data %>% filter(site == 'GMT' & size == 'home range') %>% select(cover.diversity) %>% as.numeric()`. It also has a richness of `r data %>% filter(site == 'GMT' & size == 'home range') %>% select(cover.richness) %>% as.numeric()`.
+
+You can see how the pattern matches the suitable habitat raster, which makes sense because they're both derived from the VRI.
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.diversity), binwidth=0.1, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Landcover diversity') +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.diversity), binwidth=0.1, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Landcover diversity') +
+  theme_classic()
+```
+
+Models:
+
+### New data set
+
+```{r}
+occupancy.by.cover.diversity %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.cover.diversity %>% map(tidy)
+```
+
+## Landcover evenness
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.evenness), binwidth=0.1, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Landcover evenness') +
+  ylim(0, 25) +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.evenness), binwidth=0.1, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Landcover evenness') +
+  ylim(0, 25) +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.cover.evenness %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.cover.evenness %>% map(tidy)
+```
+
+## Landcover richness
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.richness), binwidth=0.5, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Landcover richness') +
+  ylim(0, 45) +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.richness), binwidth=0.5, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Landcover richness') +
+  ylim(0, 45) +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.cover.richness %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.cover.richness %>% map(tidy)
+```
+
+## Landcover contagion
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.contagion), binwidth=5, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Landcover contagion') +
+  ylim(0, 20) +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=cover.contagion), binwidth=5, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Landcover contagion') +
+  ylim(0, 20) +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.cover.contagion %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.cover.contagion %>% map(tidy)
+```
+
+## Gap edge density
+
+```{r message=FALSE}
+# Load gap raster.
+r.gaps <- raster('../data/processed/gaps_sc_100.tif')
+
+# Define levels.
+gap.levels <- data.frame(ID=0:1, class.name=
+                           c('undefined', 'gap'))
+
+# Add to the raster.
+levels(r.gaps) <- gap.levels
+
+# Clip raster to larger extent.
+gmt.gaps <- crop(r.gaps, gmt.mr)
+
+# Plot it.
+raster::as.data.frame(gmt.gaps, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=gaps_sc_100_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain gaps (home range)') +
+  theme_void()
+```
+
+Here again is Granite Mountain, with a pretty low gap edge density of `r data %>% filter(site == 'GMT' & size == 'home range') %>% select(gap.edge.density) %>% as.numeric()`. It's measuring the perimeter of all the gaps, and then controlling for the size of the plot.
+
+Compare to Mount Currie:
+
+```{r}
+# Pull out another site.
+mtc <- centroids.sf %>% filter(site == 'MTC')
+
+# Make a maximum range polygon.
+mtc.mr <- st_buffer(mtc$geometry, mr) %>% st_sf()
+
+# And a home range polygon.
+mtc.hr <- st_buffer(mtc$geometry, hr) %>% st_sf()
+
+# Clip raster to larger extent.
+mtc.gaps <- crop(r.gaps, mtc.mr)
+
+# Plot it.
+raster::as.data.frame(mtc.gaps, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=gaps_sc_100_class.name)) +
+  geom_sf(data=mtc.hr, fill=NA) + 
+  labs(title='Mount Currie gaps (home range)') +
+  theme_void()
+```
+
+The edge density here is `r data %>% filter(site == 'MTC' & size == 'home range') %>% select(gap.edge.density) %>% as.numeric()`. But when we jump up to the maximum range the number goes *down* to `r data %>% filter(site == 'GMT' & size == 'maximum range') %>% select(gap.edge.density) %>% as.numeric()` even though there's more total edge because it's corrected for the landscape area (density, not absolute value).
+
+```{r}
+# Plot it.
+raster::as.data.frame(mtc.gaps, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=gaps_sc_100_class.name)) +
+  geom_sf(data=mtc.mr, fill=NA) +
+  labs(title='Mount Currie gaps (maximum range)') +
+  theme_void()
+```
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=gap.edge.density), binwidth=5, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Gap edge density') +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=gap.edge.density), binwidth=5, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Original dataset - Gap edge density') +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.gap.edge.density %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.gap.edge.density %>% map(tidy)
+```
+
+## Suitable habitat edge density
+
+As a reminder, suitable habitat looks like this:
+
+```{r}
+# Plot it.
+raster::as.data.frame(gmt.suitable, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=foraging_sc_suitable_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain suitable habitat (home range)') +
+  theme_void()
+```
+
+So edge density is the length of the perimeter of suitable habitat divided by the area being sampled. For comparison, this is the HSI:
+
+```{r message=FALSE}
+# Load suitable habitat raster.
+r.hsi <- raster('../data/processed/foraging_sc.tif')
+
+# Define levels.
+hsi.levels <- data.frame(ID=c(-10, -2, -1, 0, 1, 2, 3), 
+                         class.name=c('ocean', 'freshwater', 'river', 
+                                      'nil', 'low', 'moderate', 'high'))
+
+# Add to the raster.
+levels(r.hsi) <- hsi.levels
+
+# Clip raster to larger extent.
+gmt.hsi <- crop(r.hsi, gmt.mr)
+
+# Plot it.
+raster::as.data.frame(gmt.hsi, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=foraging_sc_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain HSI (home range)') +
+  theme_void()
+```
+
+HSI edge density is the length of the perimeter of *all classes* divided by the area being sampled. So that includes the border between high and moderate habitat, and between ocean and other classes, etc. Whereas suitable habitat edge density *only* includes the border between good habitat and everything else. 
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=suitable.edge.density), binwidth=5, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Suitable habitat edge density') +
+  ylim(0, 20) +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=suitable.edge.density), binwidth=5, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Suitable habitat edge density') +
+  ylim(0, 20) +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.suitable.edge.density %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.suitable.edge.density %>% map(tidy)
+```
+
+## Proportion mature cover
+
+Compare to suitable habitat above. 
+
+```{r message=FALSE}
+# Load mature cover raster.
+r.older <- raster('../data/processed/older_sc_100.tif')
+
+# Define levels.
+older.levels <- data.frame(ID=0:1, class.name=
+                             c('undefined', 'older'))
+
+# Add to the raster.
+levels(r.older) <- older.levels
+
+# Clip raster to larger extent.
+gmt.older <- crop(r.older, gmt.mr)
+
+# Plot it.
+raster::as.data.frame(gmt.older, xy=TRUE) %>% 
+  ggplot() +
+  geom_raster(aes(x=x, y=y, fill=older_sc_100_class.name)) +
+  geom_sf(data=gmt.hr, fill=NA) +
+  labs(title='Granite Mountain older forest cover (home range)') +
+  theme_void()
+```
+
+It looks basically the same, for obvious reasons.
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=proportion.cover.mature), binwidth=5, color='white', fill='darkolivegreen3') +
+  facet_wrap(~size) +
+  labs(title='New dataset - Proportion mature forest cover') +
+  ylim(0, 10) +
+  theme_classic()
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range')))) +
+  geom_histogram(aes(x=proportion.cover.mature), binwidth=5, color='white', fill='coral3') +
+  facet_wrap(~size) +
+  labs(title='Reconstructed dataset - Proportion mature forest cover') +
+  ylim(0, 10) +
+  theme_classic()
+```
+
+### New data set
+
+```{r}
+occupancy.by.proportion.cover.mature %>% map(tidy)
+```
+
+### Reconstructed data set
+
+```{r message=FALSE}
+original.by.proportion.cover.mature %>% map(tidy)
+```
+
+# Correlation
+
+First off, there are three variables that are likely to be very, very highly correlated, and it would be nice if I could just scratch two of them off right away.
+
+```{r}
+cover.vars <- data %>% select(cover.diversity, cover.evenness, cover.richness) %>% names()
+
+data %>% select(site, size, cover.vars) %>% 
+  pivot_longer(!c(site, size), names_to='variable', values_to='value') %>% 
+  mutate(var=paste(size, variable)) %>% 
+  select(site, value, var) %>% 
+  pivot_wider(names_from=var, values_from=value) %>% 
+  select(-site) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+Kind of interesting. The variables at the most distant sizes (maximum range and PFA) are least correlated, which makes sense. Closer sizes tend to be more correlated, also not surprising. Diversity is always correlated with evenness and richness within each size, but not necessarily across sizes.
+
+It's not definitive, but I feel good enough about this to toss richness and evennes and keep just diversity.
+
+```{r}
+# Shape the data into a correlation-ready format.
+vars <- data %>% select(proportion.cover.mature, cover.diversity, cover.contagion, gap.edge.density, proportion.suitable, suitable.edge.density) %>% 
+  names()
+
+data %>% select(site, size, vars) %>% 
+  pivot_longer(!c(site, size), names_to='variable', values_to='value') %>% 
+  mutate(var=paste(size, variable)) %>% 
+  select(site, value, var) %>% 
+  pivot_wider(names_from=var, values_from=value) %>% 
+  select(-site) %>% 
+  ggcorr(method=c('pairwise', 'pearson'), nbreaks=5, hjust=1, layout.exp=5)
+```
+
+Well, that's pretty unreadable, but there's nothing I can do about that.
+
+Something super strange--if I'm reading this right, that diagonal band of red shows that each variable is strongly correlated with its match in the next size radius, but *only* between PFA x breeding area and home range x maximum range, and *not* between breeding area x home range or between any of the more widely-separated sizes. 
+
+# Scatterplots
+
+A few scatterplots.
+
+## Proportion mature cover
+
+```{r}
+# Proportion mature canopy cover.
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range'))), aes(proportion.cover.mature, quality.index)) +
+  geom_point(color='darkolivegreen3') +
+  labs(title='New dataset - Proportion mature forest cover') +
+  theme_classic() +
+  facet_wrap(~size)
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range'))), aes(proportion.cover.mature, quality.index)) +
+  geom_point(color='coral3') +
+  labs(title='Reconstructed dataset - Proportion mature forest cover') +
+  theme_classic() +
+  facet_wrap(~size)
+```
+
+## Proportion suitable habitat
+
+```{r}
+ggplot(transform(data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range'))), aes(proportion.suitable, quality.index)) +
+  geom_point(color='darkolivegreen3') +
+  labs(title='New dataset - Proportion suitable habitat') +
+  theme_classic() +
+  facet_wrap(~size)
+
+ggplot(transform(original.data,
+                 size=factor(size, levels=c('PFA', 'breeding area', 'home range', 'maximum range'))), aes(proportion.suitable, quality.index)) +
+  geom_point(color='coral3') +
+  labs(title='Reconstructed dataset - Proportion suitable habitat') +
+  theme_classic() +
+  facet_wrap(~size)
+```
+

@@ -1,0 +1,7 @@
+"0","# Plot it."
+"0","raster::as.data.frame(gmt.suitable, xy=TRUE) %>% "
+"0","  ggplot() +"
+"0","  geom_raster(aes(x=x, y=y, fill=foraging_sc_suitable_class.name)) +"
+"0","  geom_sf(data=gmt.hr, fill=NA) +"
+"0","  labs(title='Granite Mountain suitable habitat (home range)') +"
+"0","  theme_void()"

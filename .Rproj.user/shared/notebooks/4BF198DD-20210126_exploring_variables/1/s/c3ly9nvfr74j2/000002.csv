@@ -1,0 +1,1 @@
+"0","vars <- data %>% select(bec.diversity, cover.diversity, cover.evenness, cover.richness, gap.edge.density, proportion.suitable, suitable.edge.density) %>% names()"
