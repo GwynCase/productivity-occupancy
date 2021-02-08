@@ -72,6 +72,11 @@ mature.diversity.model <- function(df) {
 mature.edge.density.model <- function(df) {
   glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature + gap.edge.density, data=df, family=binomial(logit))
 }
+
+# Null
+null.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ 1, data=df, family=binomial(logit))
+}
 ```
 
 Then nest the data frame for ease of coding and apply each function to generate a disturbingly large number of models really fast.
@@ -87,7 +92,8 @@ nf <- nf %>%
     m.suitable.edge.density=map(data, suitable.edge.density.model),
     m.proportion.mature=map(data, proportion.mature.model),
     m.mature.diversity=map(data, mature.diversity.model),
-    m.mature.edge.density=map(data, mature.edge.density.model)
+    m.mature.edge.density=map(data, mature.edge.density.model),
+    m.null=map(data, null.model)
          )
 ```
 
@@ -105,9 +111,5 @@ nf.long %>%
   arrange(AIC) %>% 
   kable() %>% kable_styling(bootstrap_options=c('striped'))
 ```
-
-
-
-
 
 

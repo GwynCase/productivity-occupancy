@@ -22,3 +22,8 @@
 "0","mature.edge.density.model <- function(df) {"
 "0","  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature + gap.edge.density, data=df, family=binomial(logit))"
 "0","}"
+"0",""
+"0","# Null"
+"0","null.model <- function(df) {"
+"0","  glm(cbind(years.detect, years.no.detect) ~ 1, data=df, family=binomial(logit))"
+"0","}"

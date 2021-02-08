@@ -1,0 +1,4 @@
+"0","pfa.models %>% mutate(tidy=map(model, tidy)) %>% "
+"0","  unnest(tidy) %>% ungroup() %>% "
+"0","  select(!c(size, data, model)) %>% "
+"0","  filter(term != '(Intercept)')"

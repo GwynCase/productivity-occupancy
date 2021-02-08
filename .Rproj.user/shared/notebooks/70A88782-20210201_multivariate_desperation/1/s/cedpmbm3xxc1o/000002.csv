@@ -8,5 +8,6 @@
 "0","    m.suitable.edge.density=map(data, suitable.edge.density.model),"
 "0","    m.proportion.mature=map(data, proportion.mature.model),"
 "0","    m.mature.diversity=map(data, mature.diversity.model),"
-"0","    m.mature.edge.density=map(data, mature.edge.density.model)"
+"0","    m.mature.edge.density=map(data, mature.edge.density.model),"
+"0","    m.null=map(data, null.model)"
 "0","         )"

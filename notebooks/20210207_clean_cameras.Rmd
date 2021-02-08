@@ -1,0 +1,31 @@
+---
+title: "Clean Cameras"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+This is the process used to take the raw camera data produced by my amazing minion and prep it for further analysis.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+```
+
+All files, and *only* files, containing camera data contain the word "photo," which makes things much, much easier.
+
+```{r message=FALSE}
+# Get a list of all the camera data files.
+file.list <- list.files(path='../data/raw', pattern='photos', full.names=TRUE)
+
+# Open all the files in the list and add to a data frame.
+df <- file.list %>% map(read_csv, col_types = cols(.default = "c")) %>% 
+  bind_rows()
+```
+
+
