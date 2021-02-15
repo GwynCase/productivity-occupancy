@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:left;"> Modnames </th>
+   <th style="text-align:right;"> K </th>
+   <th style="text-align:right;"> AICc </th>
+   <th style="text-align:right;"> Delta_AICc </th>
+   <th style="text-align:right;"> ModelLik </th>
+   <th style="text-align:right;"> AICcWt </th>
+   <th style="text-align:right;"> LL </th>
+   <th style="text-align:right;"> Cum.Wt </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 114.9945 </td>
+   <td style="text-align:right;"> 0.000000 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+   <td style="text-align:right;"> 0.3173570 </td>
+   <td style="text-align:right;"> -56.45641 </td>
+   <td style="text-align:right;"> 0.3173570 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 5 </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 116.3629 </td>
+   <td style="text-align:right;"> 1.368483 </td>
+   <td style="text-align:right;"> 0.5044726 </td>
+   <td style="text-align:right;"> 0.1600979 </td>
+   <td style="text-align:right;"> -56.05647 </td>
+   <td style="text-align:right;"> 0.4774549 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> m.suitable.edge.density </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 117.0517 </td>
+   <td style="text-align:right;"> 2.057289 </td>
+   <td style="text-align:right;"> 0.3574911 </td>
+   <td style="text-align:right;"> 0.1134523 </td>
+   <td style="text-align:right;"> -55.27056 </td>
+   <td style="text-align:right;"> 0.5909072 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 117.1609 </td>
+   <td style="text-align:right;"> 2.166417 </td>
+   <td style="text-align:right;"> 0.3385078 </td>
+   <td style="text-align:right;"> 0.1074278 </td>
+   <td style="text-align:right;"> -56.45544 </td>
+   <td style="text-align:right;"> 0.6983350 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 6 </td>
+   <td style="text-align:left;"> m.mature.diversity </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 117.4458 </td>
+   <td style="text-align:right;"> 2.451327 </td>
+   <td style="text-align:right;"> 0.2935628 </td>
+   <td style="text-align:right;"> 0.0931642 </td>
+   <td style="text-align:right;"> -55.46757 </td>
+   <td style="text-align:right;"> 0.7914993 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 7 </td>
+   <td style="text-align:left;"> m.mature.edge.density </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 117.9475 </td>
+   <td style="text-align:right;"> 2.952990 </td>
+   <td style="text-align:right;"> 0.2284370 </td>
+   <td style="text-align:right;"> 0.0724961 </td>
+   <td style="text-align:right;"> -55.71841 </td>
+   <td style="text-align:right;"> 0.8639953 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> m.suitable.sink </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 118.4286 </td>
+   <td style="text-align:right;"> 3.434180 </td>
+   <td style="text-align:right;"> 0.1795880 </td>
+   <td style="text-align:right;"> 0.0569935 </td>
+   <td style="text-align:right;"> -54.77954 </td>
+   <td style="text-align:right;"> 0.9209888 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:left;"> m.suitable.diversity </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 118.8452 </td>
+   <td style="text-align:right;"> 3.850743 </td>
+   <td style="text-align:right;"> 0.1458216 </td>
+   <td style="text-align:right;"> 0.0462775 </td>
+   <td style="text-align:right;"> -56.16728 </td>
+   <td style="text-align:right;"> 0.9672663 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 8 </td>
+   <td style="text-align:left;"> m.mature.sink </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 119.5377 </td>
+   <td style="text-align:right;"> 4.543247 </td>
+   <td style="text-align:right;"> 0.1031446 </td>
+   <td style="text-align:right;"> 0.0327337 </td>
+   <td style="text-align:right;"> -55.33407 </td>
+   <td style="text-align:right;"> 1.0000000 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

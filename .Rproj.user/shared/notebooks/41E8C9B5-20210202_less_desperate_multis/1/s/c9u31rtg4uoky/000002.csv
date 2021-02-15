@@ -1,2 +1,0 @@
-"0","aictab(ba.models$model, modnames=pfa.models$modname) %>% "
-"0","  kable() %>% kable_styling(bootstrap_options=c('striped'))"
