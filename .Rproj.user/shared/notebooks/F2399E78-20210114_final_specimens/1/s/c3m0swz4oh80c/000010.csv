@@ -1,0 +1,7 @@
+"0",""
+"0","# Proportion counts tree squirrel:everything else for pooled sample."
+"0","sc %>% mutate(total.count=n()) %>% "
+"0","  group_by(genus) %>% "
+"0","  mutate(genus.count=n(), prop.count=genus.count/total.count*100) %>% "
+"0","  filter(genus == 'Tamiasciurus') %>% "
+"0","  distinct(genus, prop.count)"

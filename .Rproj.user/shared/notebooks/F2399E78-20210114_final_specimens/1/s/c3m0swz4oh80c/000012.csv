@@ -1,0 +1,7 @@
+"0",""
+"0","# Proportion counts avian:mammalian for pellets only sample."
+"0","sc %>% filter(source == 'P') %>% "
+"0","  mutate(total.count=n()) %>% "
+"0","  group_by(class) %>% "
+"0","  mutate(class.count=n(), prop.count=class.count/total.count*100) %>% "
+"0","  distinct(class, prop.count)"

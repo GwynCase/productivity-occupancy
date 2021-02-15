@@ -93,7 +93,7 @@ diet.items <- diet.items %>% mutate(category=case_when(
 diet.items <- diet.items %>% replace_na(list(binomial = 'Unidentified item'))
 
 # Create a table with average masses by collecting all the items of known mass...
-average.sizes <- diet.items %>% drop_na(mass) %>% 
+average.sizes <- prey.list %>% 
   group_by(category) %>% 
   ## averaging the mass for each size & class category...
   summarize(average=mean(mass)) %>% 
@@ -284,3 +284,37 @@ sc %>% filter(source == 'P') %>%
   filter(genus == 'Tamiasciurus') %>% 
   distinct(genus, prop.mass)
 ```
+
+Updating this on 2021-02-15 with proportions of counts, for ease of comparison.
+
+```{r}
+# Proportion counts avian:mammalian for pooled sample.
+sc %>% mutate(total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(class.count=n(), prop.count=class.count/total.count*100) %>% 
+  distinct(class, prop.count)
+
+# Proportion counts tree squirrel:everything else for pooled sample.
+sc %>% mutate(total.count=n()) %>% 
+  group_by(genus) %>% 
+  mutate(genus.count=n(), prop.count=genus.count/total.count*100) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  distinct(genus, prop.count)
+
+# Proportion counts avian:mammalian for pellets only sample.
+sc %>% filter(source == 'P') %>% 
+  mutate(total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(class.count=n(), prop.count=class.count/total.count*100) %>% 
+  distinct(class, prop.count)
+
+# Proportion counts tree squirrel for pellets only.
+sc %>% filter(source == 'P') %>% 
+  mutate(total.count=n()) %>% 
+  group_by(genus) %>% 
+  mutate(genus.count=n(), prop.count=genus.count/total.count*100) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  distinct(genus, prop.count)
+```
+
+

@@ -81,7 +81,7 @@
 "0","diet.items <- diet.items %>% replace_na(list(binomial = 'Unidentified item'))"
 "0",""
 "0","# Create a table with average masses by collecting all the items of known mass..."
-"0","average.sizes <- diet.items %>% drop_na(mass) %>% "
+"0","average.sizes <- prey.list %>% "
 "0","  group_by(category) %>% "
 "0","  ## averaging the mass for each size & class category..."
 "0","  summarize(average=mean(mass)) %>% "

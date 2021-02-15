@@ -1,2 +1,3 @@
 "0","sc <- diet.items %>% filter(id != 1120) %>% "
-"0","  filter(id != 1171)"
+"0","  filter(id != 1171) %>% "
+"0","  filter(site != 'COM')"

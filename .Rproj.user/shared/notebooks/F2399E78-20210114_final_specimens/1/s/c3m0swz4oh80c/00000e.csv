@@ -1,0 +1,5 @@
+"0","# Proportion counts avian:mammalian for pooled sample."
+"0","sc %>% mutate(total.count=n()) %>% "
+"0","  group_by(class) %>% "
+"0","  mutate(class.count=n(), prop.count=class.count/total.count*100) %>% "
+"0","  distinct(class, prop.count)"
