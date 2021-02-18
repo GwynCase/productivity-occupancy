@@ -1,0 +1,3 @@
+"0","ba.models %>% mutate(glance=map(model, glance)) %>% "
+"0","  unnest(glance) %>% ungroup() %>% "
+"0","  select(!c(size, data, model))"

@@ -1,0 +1,8 @@
+"0","# Look at some diagnostics."
+"0","data.frame(predicted=predict(ba.top.model, type='response'),"
+"0","           residuals=residuals(ba.top.model, type='response')) %>% "
+"0","  ggplot(aes(x=predicted, y=residuals)) +"
+"0","  geom_point() +"
+"0","  geom_hline(yintercept=0, linetype='dashed') +"
+"0","  geom_smooth(method='lm', se=FALSE, color='black') +"
+"0","  theme_classic()"
