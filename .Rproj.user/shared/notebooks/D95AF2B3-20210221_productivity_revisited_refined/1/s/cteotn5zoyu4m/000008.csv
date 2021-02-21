@@ -1,0 +1,5 @@
+"0","all.models <- nf %>% pivot_longer(-c(size, data), names_to='modname', values_to='model') %>% "
+"0","  mutate(name=paste(size, modname))"
+"0",""
+"0","aictab(all.models$model, modnames=all.models$name) %>% "
+"0","  kable() %>% kable_styling(bootstrap_options=c('striped'))"

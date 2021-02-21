@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> size </th>
+   <th style="text-align:left;"> modname </th>
+   <th style="text-align:right;"> sigma </th>
+   <th style="text-align:right;"> logLik </th>
+   <th style="text-align:right;"> AIC </th>
+   <th style="text-align:right;"> BIC </th>
+   <th style="text-align:right;"> deviance </th>
+   <th style="text-align:right;"> df.residual </th>
+   <th style="text-align:right;"> R2m </th>
+   <th style="text-align:right;"> R2c </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.mature.sink </td>
+   <td style="text-align:right;"> 0.3519534 </td>
+   <td style="text-align:right;"> -11.81741 </td>
+   <td style="text-align:right;"> 35.63481 </td>
+   <td style="text-align:right;"> 38.02219 </td>
+   <td style="text-align:right;"> 11.02421 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.3426189 </td>
+   <td style="text-align:right;"> 0.9317148 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.mature.sink </td>
+   <td style="text-align:right;"> 0.5649766 </td>
+   <td style="text-align:right;"> -14.06884 </td>
+   <td style="text-align:right;"> 40.13768 </td>
+   <td style="text-align:right;"> 42.52505 </td>
+   <td style="text-align:right;"> 18.64885 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.2844187 </td>
+   <td style="text-align:right;"> 0.7616946 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.mature.diversity </td>
+   <td style="text-align:right;"> 0.6486018 </td>
+   <td style="text-align:right;"> -13.22710 </td>
+   <td style="text-align:right;"> 36.45421 </td>
+   <td style="text-align:right;"> 38.44369 </td>
+   <td style="text-align:right;"> 22.32147 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.2101877 </td>
+   <td style="text-align:right;"> 0.6502397 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.mature.edge.density </td>
+   <td style="text-align:right;"> 0.7164629 </td>
+   <td style="text-align:right;"> -17.84551 </td>
+   <td style="text-align:right;"> 45.69102 </td>
+   <td style="text-align:right;"> 47.68050 </td>
+   <td style="text-align:right;"> 22.85901 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.1783236 </td>
+   <td style="text-align:right;"> 0.4325598 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.mature.edge.density </td>
+   <td style="text-align:right;"> 0.7533775 </td>
+   <td style="text-align:right;"> -17.76095 </td>
+   <td style="text-align:right;"> 45.52189 </td>
+   <td style="text-align:right;"> 47.51137 </td>
+   <td style="text-align:right;"> 22.79199 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.1770295 </td>
+   <td style="text-align:right;"> 0.2955693 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.mature.diversity </td>
+   <td style="text-align:right;"> 0.7273408 </td>
+   <td style="text-align:right;"> -13.68948 </td>
+   <td style="text-align:right;"> 37.37896 </td>
+   <td style="text-align:right;"> 39.36843 </td>
+   <td style="text-align:right;"> 23.88825 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.1428064 </td>
+   <td style="text-align:right;"> 0.4991436 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.suitable.edge.density </td>
+   <td style="text-align:right;"> 0.7874511 </td>
+   <td style="text-align:right;"> -17.81944 </td>
+   <td style="text-align:right;"> 45.63888 </td>
+   <td style="text-align:right;"> 47.62835 </td>
+   <td style="text-align:right;"> 23.50913 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.1353813 </td>
+   <td style="text-align:right;"> 0.2322210 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 0.7566752 </td>
+   <td style="text-align:right;"> -16.04446 </td>
+   <td style="text-align:right;"> 40.08892 </td>
+   <td style="text-align:right;"> 41.68050 </td>
+   <td style="text-align:right;"> 24.34879 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0999949 </td>
+   <td style="text-align:right;"> 0.2490382 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.mature.sink </td>
+   <td style="text-align:right;"> 0.8181785 </td>
+   <td style="text-align:right;"> -17.75731 </td>
+   <td style="text-align:right;"> 47.51461 </td>
+   <td style="text-align:right;"> 49.90199 </td>
+   <td style="text-align:right;"> 24.71423 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.0963342 </td>
+   <td style="text-align:right;"> 0.4313278 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 0.7591655 </td>
+   <td style="text-align:right;"> -16.20808 </td>
+   <td style="text-align:right;"> 40.41616 </td>
+   <td style="text-align:right;"> 42.00775 </td>
+   <td style="text-align:right;"> 24.54037 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0898435 </td>
+   <td style="text-align:right;"> 0.2551252 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 0.7712692 </td>
+   <td style="text-align:right;"> -16.07518 </td>
+   <td style="text-align:right;"> 40.15035 </td>
+   <td style="text-align:right;"> 41.74194 </td>
+   <td style="text-align:right;"> 24.54669 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0839002 </td>
+   <td style="text-align:right;"> 0.2091500 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.mature.edge.density </td>
+   <td style="text-align:right;"> 0.8100178 </td>
+   <td style="text-align:right;"> -19.11676 </td>
+   <td style="text-align:right;"> 48.23351 </td>
+   <td style="text-align:right;"> 50.22299 </td>
+   <td style="text-align:right;"> 25.15745 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0588903 </td>
+   <td style="text-align:right;"> 0.2941309 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.suitable.edge.density </td>
+   <td style="text-align:right;"> 0.8281541 </td>
+   <td style="text-align:right;"> -17.55672 </td>
+   <td style="text-align:right;"> 45.11344 </td>
+   <td style="text-align:right;"> 47.10292 </td>
+   <td style="text-align:right;"> 24.94083 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0536924 </td>
+   <td style="text-align:right;"> 0.1981908 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.suitable.edge.density </td>
+   <td style="text-align:right;"> 0.8575757 </td>
+   <td style="text-align:right;"> -19.81125 </td>
+   <td style="text-align:right;"> 49.62250 </td>
+   <td style="text-align:right;"> 51.61198 </td>
+   <td style="text-align:right;"> 25.01276 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0390560 </td>
+   <td style="text-align:right;"> 0.1049547 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 0.8022135 </td>
+   <td style="text-align:right;"> -16.70843 </td>
+   <td style="text-align:right;"> 41.41686 </td>
+   <td style="text-align:right;"> 43.00844 </td>
+   <td style="text-align:right;"> 25.32812 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0290010 </td>
+   <td style="text-align:right;"> 0.1514875 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 0.8050903 </td>
+   <td style="text-align:right;"> -16.22884 </td>
+   <td style="text-align:right;"> 40.45768 </td>
+   <td style="text-align:right;"> 42.04926 </td>
+   <td style="text-align:right;"> 25.35343 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0260637 </td>
+   <td style="text-align:right;"> 0.1424629 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 0.8568910 </td>
+   <td style="text-align:right;"> -15.00921 </td>
+   <td style="text-align:right;"> 38.01842 </td>
+   <td style="text-align:right;"> 39.22876 </td>
+   <td style="text-align:right;"> 23.18522 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0249078 </td>
+   <td style="text-align:right;"> 0.0375055 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.suitable.edge.density </td>
+   <td style="text-align:right;"> 0.9144433 </td>
+   <td style="text-align:right;"> -16.98533 </td>
+   <td style="text-align:right;"> 43.97065 </td>
+   <td style="text-align:right;"> 45.48358 </td>
+   <td style="text-align:right;"> 23.19813 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.0219703 </td>
+   <td style="text-align:right;"> 0.0395262 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.mature.edge.density </td>
+   <td style="text-align:right;"> 0.8615107 </td>
+   <td style="text-align:right;"> -19.35444 </td>
+   <td style="text-align:right;"> 48.70889 </td>
+   <td style="text-align:right;"> 50.69836 </td>
+   <td style="text-align:right;"> 25.31242 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0215793 </td>
+   <td style="text-align:right;"> 0.1108448 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.mature.sink </td>
+   <td style="text-align:right;"> 0.9038091 </td>
+   <td style="text-align:right;"> -18.03698 </td>
+   <td style="text-align:right;"> 48.07396 </td>
+   <td style="text-align:right;"> 50.46133 </td>
+   <td style="text-align:right;"> 25.45775 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 0.0211395 </td>
+   <td style="text-align:right;"> 0.1786293 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.mature.diversity </td>
+   <td style="text-align:right;"> 0.8394945 </td>
+   <td style="text-align:right;"> -15.82305 </td>
+   <td style="text-align:right;"> 41.64609 </td>
+   <td style="text-align:right;"> 43.63557 </td>
+   <td style="text-align:right;"> 25.75686 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0204061 </td>
+   <td style="text-align:right;"> 0.2389805 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 0.8086808 </td>
+   <td style="text-align:right;"> -17.01093 </td>
+   <td style="text-align:right;"> 42.02186 </td>
+   <td style="text-align:right;"> 43.61344 </td>
+   <td style="text-align:right;"> 25.81296 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0038449 </td>
+   <td style="text-align:right;"> 0.1690513 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.mature.diversity </td>
+   <td style="text-align:right;"> 0.8590765 </td>
+   <td style="text-align:right;"> -16.02010 </td>
+   <td style="text-align:right;"> 42.04020 </td>
+   <td style="text-align:right;"> 44.02968 </td>
+   <td style="text-align:right;"> 25.84893 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> 0.0012074 </td>
+   <td style="text-align:right;"> 0.1670642 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 0.8126172 </td>
+   <td style="text-align:right;"> -17.14679 </td>
+   <td style="text-align:right;"> 42.29357 </td>
+   <td style="text-align:right;"> 43.88515 </td>
+   <td style="text-align:right;"> 25.79639 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 0.0011413 </td>
+   <td style="text-align:right;"> 0.1506272 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> PFA </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 0.7698004 </td>
+   <td style="text-align:right;"> -13.12990 </td>
+   <td style="text-align:right;"> 32.25980 </td>
+   <td style="text-align:right;"> 33.45349 </td>
+   <td style="text-align:right;"> 25.85007 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.1608392 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> breeding area </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 0.7698004 </td>
+   <td style="text-align:right;"> -13.12990 </td>
+   <td style="text-align:right;"> 32.25980 </td>
+   <td style="text-align:right;"> 33.45349 </td>
+   <td style="text-align:right;"> 25.85007 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.1608392 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> home range </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 0.7698004 </td>
+   <td style="text-align:right;"> -13.12990 </td>
+   <td style="text-align:right;"> 32.25980 </td>
+   <td style="text-align:right;"> 33.45349 </td>
+   <td style="text-align:right;"> 25.85007 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.1608392 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> maximum range </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 0.7698004 </td>
+   <td style="text-align:right;"> -13.12990 </td>
+   <td style="text-align:right;"> 32.25980 </td>
+   <td style="text-align:right;"> 33.45349 </td>
+   <td style="text-align:right;"> 25.85007 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> 0.1608392 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>
