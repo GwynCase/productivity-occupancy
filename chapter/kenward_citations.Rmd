@@ -20,3 +20,20 @@ Kenward 1982 Goshawk hunting behaviour, and range size as a function of habitat 
 (In Britain, NOGO spend a disproportionate amount of time in woodland, spent a disproportionate amount of time spend hunting in woodland, and were disproportionately successful in woodland. In Finland this same pattern held, but for woodland edges rather than open areas or deep forest. NOGO in Finland places ranges in areas with a disproportionate amount of edge and spent a disproportionate amount of time within edges.)
 
 Tornberg & Colpaert 2001 Survival, ranging, habitat choice and diet of the Norther GOshawk during winter in northern Final Ibis 143:41-50
+
+> Kruger & Lindstrom (2001) used 25 years of data from a study in Wesfalia, in Germany, to show that the sites that are least often occupied also produce the smalled broods when thy are occupied. With a study that was several times the life-span of most hawks, the result indicates strongly that some sites are of poorer quality whichever hawks occupy them. A result of poor sites being occupied only at high density, in a distribution of individuals that is known as Ideal Pre-emptive (because the best sites are held first, Pulliam & Danielson 1991), is that the average productivity is reduced at high density.
+
+Kruger & Lindstrom. 2001. Habitat heterogeneity affects population growth in Goshawk Accipiter gentilis. Journal of animal ecology 70: 173-181.
+
+> As a result of death before first attempting to breed, or failing the first attempt, a majority of goshawks have no offspring. Two studies lasting 25-30 years in Europe have estimated productivity of individual females that nested at least once in a Danish population (Drachmann & Nielsen 2002) and in Upper Bavaria (Bezzel et al 1997a). Remarkably, each study estimated that 15.5% of nesting females produced 50% of the young, which was the proportion of young from 20% of females in 12 years on the Kaibab Plateau (Wiens & Reynolds 2005). With fewer than 50% of hawks living long enough to breed, even where many nest in their first year, in each case fewer than 8% of females form one generation prudced half the young in the next. In such a situation, a trait that improves evolutionary fitness can spread rapidly.
+
+Drachmann & Nielsen is in Dutch.
+
+Bezzel et al is in German.
+
+Wiens & Reynolds 2005 Is fledging success a reliable index of fitness in Northern Goshawks? Journal of Raptor Research 39: 210-221.
+
+
+
+
+

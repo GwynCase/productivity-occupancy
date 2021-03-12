@@ -1,45 +1,18 @@
+zone.counts
+
+test <- zone.counts %>% filter(source == 'C') %>%
+  pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+  ungroup() %>% select(!source) %>% 
+  column_to_rownames(var='zone') %>% 
+  chisq.test(., correct=FALSE, simulate.p.value=TRUE)
 
 
-rv
-prey.list
 
-left_join(rv, prey.list, by=c('class', 'family', 'common', 'category')) %>% view()
-
-left_join(rv, prey.list) %>% mutate_if(is.character, replace_na, 'Unknown') %>% 
-  left_join(average.sizes) %>%
-  mutate(mass=coalesce(mass, average)) %>%
-  select(author, class, family, order, genus, species, binomial, common, category, prop.count, mass) %>% view()
+zone.counts %>% group_by(source) %>% nest() %>% 
+  mutate(ch=map(data, function(data) {
+    data %>% pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+      column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  })) 
 
 
-rv %>% group_by(author) %>% 
-  mutate(total.mass=sum(biomass)) %>% 
-  group_by(author, class) %>% 
-  mutate(class.mass=sum(biomass), prop.mass=class.mass/total.mass*100) %>%
-  distinct(author, class, prop.mass) %>% 
-  bind_rows(mn) %>% 
-  pivot_wider(names_from=class, values_from=prop.mass) %>% 
-  arrange(Aves)
-
-sq <- tribble(
-  ~author, ~genus, ~prop.mass,
-  'case', 'Tamiasciurus', 14.1,
-  'watson', 'Tamiasciurus', 9.6,
-)
-
-rv %>% group_by(author) %>% 
-  mutate(total.mass=sum(biomass)) %>% 
-  group_by(author, genus) %>% 
-  mutate(genus.mass=sum(biomass), prop.mass=genus.mass/total.mass*100) %>% 
-  filter(genus == 'Tamiasciurus') %>% 
-  distinct(author, genus, prop.mass) %>% 
-  bind_rows(sq) %>% 
-  arrange(prop.mass)
-  
-  
-  
-  
-  
-  
-  
-  
-  
