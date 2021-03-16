@@ -190,7 +190,11 @@ At a subset of these sites (2019 *n* = `r diet.data %>% filter(source == 'C' & y
 
 Nest cameras were digital trail cameras (Reconyx brand, UltraFire and HyperFire models) mounted 2-5 meters distant from and slightly above the nest, usually in an adjacent tree. Cameras in 2019 were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. In 2020, cameras were programmed to take five photos one second apart when triggered by motion, and an additional one photo every twenty minutes. Installation took place during the early nestling phase (between `r diet.data %>% filter(source == 'C') %>% group_by(site) %>% arrange(date) %>% slice(1) %>% ungroup() %>% summarize(date=min(date)) %>% mutate(day=day(date), month=month(date, label=TRUE, abbr=FALSE), install=paste(day, month)) %>% select(install) %>% as.character()` and `r diet.data %>% filter(source == 'C') %>% group_by(site) %>% arrange(date) %>% slice(1) %>% ungroup() %>% summarize(date=max(date)) %>% mutate(day=day(date), month=month(date, label=TRUE, abbr=FALSE), install=paste(day, month)) %>% select(install) %>% as.character()`) and cameras were left in place until after juveniles dispersed in the fall. Camera site selection was not random but constrained by topography, access, and timing of discovery.
 
-Breeding chronology was not available for most sites. At the `r diet.data %>% filter(source == 'C') %>% distinct(site) %>% summarize(n()) %>% as.numeric()` sites with cameras, chicks were aged from photos taken shortly after camera installation using a pictorial guide [@boal_photographic_1994]. Productivity was defined as the number of chicks to reach 32 days age [@boal_photographic_1994; @mcclaren_northern_2002]. 
+```{r productivity, warning=FALSE, message=FALSE}
+productivity <- read_csv('../data/raw/productivity.csv')
+```
+
+Breeding chronology was not available for most sites. At `r filter(productivity, !is.na(n.fledge)) %>% summarize(n()) %>% as.numeric()` of the sites with cameras (2019 *n* = `r filter(productivity, !is.na(n.fledge) & year == 2019) %>% summarize(n()) %>% as.numeric()`, 2020 *n* = `r filter(productivity, !is.na(n.fledge) & year == 2020) %>% summarize(n()) %>% as.numeric()`), chicks were aged from photos taken shortly after camera installation using a pictorial guide [@boal_photographic_1994]. Productivity was defined as the number of chicks to reach 32 days age [@boal_photographic_1994; @mcclaren_northern_2002]. 
 
 <!-- Steenhof & Kochert 1982 define fledging  success as number of young to reach 80% of the average age when young leave the nest. Boal 1994 states this is 32 days for NOGO, and this is the definition McClaren 2002 uses. -->
 
@@ -366,7 +370,6 @@ zone.mass <- left_join(diet.items, centroids.sf, by=c('site')) %>%
     arrange(zone)
 ```
 
-
 We pooled all data within each source (cameras, pellets, pooled pellets and remains) and within each zone (coastal, transition) and tested for differences between the zones with a chi-squared test using counts of items.
 
 ```{r chi-zone, warning=FALSE, message=FALSE}
@@ -391,6 +394,19 @@ zone.chi <- zone.counts %>% group_by(source) %>% nest() %>%
 ```
 
 To determine the reproductive consequences of dietary variation, we examined how two aspects of diet, diet diversity and proportion of biomass composed of squirrel, influenced productivity. We used linear regressions in R [@R_2020] with productivity as the response variable and diet as the explanatory variable. Because productivity data were available only from sites with nest cameras and nest-level diet data from pellets and prey remains were sparse, we performed this analysis using only diet data from nest cameras.
+
+```{r models, warning=FALSE, message=FALSE}
+# Make a happy data set for the models to use.
+model.data <- productivity %>% mutate(nest=paste(site, year, sep='')) %>% 
+  left_join(nest.diversity, by=c('nest')) %>% 
+  left_join(nest.mass, by=c('nest')) %>%
+  select(site, year, nest, n.fledge, diet.diversity, squirrel) %>% 
+  filter_all(all_vars(!is.na(.)))
+
+# Make the models.
+diversity.model <- lm(n.fledge ~ diet.diversity, data=model.data)
+squirrel.model <- lm(n.fledge ~ squirrel, data=model.data)
+```
 
 # Results
 

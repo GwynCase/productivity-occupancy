@@ -1,0 +1,172 @@
+---
+title: "Clean Cameras"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+This is the process used to take the raw camera data produced by my amazing minion and prep it for further analysis.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+```
+
+All files, and *only* files, containing camera data contain the word "photo," which makes things much, much easier.
+
+```{r message=FALSE}
+# Get a list of all the camera data files.
+file.list <- list.files(path='../data/raw', pattern='photos', full.names=TRUE)
+
+# Open all the files in the list and add to a data frame.
+df <- file.list %>% map(read_csv, col_types = cols(.default = "c")) %>% 
+  bind_rows()
+```
+
+There are some horrible, horrible problems with time and date formats, and sadly I think the only real way to fix them is to go through the sheets one by one and standardize them. That is definitely a thing I will have to do at some point, but thankfully for this analysis I only need year and the date of the first photo.
+
+```{r}
+# Try to fix all of the different datetime formats.
+df$datetime <- parse_date_time(df$datetime, c('ymd HMS', 'mdy HMS', 'dmy HMS', 'mdy HM'))
+```
+
+Now on to hunting down and fixing typos, etc.
+
+```{r}
+# Typos in the "interest" column.
+df %>% distinct(interest)
+```
+
+Yes, some.
+
+```{r}
+# Fix the two typos in 'interest'.
+df <- df %>% mutate(interest=case_when(
+  interest == 'Delivery' ~ 'delivery',
+  interest == 'preu' ~ 'prey',
+  TRUE ~ interest
+))
+
+# Typos in 'class'?
+df %>% distinct(class)
+```
+
+No, that looks fine, but I would like to replace the Us with Unknowns.
+
+```{r}
+# Replace Us with Unknown.
+df <- df %>% mutate(class=case_when(
+  class == 'U' ~ 'Unknown',
+  TRUE ~ class
+)) 
+
+# Typos in 'order'?
+df %>% distinct(order)
+```
+
+A few. Fix them, and again turn Us to Unknowns
+
+```{r}
+df <- df %>% mutate(order=case_when(
+  order == 'Passerofprmes' ~ 'Passeriformes',
+  order == 'Passiformes' ~ 'Passeriformes',
+  order == 'U' ~ 'Unknown',
+  TRUE ~ order
+))
+```
+
+On to family.
+
+
+```{r}
+df %>% distinct(family)
+```
+
+Yes, a number of them genera mistakenly entered into the family column.
+
+```{r}
+# Fix the typos in 'family.'
+df <- df %>% mutate(family=case_when(
+  family == 'Sciruidae' ~ 'Sciuridae',
+  family == 'Lepus' ~ 'Leporidae',
+  family == 'Dendragapus' ~ 'Phasianidae',
+  family == 'Neotoma' ~ 'Cricetidae',
+  family == 'U' ~ 'Unknown',
+  TRUE ~ family
+))
+
+# Typos in 'genus'?
+df %>% distinct(genus)
+```
+
+Several. I'm using *Dryobates* instead of *Leuconotopicus* for the genus of HAWO and DOWO. 
+
+There's two tricky ones here, *Tamias* which might be *Neotamias* or *Tamiasciurus*, and *Phasianidae*, which might be *Bonasa* or *Dendragapus*.
+
+```{r}
+# What's the squirrel?
+df %>% filter(genus == 'Tamias') %>% select(genus, species)
+
+# What's the squirrel?
+df %>% filter(genus == 'Tamias') %>% select(genus, species)
+
+# What's the grouse?
+df %>% filter(genus == 'Phasianidae') %>% select(genus, species)
+```
+
+```{r}
+# Fix the typos.
+df <- df %>% mutate(genus=case_when(
+  genus == 'Tamasciurus' ~ 'Tamiasciurus',
+  genus == 'Tamasciuris' ~ 'Tamiasciurus',
+  genus == 'Leuconotopicus' ~ 'Dryobates',
+  genus == 'Turdidae' ~ 'Turdus',
+  genus == 'Leporidae' ~ 'Lepus',
+  genus == 'Tamias' ~ 'Neotamias',
+  genus == 'Phasianidae' ~ 'Dendragapus',
+  genus == 'U' ~ 'Unknown',
+  TRUE ~ genus
+))
+
+# Typos in species?
+df %>% distinct(species)
+```
+
+Remarkably free of typos, just a few things to fix up.
+
+```{r}
+# Fix the typos in 'species'.
+df <- df %>% mutate(species=case_when(
+  species == 'spp' ~ 'sp',
+  species == 'Unknown' ~ 'unknown',
+  species == 'U' ~ 'unknown',
+  TRUE ~ species
+))
+
+# How about common names?
+df %>% distinct(common)
+```
+
+Kind of a hot mess--exactly what you'd expect from common names. Let's do this in steps.
+
+```{r}
+# Start by making everything lowercase.
+df$common <- str_to_lower(df$common)
+```
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+"0","# Import conflict settings."
+"0","source('../src/conflicted.R')"
+"0",""
+"0","# Load some libraries."
+"0","library(tidyverse)"
+"0","library(lubridate)"

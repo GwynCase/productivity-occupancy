@@ -1,0 +1,3 @@
+"0",""
+"0","# What's the squirrel?"
+"0","df %>% filter(genus == 'Tamias') %>% select(genus, species)"

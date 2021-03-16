@@ -1,0 +1,6 @@
+"0","# Get a list of all the camera data files."
+"0","file.list <- list.files(path='../data/raw', pattern='photos', full.names=TRUE)"
+"0",""
+"0","# Open all the files in the list and add to a data frame."
+"0","df <- file.list %>% map(read_csv, col_types = cols(.default = ""c"")) %>% "
+"0","  bind_rows()"

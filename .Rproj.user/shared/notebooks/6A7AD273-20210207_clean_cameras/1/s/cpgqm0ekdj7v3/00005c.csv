@@ -1,4 +1,0 @@
-"0","file.list %>% map(read_csv, col_types = cols(.default = ""c""))
-"
-"1","[[1]]
-"

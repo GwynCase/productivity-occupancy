@@ -1,0 +1,8 @@
+"0","# Replace Us with Unknown."
+"0","df <- df %>% mutate(class=case_when("
+"0","  class == 'U' ~ 'Unknown',"
+"0","  TRUE ~ class"
+"0",")) "
+"0",""
+"0","# Typos in 'order'?"
+"0","df %>% distinct(order)"

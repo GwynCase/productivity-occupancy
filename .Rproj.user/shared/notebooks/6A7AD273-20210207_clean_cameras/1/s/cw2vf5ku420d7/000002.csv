@@ -1,0 +1,6 @@
+"0","df <- df %>% mutate(order=case_when("
+"0","  order == 'Passerofprmes' ~ 'Passeriformes',"
+"0","  order == 'Passiformes' ~ 'Passeriformes',"
+"0","  order == 'U' ~ 'Unknown',"
+"0","  TRUE ~ order"
+"0","))"

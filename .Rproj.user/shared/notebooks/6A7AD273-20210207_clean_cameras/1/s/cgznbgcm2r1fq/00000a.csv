@@ -1,0 +1,8 @@
+"0","# Make everything lowercase."
+"0","df$common <- df$common <- str_to_lower(df$common)"
+"0",""
+"0","# Split on the periods to make separate words."
+"0","df$common <- gsub('\\.', ' ', df$common)"
+"0",""
+"0","# Find the problem children."
+"0","df %>% filter(common == 'm') %>% select(genus, species, common)"

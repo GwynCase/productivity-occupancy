@@ -1,0 +1,2 @@
+"0","# Try to fix all of the different datetime formats."
+"0","df$datetime <- parse_date_time(df$datetime, c('ymd HMS', 'mdy HMS', 'dmy HMS', 'mdy HM'))"

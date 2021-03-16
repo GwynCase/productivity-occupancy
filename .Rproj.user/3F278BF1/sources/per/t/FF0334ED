@@ -3,7 +3,7 @@
     "path": "C:/Users/gwync/sfuvault/productivity-occupancy/chapter/1_20210308_compiled_0-3.Rmd",
     "project_path": "chapter/1_20210308_compiled_0-3.Rmd",
     "type": "r_markdown",
-    "hash": "2813879939",
+    "hash": "2246959519",
     "contents": "",
     "dirty": false,
     "created": 1615244012367.0,
@@ -12,16 +12,16 @@
     "properties": {
         "tempName": "Untitled1",
         "chunk_output_type": "inline",
-        "cursorPosition": "392,522",
-        "scrollLine": "381",
-        "last_setup_crc32": "E8F1B7B6e74108d1"
+        "cursorPosition": "327,17",
+        "scrollLine": "318",
+        "last_setup_crc32": "BFC98C7Ce74108d1"
     },
     "folds": "",
-    "lastKnownWriteTime": 1615505647,
+    "lastKnownWriteTime": 1615847068,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1615505647359,
+    "last_content_update": 1615847068323,
     "read_only": false,
     "read_only_alternatives": []
 }

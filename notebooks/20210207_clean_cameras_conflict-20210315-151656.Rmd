@@ -1,0 +1,239 @@
+---
+title: "Clean Cameras"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+This is the process used to take the raw camera data produced by my amazing minion and prep it for further analysis.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+```
+
+All files, and *only* files, containing camera data contain the word "photo," which makes things much, much easier.
+
+```{r message=FALSE}
+# Get a list of all the camera data files.
+file.list <- list.files(path='../data/raw', pattern='photos', full.names=TRUE)
+
+# Open all the files in the list and add to a data frame.
+df <- file.list %>% map(read_csv, col_types = cols(.default = "c")) %>% 
+  bind_rows()
+```
+
+There are some horrible, horrible problems with time and date formats, and sadly I think the only real way to fix them is to go through the sheets one by one and standardize them. That is definitely a thing I will have to do at some point, but thankfully for this analysis I only need year and the date of the first photo.
+
+```{r}
+# Try to fix all of the different datetime formats.
+df$datetime <- parse_date_time(df$datetime, c('ymd HMS', 'mdy HMS', 'dmy HMS', 'mdy HM'))
+```
+
+Now on to hunting down and fixing typos, etc.
+
+```{r}
+# Typos in the "interest" column.
+df %>% distinct(interest)
+```
+
+Yes, some.
+
+```{r}
+# Fix the two typos in 'interest'.
+df <- df %>% mutate(interest=case_when(
+  interest == 'Delivery' ~ 'delivery',
+  interest == 'preu' ~ 'prey',
+  TRUE ~ interest
+))
+
+# Typos in 'class'?
+df %>% distinct(class)
+```
+
+No, that looks fine, but I would like to replace the Us with Unknowns.
+
+```{r}
+# Replace Us with Unknown.
+df <- df %>% mutate(class=case_when(
+  class == 'U' ~ 'Unknown',
+  TRUE ~ class
+)) 
+
+# Typos in 'order'?
+df %>% distinct(order)
+```
+
+A few. Fix them, and again turn Us to Unknowns
+
+```{r}
+df <- df %>% mutate(order=case_when(
+  order == 'Passerofprmes' ~ 'Passeriformes',
+  order == 'Passiformes' ~ 'Passeriformes',
+  order == 'U' ~ 'Unknown',
+  TRUE ~ order
+))
+```
+
+On to family.
+
+
+```{r}
+df %>% distinct(family)
+```
+
+Yes, a number of them genera mistakenly entered into the family column.
+
+```{r}
+# Fix the typos in 'family.'
+df <- df %>% mutate(family=case_when(
+  family == 'Sciruidae' ~ 'Sciuridae',
+  family == 'Lepus' ~ 'Leporidae',
+  family == 'Dendragapus' ~ 'Phasianidae',
+  family == 'Neotoma' ~ 'Cricetidae',
+  family == 'U' ~ 'Unknown',
+  TRUE ~ family
+))
+
+# Typos in 'genus'?
+df %>% distinct(genus)
+```
+
+Several. I'm using *Dryobates* instead of *Leuconotopicus* for the genus of HAWO and DOWO. 
+
+There's two tricky ones here, *Tamias* which might be *Neotamias* or *Tamiasciurus*, and *Phasianidae*, which might be *Bonasa* or *Dendragapus*.
+
+```{r}
+# What's the squirrel?
+df %>% filter(genus == 'Tamias') %>% select(genus, species)
+
+# What's the squirrel?
+df %>% filter(genus == 'Tamias') %>% select(genus, species)
+
+# What's the grouse?
+df %>% filter(genus == 'Phasianidae') %>% select(genus, species)
+```
+
+```{r}
+# Fix the typos.
+df <- df %>% mutate(genus=case_when(
+  genus == 'Tamasciurus' ~ 'Tamiasciurus',
+  genus == 'Tamasciuris' ~ 'Tamiasciurus',
+  genus == 'Leuconotopicus' ~ 'Dryobates',
+  genus == 'Turdidae' ~ 'Turdus',
+  genus == 'Leporidae' ~ 'Lepus',
+  genus == 'Tamias' ~ 'Neotamias',
+  genus == 'Phasianidae' ~ 'Dendragapus',
+  genus == 'Cricetidae' ~ 'Neotoma',
+  genus == 'U' ~ 'Unknown',
+  TRUE ~ genus
+))
+
+# Typos in species?
+df %>% distinct(species)
+```
+
+Remarkably free of typos, just a few things to fix up.
+
+```{r}
+# Fix the typos in 'species'.
+df <- df %>% mutate(species=case_when(
+  species == 'spp' ~ 'sp',
+  species == 'U' ~ 'unknown',
+  TRUE ~ species
+))
+
+# How about common names?
+df %>% distinct(common)
+```
+
+Kind of a hot mess. Exactly what you'd expect from common names, really. Let's do this in stages.
+
+The tricky one is the one that's just 'm'.
+
+```{r}
+# Make everything lowercase.
+df$common <- df$common <- str_to_lower(df$common)
+
+# Split on the periods to make separate words.
+df$common <- gsub('\\.', ' ', df$common)
+
+# Find the problem children.
+df %>% filter(common == 'm') %>% select(genus, species, common)
+
+# Fix the typos.
+df <- df %>% mutate(common=case_when(
+  common == 'bad-tailed pigeon' ~ 'band-tailed pigeon',    # HAHAHAHA I love this one!
+  common == 'chimpunk' ~ 'chipmunk',
+  common == 'stellers jay' ~ 'steller\'s jay',
+  common == 'townsends chipmunk' ~ 'townsend\'s chipmunk',
+  common == 'm' & species == 'douglasii' ~ 'douglas squirrel',
+  common == 'm' & genus == 'Rattus' ~ 'rat',
+  common == 'u' ~ 'unknown',
+  TRUE ~ common
+))
+
+# Lastly, see if anything is wonky in 'size'.
+df %>% distinct(size)
+```
+
+Looks perfect.
+
+In the earliest data sheets I forgot to include a column for 'order' because I'm an idiot. Not that things are cleaned up I can fill in those missing data.
+
+```{r message=FALSE}
+# Bring in a list of all known prey.
+prey.list <- read_csv('../data/interim/prey_attributes.csv')
+
+# Join the camera data to the list of diet items.
+df <- prey.list %>% select(order.list=order, genus, species, common) %>% 
+  right_join(df, by=c('genus', 'species', 'common')) %>% 
+  arrange(site, datetime) %>%  
+  mutate(order=case_when(
+    is.na(order) ~ order.list,
+    TRUE ~ order
+  ))
+```
+
+A final check.
+
+```{r}
+df %>% select(class, order, family, genus, species, common) %>% distinct() %>% 
+  arrange(class, order, family, genus, species, common)
+```
+
+This turns up one last typo: a known genus (Turdus) with an unknown family. Otherwise, I can fill all the NAs with 'Unknown'--except, of course, for those rows that are nothing at all.
+
+```{r warning=FALSE}
+# Fill in the last typo.
+df <- df %>% mutate(family=case_when(
+  genus == 'Turdus' & is.na(family) ~ 'Turdidae',
+  TRUE ~ family
+))
+
+# Fill in the NAs.
+df <- df %>% mutate_at(c('order', 'family', 'genus'), funs(case_when(
+  is.na(.) & class != 'Unknown' ~ 'Unknown',
+  TRUE ~ .
+)))
+```
+
+And that leads me to the final, but question: what to do with half-identified things??
+
+Problems include unidentifed:
+
+* grouse
+* thrushes
+* tree squirrels
+* chipmunks
+
+There's only one townsend's chipmunk, so I can easily assign that to *Neotamias sp.*. Likewise there's a small number *Tamiasciurus sp.* so I can assign them to *T. douglasii*.
+
+
+

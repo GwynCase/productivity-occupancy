@@ -1,0 +1,2 @@
+"0","# Typos in the ""interest"" column."
+"0","df %>% distinct(interest)"
