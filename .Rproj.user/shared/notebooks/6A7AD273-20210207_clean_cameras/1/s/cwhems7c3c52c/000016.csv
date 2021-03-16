@@ -1,0 +1,3 @@
+"0","# And one last check."
+"0","df %>% select(class, order, family, genus, species, common, size) %>% distinct() %>% "
+"0","  arrange(class, order, family, genus, species, common, size)"

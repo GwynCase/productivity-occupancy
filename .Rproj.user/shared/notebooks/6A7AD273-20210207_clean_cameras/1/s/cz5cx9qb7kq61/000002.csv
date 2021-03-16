@@ -1,0 +1,7 @@
+"0","# Mark things with 'juvenile' in the comments as J, otherwise U for unknown."
+"0","df <- df %>% mutate(age=case_when("
+"0","  str_detect(comments, 'juv|Juv') ~ 'J',"
+"0","  str_detect(comments, 'baby|Baby') & !is.na(class) ~ 'J',"
+"0","  TRUE ~ 'U'"
+"0","  "
+"0","))"

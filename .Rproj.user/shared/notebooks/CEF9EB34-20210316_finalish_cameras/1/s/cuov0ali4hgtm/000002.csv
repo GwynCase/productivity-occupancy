@@ -1,0 +1,5 @@
+"0","# Change mass for juvenile items."
+"0","diet.items <- diet.items %>% mutate(mass=case_when("
+"0","  age == 'J' ~ 0.5*mass,"
+"0","  TRUE ~ mass"
+"0","))"
