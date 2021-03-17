@@ -1,7 +1,0 @@
-"0","ggplot(group.quant.pellets, aes(x=group, y=proportion.count, fill=group)) +"
-"0","  geom_bar(stat='identity', color='white') +"
-"0","   scale_fill_manual(values=c(bird, mammal, squirrel, thrush)) +"
-"0","  labs(y='Proportion of items', title='Prey items identified from pellets') +"
-"0","  theme_classic() +"
-"0","  theme(text=element_text(family=""Lato Semibold""), axis.title.x=element_blank(),"
-"0","        legend.position='none')"

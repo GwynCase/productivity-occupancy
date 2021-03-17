@@ -38,17 +38,22 @@ pred1 <- model.data %>% filter(nest != 'MTF2019') %>% data_grid(., Tamiasciurus,
   mutate(pred=predict(mod1, newdata=., interval='confidence')) %>% select(!Tamiasciurus)
 pred1
 
-preda <- predict(mod1, interval='confidence')
+pred1 <- predict(mod1, interval='confidence')
 
 preda
 
-preda <- model.data %>% filter(nest != 'MTF2019') %>% cbind(preda)
+pred1 <- model.data %>% filter(nest != 'MTF2019') %>% cbind(pred1)
 
 pred1 %>% mutate_if(is.list, simplify_all) %>% unnest(cols=c(1)) %>% str()
 
 ggplot() +
   geom_point(data=model.data, aes(x=Tamiasciurus, y=n.fledge)) +
-  geom_line(data=pred1, aes(x=Tamiasciurus, y=pred)) +
+  geom_line(data=pred1, aes(x=Tamiasciurus, y=fit), color='red') +
+  geom_line(data=pred2, aes(x=Tamiasciurus, y=fit), color='blue') +
+  geom_line(data=pred3, aes(x=Tamiasciurus, y=fit), color='purple') +
+  geom_ribbon(data=pred1, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='red', alpha=0.1) +
+  geom_ribbon(data=pred2, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='blue', alpha=0.1) +
+  geom_ribbon(data=pred3, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='purple', alpha=0.1) +
   theme_classic()
 
 

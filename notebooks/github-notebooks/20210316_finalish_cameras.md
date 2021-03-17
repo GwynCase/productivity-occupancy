@@ -15,6 +15,8 @@ library(ggplot2)
 library(vegan)
 library(broom.mixed)
 library(lme4)
+library(purrr)
+library(modelr)
 
 # Bring in camera data.
 camera.data <- read_csv('../data/interim/cameras_20210315.csv', guess_max=7000) %>% 
@@ -301,5 +303,121 @@ data.frame(predicted=predict(squirrel.model, type='response'),
 
 ![](20210316_finalish_cameras_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
-That’s how well the model is *doing*. But how well is the model
-*modeling?*
+Because there is only one site repeated between years, it’s probably not
+crazy to run this as a simple linear model.
+
+``` r
+# Try it without MTF in 2019.
+mod1 <- model.data %>% filter(nest != 'MTF2019') %>% lm(n.fledge ~ Tamiasciurus, data=.)
+
+# Try it without MTF in 2020.
+mod2 <- model.data %>% filter(nest != 'MTF2020') %>% lm(n.fledge ~ Tamiasciurus, data=.)
+
+# Try it with both.
+mod3 <- model.data %>% lm(n.fledge ~ Tamiasciurus, data=.)
+
+# Put them all in a data frame.
+mods <- tribble(~name, ~model, ~data,
+        'mod1', mod1, model.data,
+        'mod2', mod2, model.data,
+        'mod3', mod3, model.data)
+
+# Calculate some stuff.
+mods <- mods %>% mutate(gl=map(model, glance), td=map(model, tidy))
+
+# Look at them.
+mods %>% unnest(gl)
+```
+
+    ## # A tibble: 3 x 15
+    ##   name  model data  r.squared adj.r.squared sigma statistic p.value    df logLik
+    ##   <chr> <lis> <lis>     <dbl>         <dbl> <dbl>     <dbl>   <dbl> <int>  <dbl>
+    ## 1 mod1  <lm>  <tib~     0.181        0.0792 0.809      1.77   0.220     2  -11.0
+    ## 2 mod2  <lm>  <tib~     0.194        0.0935 0.809      1.93   0.202     2  -11.0
+    ## 3 mod3  <lm>  <tib~     0.190        0.100  0.778      2.12   0.180     2  -11.7
+    ## # ... with 5 more variables: AIC <dbl>, BIC <dbl>, deviance <dbl>,
+    ## #   df.residual <int>, td <list>
+
+``` r
+mods %>% unnest(td) %>% arrange(term, name)
+```
+
+    ## # A tibble: 6 x 9
+    ##   name  model  data       gl        term    estimate std.error statistic p.value
+    ##   <chr> <list> <list>     <list>    <chr>      <dbl>     <dbl>     <dbl>   <dbl>
+    ## 1 mod1  <lm>   <tibble [~ <tibble ~ (Inter~  -0.414     1.39      -0.299   0.773
+    ## 2 mod2  <lm>   <tibble [~ <tibble ~ (Inter~  -0.395     1.39      -0.284   0.783
+    ## 3 mod3  <lm>   <tibble [~ <tibble ~ (Inter~  -0.451     1.33      -0.339   0.742
+    ## 4 mod1  <lm>   <tibble [~ <tibble ~ Tamias~   0.0364    0.0273     1.33    0.220
+    ## 5 mod2  <lm>   <tibble [~ <tibble ~ Tamias~   0.0378    0.0272     1.39    0.202
+    ## 6 mod3  <lm>   <tibble [~ <tibble ~ Tamias~   0.0380    0.0261     1.45    0.180
+
+None of them are anything like significant. This is a problem because
+even when you pull out just the 2019 data it stays insignificant.
+
+``` r
+# Run with just 2019 data.
+model.data %>% filter(year == 2019) %>% lm(n.fledge ~ Tamiasciurus, data=.) %>% summary()
+```
+
+    ## 
+    ## Call:
+    ## lm(formula = n.fledge ~ Tamiasciurus, data = .)
+    ## 
+    ## Residuals:
+    ##        1        2        3        4        5        6 
+    ##  0.14382 -1.17525  0.24394 -0.18379 -0.06981  1.04109 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)
+    ## (Intercept)  -1.75102    1.68881  -1.037    0.358
+    ## Tamiasciurus  0.07195    0.03487   2.063    0.108
+    ## 
+    ## Residual standard error: 0.8037 on 4 degrees of freedom
+    ## Multiple R-squared:  0.5155, Adjusted R-squared:  0.3944 
+    ## F-statistic: 4.256 on 1 and 4 DF,  p-value: 0.1081
+
+This is an even bigger problem because when I try to re-run my
+“storytime” code, which originally produced such a nice p-value, I
+cannot reproduce those results: the p-value is still non-significant.
+
+So in summary
+
+  - running with two years of data produces no significant results
+  - running with one year of data produces no significant results, even
+    though it did previously
+  - running with original code produces no significant results, even
+    though it did previously
+  - I am unable to reproduce previous results, I have no explanation for
+    why, and I therefore have no evidence previous significant results
+    were every actually real
+
+I can go over my data very carefully to see if I’ve made a huge mistake
+in this most recent iteration of the data set but it seems unlikely.
+
+``` r
+# Make some confidence intervals, etc.
+pred1 <- predict(mod1, interval='confidence')
+pred1 <- model.data %>% filter(nest != 'MTF2019') %>% cbind(pred1)
+
+pred2 <- predict(mod2, interval='confidence')
+pred2 <- model.data %>% filter(nest != 'MTF2020') %>% cbind(pred2)
+
+pred3 <- predict(mod3, interval='confidence')
+pred3 <- model.data %>% cbind(pred3)
+
+# Plot them.
+ggplot() +
+  geom_point(data=model.data, aes(x=Tamiasciurus, y=n.fledge)) +
+  geom_line(data=pred1, aes(x=Tamiasciurus, y=fit), color='red') +
+  geom_line(data=pred2, aes(x=Tamiasciurus, y=fit), color='blue') +
+  geom_line(data=pred3, aes(x=Tamiasciurus, y=fit), color='purple') +
+  geom_ribbon(data=pred1, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='red', alpha=0.1) +
+  geom_ribbon(data=pred2, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='blue', alpha=0.1) +
+  geom_ribbon(data=pred3, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='purple', alpha=0.1) +
+  theme_classic()
+```
+
+![](20210316_finalish_cameras_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+So no real difference whether one or the other is included, or both.
