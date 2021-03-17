@@ -1,0 +1,1 @@
+"0","glm(proportion.occupied ~ zone, data=occupancy.zone, family=binomial, weights=years.surveyed) %>% tidy()"

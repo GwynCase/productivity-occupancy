@@ -1,0 +1,241 @@
+---
+title: "wtf"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(ggplot2)
+library(vegan)
+library(broom.mixed)
+library(lme4)
+library(purrr)
+library(modelr)
+```
+
+In "storytime" I calculated biomass using `camera_corrected.csv` and `prey_attributes_revised.R`. In earlier versions, I used the same .csv file but code from `prey_attributes.R`
+
+### How it was done in storytime.
+
+```{r}
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+  # Uses camera_corrected.csv
+
+# Start renaming things.
+st.average <- average.sizes
+
+st.average
+```
+
+```{r}
+st.diet.items <- diet.items
+
+nrow(st.diet.items)
+
+st.diet.items %>% filter(method == 'camera') %>% nrow()
+
+st.diet.items %>% filter(method == 'camera') %>% 
+  distinct(class, order, family, genus, species, category, mass) %>% 
+  arrange(class, order, family, genus, species, category, mass)
+```
+
+Well, right off the bat there are some huge errors here. Numerous birds are misclassified as small mammals, so something went awry with the code. That would probably explain why the total biomass numbers (further down) are much higher than in the newer analysis--mammals are so much heavier that misclassifying birds as mammals increases the total mass rapidly.
+
+```{r message=FALSE}
+# Take only items identified to genus and twist to a wide format.
+camera.diet.wide <- diet.items %>% filter(binomial != 'Unidentified item' & method == 'camera') %>% 
+  group_by(nest, genus, species) %>% 
+  mutate(count=n()) %>% ungroup() %>% 
+  dplyr::select(nest, binomial, count) %>%
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count,
+              values_fill=list(count = 0))
+
+# Calculate diet diversity.
+camera.diet.diversity <- plyr::ddply(camera.diet.wide, ~nest, function(x) {
+           data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+   })
+
+# Proportion of diet made up of squirrel, by biomass.
+camera.proportion.squirrel <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), proportion.squirrel=amount.sq/total) %>% 
+  select(nest, proportion.squirrel) %>% distinct()
+
+# Proportion of diet made up of mammal, by biomass.
+camera.proportion.mammal <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.mm=sum(mass), proportion.mammal=amount.mm/total) %>% 
+  select(nest, total, proportion.mammal) %>% distinct()
+
+# Join them together.
+camera.diet.variables <- full_join(camera.diet.diversity, camera.proportion.mammal, by=c('nest')) %>% 
+  full_join(camera.proportion.squirrel, by=c('nest'))
+
+# Bring in productivity data.
+camera.sites.2019 <- read_csv('../data/raw/camera_nests_2019.csv')
+
+# Add productivity to dataset.
+camera.diet.variables <- camera.sites.2019 %>% select(nest, site, n_fledge) %>% 
+  full_join(camera.diet.variables, by=c('nest'))
+
+st.vars <- camera.diet.variables
+
+st.vars
+```
+
+And running a model based on this...
+
+```{r}
+st.mod <- lm(n_fledge ~ proportion.squirrel, data=st.vars)
+
+summary(st.mod)
+```
+
+So even that p-value is insignificant, even though in "storytime" it is. That means either `camera_corrected` or `prey_attributes_revised` was changed between when I printed "storytime" and now.
+
+### How it was done a very long time ago.
+
+```{r message=FALSE, warning=FALSE}
+# Bring in diet data.
+df <- read_csv('../data/interim/camera_corrected.csv', guess_max=1000)
+  # This throws a bunch of parsing failures, but not in a column that matters, so it seems ok.
+
+source('../src/prey_attributes.R')
+
+# Rename the main data frame.
+ot.diet.items <- items
+
+# Look at the average sizes.
+m.mass
+sm
+md
+```
+
+These numbers are quite different from those used in "storytime." For example a large bird in the old-fashioned analysis is 415.4 g, while a large bird in the storytime analysis is 783 g. Small mammal is also very different (87 g here, 42 g there). The others are roughly similar. However, a generic small item is 69 g here and only 31 g there, and a medium item is also 100g larger here than there.
+
+```{r}
+ot.diet.items %>% mutate(mass=as.numeric(mass)) %>% 
+  filter(!is.na(mass)) %>% 
+  group_by(site) %>% 
+  mutate(total=sum(mass)) %>%
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), prop.sq=amount.sq/total) %>% 
+  select(site, total, prop.sq) %>% distinct()
+```
+
+I had to add `filter(!is.na(mass))` because MTC and MTF were turning up as `NA`s, presumably because some items didn't get the correct mass. And indeed, these numbers are the same as those in "squirrel forest" *except* for MTC and MTF--I dropped some items and it changed their numbers.
+
+So what items are wrong?
+
+```{r}
+ot.diet.items %>%
+  distinct(class, family, genus, species, group, mass) %>% 
+  arrange(class, family, genus, species, group, mass)
+```
+
+Looks like it's a grouse that's missing. Some other notes about this--although the storytime analysis and the current analysis use only camera data to calculate proportion squirrel, they *do* use specimen data to calculate biomass of average items. Therefore, non-camera data does affect the camera data and therefore do affect the analysis, indirectly.
+
+If manually enter the data from "squirrel forest"... 
+
+```{r}
+ot.vars <- tribble(
+  ~site, ~prop.squirrel,
+  'MTC', 0.4989519,
+  'MTF', 0.4833816,
+  'RLK', 0.4119170,
+  'TCR', 0.5050670,
+  'TMC', 0.2210566,
+  'UTZ', 0.4851830
+)
+
+ot.vars <- camera.sites.2019 %>% select(nest, site, n_fledge) %>% 
+  full_join(ot.vars, by=c('site'))
+```
+
+and use it in a model...
+
+```{r}
+ot.mod <- lm(n_fledge ~ prop.squirrel, data=ot.vars)
+
+summary(ot.mod)
+```
+
+Nope. *Still* not significant. 
+
+I finally tracked it down to another notebook:
+
+### How it was done in diet, revisited.
+
+Here's just entering things in manually, to start:
+
+```{r}
+rv.vars <- tribble(
+  ~nest, ~prop.sq.mass, ~prop.sq.count,
+'MTC2019',	0.7172089,	0.5660377,
+'MTF2019',	0.7167476,	0.6153846,
+'RLK2019',	0.7755876,	0.6486486,
+'TCR2019',	0.8112324,	0.6451613,
+'TMC2019',	0.4872569,	0.3200000,
+'UTZ2019',	0.7271142,	0.7600000)
+
+rv.vars <- camera.sites.2019 %>% select(nest, site, n_fledge) %>% 
+  full_join(rv.vars, by=c('nest'))
+
+rv.mod <- lm(n_fledge ~ prop.sq.mass, data=rv.vars)
+
+summary(rv.mod)
+```
+
+And here, *finally* is the p-value of 0.034 seen in the published "storytime" notebook. But where does it come from?? "Diet, revisited" uses `prey_attributes_revised.R` just like "storytime" does.
+
+```{r message=FALSE}
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+
+rv.data <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  group_by(nest) %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count) %>% 
+  select(nest, prop.sq.mass, prop.sq.count) %>% distinct() 
+
+rv.data
+```
+
+Nope, not even close. So that means that, yes, either the data set or the processing code (or both) was changed in the interim.
+
+A final check to see anything obvious in the new camera data set.
+
+```{r, message=FALSE, warning=FALSE}
+# Bring in camera data.
+nw.diet.items <- read_csv('../data/interim/cameras_20210315.csv', guess_max=7000) %>% 
+  ## filter only records with at least size assigned...
+  filter(size != 'U')
+# Note that this doesn't have biomass data.
+
+# Pull out 2019 data for comparison.
+nw.diet.items %>% filter(year(datetime) == 2019) %>% 
+  distinct(class, order, family, genus, species, size) %>% 
+  arrange(class, order, family, genus, species, size)
+```

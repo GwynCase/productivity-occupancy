@@ -1,0 +1,843 @@
+---
+title: "storytime"
+output: 
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+```
+
+# Introduction
+
+The northern goshawk is a forest-dwelling raptor with a wide distribution and generalist diet. However, the number and identity of key prey species varies across its range, with consequences for demographics. For such an adaptable predator, the identity and influence of key prey species on population demographics may be specific to each population.
+
+Here we describe goshawk diet at the nest during the breeding season. We evaluate whether landscape characteristics are correlated with variation in breeding season diet across this ecologically diverse region. Finally, we explore whether occupancy and reproductive success vary with diet and landscape characteristics. Addressing these fundamental knowledge gaps will assist in improving existing forest management strategies.
+
+In the 2020 field season, we installed nest cameras at 8 sites, collected pellets & prey remains for 5+ sites, and deployed transmitters at 6 sites.
+
+# Goshawk diet
+
+## Diet methods
+
+Goshawk diet was assessed using three methods: egested pellets, prey remains, and nest cameras.
+
+```{r setup, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+options(tidyverse.quiet = TRUE)
+options(dplyr.summarise.inform = FALSE)
+library(tidyverse)
+library(lubridate)
+library(vegan)
+library(ggplot2)
+library(knitr)
+library(kableExtra)
+library(broom)
+library(corrplot)
+library(extrafont)
+library(networkD3)
+library(GGally)
+
+loadfonts(device='win', quiet=TRUE)
+
+# Bring in data.
+source('../src/prey_attributes_revised.R')
+
+# Add grouping variable.
+diet.items <- diet.items %>% mutate(group=case_when(
+  class == 'Aves' & family == 'Phasianidae' ~ 'grouse',
+  class == 'Aves' & family == 'Corvidae' ~ 'corvid',
+  class == 'Aves' & family == 'Turdidae' ~ 'thrush',
+  class == 'Aves' ~ 'bird',
+  class == 'Mammalia' & genus == 'Tamiasciurus' ~ 'squirrel',
+  class == 'Mammalia' & genus == 'Lepus' ~ 'hare',
+  class == 'Mammalia' ~ 'mammal',
+  TRUE ~ 'unknown'
+))
+
+# Let's name some colors.
+aves <- '#89b0ae'
+mammalia <- '#e9c46a'
+unknown <- 'lightgrey'
+bird <- '#114b5f' # Midnight green eagle
+corvid <- '#7c9eb2' # Pewter blue
+grouse <- '#c3e8bd' # Tea green
+hare <- '#d1603d' # Copper red
+mammal <- '#cdc392' # Sage
+squirrel <- '#df9a57' # Persian orange
+thrush <- '#553e4e' # Eggplant
+```
+
+### Pellets 
+
+```{r}
+pellets <- diet.items %>% filter(source == 'P')
+```
+
+A total of `r nrow(pellets)` prey items were identified from egested pellets collected at `r distinct(pellets, site) %>% nrow()` sites in 2019 and 2020 (more data from the 2020 season still to come). Most sites had only 1-3 items identified from pellets, though some had 10 or more items identified.
+
+```{r}
+pellets %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill=unknown, color='white') +
+  labs(x='Number of prey items', y='Number of sites', 
+       title='Prey items from pellets per site') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+`r round(pellets %>% filter(genus != 'Unknown') %>% nrow() / nrow(pellets), digits=2) * 100`% of items could be identified to genus or better, and no item could not at least be identified to class. `r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r pellets %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+```{r}
+class.quant.pellets <- diet.items %>% 
+  filter(source == 'P') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='pellets') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for pellet data.
+proportion.squirrel.pellets <- diet.items %>%
+  filter(source == 'P') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='pellets') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+### Remains
+
+```{r}
+remains <- diet.items %>% filter(source == 'R')
+
+class.quant.remains <- diet.items %>% 
+  filter(source == 'R') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='remains') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+```
+
+An additional `r nrow(remains)` prey items were identified from prey remains collected from `r distinct(remains, site) %>% nrow()` sites in 2019 and 2020 (more data from the 2020 season still to come).
+
+```{r}
+remains %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill=unknown, color='white') +
+  labs(x='Number of prey items', y='Number of sites', 
+       title='Prey items identified from remains per site') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+`r round(remains %>% filter(genus != 'Unknown') %>% nrow() / nrow(remains), digits=2) * 100`% of items could be identified to genus or better, and only 1 item could not be identified at least to class. `r remains %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r remains %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+### Combined pellets and remains
+
+```{r}
+pellets.remains <- diet.items %>% filter(method == 'remains')
+```
+
+Combining pellets and remains gives a total of `r nrow(pellets.remains)` physical prey items from `r distinct(pellets.remains, site) %>% nrow()` sites.
+
+ Most sites had only 1-5 items identified from pellets and remains, though some had more than 20 items identified.
+
+```{r}
+pellets.remains %>% group_by(site) %>% summarize(count=n()) %>%
+  ggplot(aes(x=count)) +
+  geom_histogram(binwidth=1, fill=unknown, color='white') +
+  labs(x='Number of prey items', y='Number of sites', 
+       title='Prey items identified from combined pellets and remains per site') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+<!-- `r round(pellets.remains %>% filter(genus != 'Unknown') %>% nrow() / nrow(pellets.remains), digits=2) * 100`% of items could be identified to genus or better, and only 1 item could not be identified at least to class. `r pellets.remains %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified: -->
+
+```{r}
+class.quant.combined <- diet.items %>% 
+  filter(method == 'remains') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='combined') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for pellet data.
+proportion.squirrel.combined <- diet.items %>%
+  filter(method == 'remains') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='combined') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+<!-- By both count and biomass, mammals made up a smaller proportion of items than birds (`r class.quant.combined[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass, `r class.quant.combined[2,3] %>% as.numeric() %>% round(digits=2) * 100`% by count). Squirrels (*Tamiasciurus* sp.) made up `r round(pellets.remains %>% filter(genus == 'Tamiasciurus') %>% nrow() / nrow(pellets.remains), digits=2) * 100`% of the items by count (`r proportion.squirrel.combined[1,1] %>% as.numeric() %>% round(digits=2) * 100`% by biomass). -->
+
+### Cameras
+
+```{r}
+cameras <- diet.items %>% filter(source == 'C')
+```
+
+From cameras, `r nrow(cameras)` prey items were identified from photographs taken at `r distinct(cameras, site) %>% nrow()` sites 2019 (more data from the 2020 season still to come). Nests had between `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(min=min(n)) %>% as.numeric()` and `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(max=max(n)) %>% as.numeric()` (mean = `r cameras %>% group_by(site) %>% summarize(n=n()) %>% summarize(mean=mean(n)) %>% as.numeric() %>% round()`) items identified.
+
+`r round(cameras %>% filter(genus != 'Unknown') %>% nrow() / nrow(cameras), digits=2) * 100`% of items could be identified to genus or better, however `r round(cameras %>% filter(class != 'Unknown') %>% nrow() / nrow(cameras), digits=2)`% of items could not be identified at least to class. `r cameras %>% filter(binomial != 'Unidentified item') %>% distinct(binomial) %>% nrow()` different species were identified:
+
+`r cameras %>% filter(binomial != 'Unidentified item') %>% distinct(binomial, common) %>% kable() %>% kable_styling()`
+
+```{r}
+# Calculate proportion bird/mammal by biomass and count for camera data.
+class.quant.camera <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  group_by(class) %>% 
+  mutate(mass.cl=sum(mass), count.cl=n(),
+         prop.mass=mass.cl/total.mass, prop.count=count.cl/total.count,
+         data='camera') %>% 
+  select(class, prop.mass, prop.count, data) %>% distinct()
+
+# Calculate proportion of squirrel by biomass and count for camera data.
+proportion.squirrel.camera <- diet.items %>%
+  filter(method == 'camera') %>%
+  mutate(total.mass=sum(mass), total.count=n()) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(mass.sq=sum(mass), count.sq=n(), 
+         prop.sq.mass=mass.sq/total.mass, prop.sq.count=count.sq/total.count,
+         data='camera') %>% 
+  select(prop.sq.mass, prop.sq.count, data) %>% distinct() 
+```
+
+<!-- By both count and biomass, mammals made up a larger proportion of items than birds (`r class.quant.camera[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass, `r class.quant.camera[2,3] %>% as.numeric() %>% round(digits=2) * 100`% by count). Squirrels (*Tamiasciurus* sp.) made up `r round(cameras %>% filter(genus == 'Tamiasciurus') %>% nrow() / nrow(cameras), digits=2) * 100`% of the items by count (`r proportion.squirrel.camera[1,1] %>% as.numeric() %>% round(digits=2) * 100`% by biomass). -->
+
+### Comparison of methods
+
+Prey remains greatly overestimated avian prey relative to pellets or cameras, causing the combined pellets and remains data to be skewed. Pellets alone produced broadly similar estimates of mammalian and squirrel biomass to cameras.
+
+```{r}
+bind_rows(class.quant.pellets, class.quant.remains, class.quant.combined, class.quant.camera) %>% 
+  arrange(desc(class)) %>% 
+  mutate(class=factor(class)) %>% 
+  mutate(class=fct_relevel(class, 'Unknown', 'Mammalia', 'Aves')) %>% 
+  ggplot(aes(x=data, y=prop.count, group=class, fill=class)) +
+  geom_bar(position='stack', stat='identity', color='white') +
+  coord_flip() +
+  scale_fill_manual(values=c(unknown, mammalia, aves)) +
+  labs(y='Proportion of items', fill='Class', 
+       title='Prey identification bias by data source') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.y=element_blank())
+```
+
+While counts and biomass are broadly similar, counts generally overestimate birds relative to biomass.
+
+```{r}
+rename(class.quant.camera, counts=prop.count, biomass=prop.mass) %>% 
+  arrange(desc(class)) %>% 
+  mutate(class=factor(class)) %>% 
+  mutate(class=fct_relevel(class, 'Unknown', 'Mammalia', 'Aves')) %>% 
+  pivot_longer(cols=c(counts, biomass), names_to='measure', values_to='value') %>% 
+  ggplot(aes(x=measure, y=value, group=class, fill=class)) +
+  geom_bar(position='stack', stat='identity', color='white') +
+  coord_flip() +
+  scale_fill_manual(values=c(unknown, mammalia, aves)) +
+  labs(y='Proportion counts or biomass', fill='Class',
+       title='Prey quantification bias by measure') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.y=element_blank()) 
+```
+
+```{r}
+source.wide <- diet.items %>% filter(binomial != 'Unidentified item') %>% 
+  group_by(source, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(source, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=source, values_from=count, values_fill=list(count = 0)) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(-binomial, names_to='source', values_to='count') %>% 
+  mutate(source=case_when(
+    source == 'R' ~ 'remains',
+    source == 'P' ~ 'pellets',
+    source == 'RP' ~ 'combined',
+    source == 'C' ~ 'cameras'
+  )) %>% 
+  pivot_wider(names_from=binomial, values_from=count)
+
+source.wide <- column_to_rownames(source.wide, var='source')
+```
+
+Although pellets and cameras are similar in terms of proportions mammals, birds, and squirrels, they have very low overlap in terms of species list. However, keep in mind the very low number of identified species from remains and the nestedness of the combined data.
+
+Morisita's index of overlap:
+```{r}
+vegdist(source.wide[,-1], method='morisita')
+```
+To show visually how different the species list is for each data source:
+
+```{r}
+links <- diet.items %>% filter(binomial != 'Unidentified item') %>% 
+  group_by(source) %>% 
+  mutate(total.count=n()) %>% 
+  group_by(common) %>% 
+  mutate(sp.count=n(), p.count=sp.count/total.count) %>% 
+  distinct(common, source, sp.count) %>% 
+  rename(target=common, value=sp.count) %>% 
+  mutate(source=case_when(
+    source == 'R' ~ 'remains',
+    source == 'P' ~ 'pellets',
+    source == 'C' ~ 'cameras'
+  )) %>% 
+  data.frame()
+
+nodes <- data.frame(
+  name=c(as.character(links$source), 
+         as.character(links$target)) %>% unique())
+
+# With networkD3, connection must be provided using id, not using real name like in the links dataframe.. So we need to reformat it.
+links$IDsource <- match(links$source, nodes$name)-1 
+links$IDtarget <- match(links$target, nodes$name)-1
+
+# Make the Network
+sankeyNetwork(Links = links, Nodes = nodes,
+              Source = "IDsource", Target = "IDtarget",
+              Value = "value", NodeID = "name", 
+              sinksRight=FALSE, fontFamily='Lato',
+              height=750, width=1000, fontSize=14)
+```
+
+```{r eval=FALSE}
+# Twist wide based on grouping variable.
+group.wide <- diet.items %>% 
+  group_by(source, group) %>% 
+  mutate(count=n()) %>%
+  select(source, group, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=source, values_from=count, values_fill=list(count = 0)) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(-group, names_to='source', values_to='count') %>% 
+  mutate(source=case_when(
+    source == 'R' ~ 'remains',
+    source == 'P' ~ 'pellets',
+    source == 'RP' ~ 'combined',
+    source == 'C' ~ 'cameras'
+  )) %>% 
+  pivot_wider(names_from=group, values_from=count)
+
+group.wide <- column_to_rownames(group.wide, var='source')
+
+vegdist(group.wide[,-1], method='morisita')
+```
+
+## Diet quantification
+
+```{r}
+group.quant.pellets <- pellets %>% mutate(total.count=n(), total.mass=sum(mass)) %>% 
+  group_by(group) %>% 
+  mutate(group.count=n(), group.mass=sum(mass),
+         proportion.count=group.count/total.count*100,
+         proportion.mass=group.mass/total.mass*100,
+         source='pellets') %>% 
+  distinct(group, group.count, proportion.count, group.mass, proportion.mass, source) %>% 
+  ungroup()
+```
+
+Based on data from pellets alone, mammals accounted for `r class.quant.pellets[2,3] %>% as.numeric() %>% round(digits=2) * 100`% of prey items (`r class.quant.pellets[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass) and birds accounted for `r class.quant.pellets[1,3] %>% as.numeric() %>% round(digits=2) * 100`% of items (`r class.quant.pellets[1,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass). The most commonly identified prey categories were squirrel (`r filter(group.quant.pellets, group == 'squirrel') %>% select(proportion.count) %>% as.numeric() %>% round()`% by count, `r filter(group.quant.pellets, group == 'squirrel') %>% select(proportion.mass) %>% as.numeric() %>% round()`% by biomass) and other birds (`r filter(group.quant.pellets, group == 'bird') %>% select(proportion.count) %>% as.numeric() %>% round()`% by count, `r filter(group.quant.pellets, group == 'bird') %>% select(proportion.mass) %>% as.numeric() %>% round()`% by biomass).
+
+```{r}
+ggplot(group.quant.pellets, aes(x=group, y=proportion.count, fill=group)) +
+  geom_bar(stat='identity', color='white') +
+   scale_fill_manual(values=c(bird, mammal, squirrel, thrush)) +
+  labs(y='Proportion of items', title='Prey items identified from pellets') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.x=element_blank(),
+        legend.position='none')
+```
+
+```{r}
+group.quant.combined <- diet.items %>% 
+  filter(method == 'remains') %>% 
+  mutate(total.count=n(), total.mass=sum(mass)) %>% 
+  group_by(group) %>% 
+  mutate(group.count=n(), group.mass=sum(mass),
+         proportion.count=group.count/total.count*100,
+         proportion.mass=group.mass/total.mass*100,
+         source='combined') %>% 
+  distinct(group, group.count, proportion.count, group.mass, proportion.mass, source) %>% 
+  ungroup()
+```
+
+Based on data from pellets and remains combined, mammals accounted for `r class.quant.combined[2,3] %>% as.numeric() %>% round(digits=2) * 100`% of prey items (`r class.quant.combined[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass) and birds accounted for `r class.quant.combined[1, 3] %>% as.numeric() %>% round(digits=2) * 100`% of items (`r class.quant.combined[1, 2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass). The most commonly identified prey category was other birds (`r filter(group.quant.combined, group == 'bird') %>% select(proportion.count) %>% as.numeric() %>% round()`% by count, `r filter(group.quant.combined, group == 'bird') %>% select(proportion.mass) %>% as.numeric() %>% round()`% by biomass). Squirrel (`r filter(group.quant.combined, group == 'squirrel') %>% select(proportion.count) %>% as.numeric() %>% round()`% count, `r filter(group.quant.combined, group == 'squirrel') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass), other mammals (`r filter(group.quant.combined, group == 'mammal') %>% select(proportion.count) %>% as.numeric() %>% round()`% count, `r filter(group.quant.combined, group == 'mammal') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass), and thrushes (`r filter(group.quant.combined, group == 'thrush') %>% select(proportion.count) %>% as.numeric() %>% round()`% count, `r filter(group.quant.combined, group == 'thrush') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass) also made up >5% of items. While hare did not make up a significant proportion of counts (`r filter(group.quant.combined, group == 'hare') %>% select(proportion.count) %>% as.numeric() %>% round()`%), it did make up a large proportion of biomass (`r filter(group.quant.combined, group == 'hare') %>% select(proportion.mass) %>% as.numeric() %>% round()`%).
+
+```{r}
+ggplot(group.quant.combined, aes(x=group, y=proportion.count, fill=group)) +
+  geom_bar(stat='identity', color='white') +
+  scale_fill_manual(values=c(bird, corvid, grouse,
+                             hare, mammal, squirrel,
+                             thrush, unknown)) +
+  labs(y='Proportion of items', 
+       title='Prey items identified from combined pellets and remains') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.x=element_blank(),
+        legend.position='none')
+```
+
+```{r}
+group.quant.camera <- cameras %>% mutate(total.count=n(), total.mass=sum(mass)) %>% 
+  group_by(group) %>% 
+  mutate(group.count=n(), group.mass=sum(mass),
+         proportion.count=group.count/total.count*100,
+         proportion.mass=group.mass/total.mass*100,
+         source='cameras') %>% 
+  distinct(group, group.count, proportion.count, group.mass, proportion.mass, source) %>% 
+  ungroup()
+```
+
+Based on data from nest cameras, mammals accounted for `r class.quant.camera[2,3] %>% as.numeric() %>% round(digits=2) * 100`% of prey items (`r class.quant.camera[2,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass) and birds accounted for `r class.quant.camera[1,3] %>% as.numeric() %>% round(digits=2) * 100`% of items (`r class.quant.camera[1,2] %>% as.numeric() %>% round(digits=2) * 100`% by biomass). The most commonly identified prey categories were squirrel (`r filter(group.quant.camera, group == 'squirrel') %>% select(proportion.count) %>% as.numeric() %>% round()`% by count, `r filter(group.quant.camera, group == 'squirrel') %>% select(proportion.mass) %>% as.numeric() %>% round()`% by biomass). Thrushes (`r filter(group.quant.combined, group == 'thrush') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass), other mammals (`r filter(group.quant.combined, group == 'mammal') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass), and unidentified items (`r filter(group.quant.combined, group == 'unknown') %>% select(proportion.mass) %>% as.numeric() %>% round()`% biomass) each made up approximately 10% of the items.
+
+```{r}
+ggplot(group.quant.camera, aes(x=group, y=proportion.count, fill=group)) +
+  geom_bar(stat='identity', color='white') +
+  scale_fill_manual(values=c(bird, corvid, grouse,
+                             hare, mammal, squirrel,
+                             thrush, unknown)) +
+  labs(y='Proportion of items', title='Prey items identified from nest cameras') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.x=element_blank(),
+        legend.position='none')
+```
+
+```{r}
+# Take only items identified to genus and twist to a wide format.
+camera.diet.wide <- diet.items %>% filter(binomial != 'Unidentified item' & method == 'camera') %>% 
+  group_by(nest, genus, species) %>% 
+  mutate(count=n()) %>% ungroup() %>% 
+  dplyr::select(nest, binomial, count) %>%
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count,
+              values_fill=list(count = 0))
+
+# Calculate diet diversity.
+camera.diet.diversity <- plyr::ddply(camera.diet.wide, ~nest, function(x) {
+           data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+   })
+
+# Do it again with groupings.
+camera.groups.wide <- diet.items %>% filter(class != 'Unknown' & method == 'camera') %>% 
+  group_by(nest, group) %>% 
+  mutate(count=n()) %>% ungroup() %>% 
+  dplyr::select(nest, group, count) %>%
+  distinct() %>% 
+  pivot_wider(names_from=group, values_from=count,
+              values_fill=list(count = 0))
+
+# Calculate diet diversity.
+camera.groups.diversity <- plyr::ddply(camera.groups.wide, ~nest, function(x) {
+           data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+   })
+
+camera.groups.wide.rn <- column_to_rownames(camera.groups.wide, var='nest')
+```
+
+Based on items identified to species from camera data, the mean diet diversity for the entire study area was `r mean(camera.diet.diversity$diet.diversity) %>% round(digits=2)` (range = `r min(camera.diet.diversity$diet.diversity) %>% round(digits=2)`-`r max(camera.diet.diversity$diet.diversity) %>% round(digits=2)`).
+
+Based on items prey groupings from camera items identified at least to class, the mean diet diversity for the entire study area was `r mean(camera.groups.diversity$diet.diversity) %>% round(digits=2)` (range = `r min(camera.groups.diversity$diet.diversity) %>% round(digits=2)`-`r max(camera.groups.diversity$diet.diversity) %>% round(digits=2)`). 
+
+# Diet consequences
+
+## Productivity
+
+Mammals generally, and squirrels (genus *Tamiasciurus*) in particular, are presumed to be an important factor in goshawk breeding success. Here are some linear models testing whether that presumption (based on biomass from camera data) is correct.
+
+Productivity data is only available for the 6 camera sites in 2019, but will (hopefully) also be available for the 8 camera sites in 2020.
+
+```{r message=FALSE, warning=FALSE}
+# Proportion of diet made up of squirrel, by biomass.
+camera.proportion.squirrel <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(genus == 'Tamiasciurus') %>% 
+  mutate(amount.sq=sum(mass), proportion.squirrel=amount.sq/total) %>% 
+  select(nest, proportion.squirrel) %>% distinct()
+
+# Proportion of diet made up of mammal, by biomass.
+camera.proportion.mammal <- diet.items %>% 
+  filter(method == 'camera') %>% 
+  mutate(mass=as.numeric(mass)) %>% 
+  group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% 
+  filter(class == 'Mammalia') %>% 
+  mutate(amount.mm=sum(mass), proportion.mammal=amount.mm/total) %>% 
+  select(nest, proportion.mammal) %>% distinct()
+
+# Join them together.
+camera.diet.variables <- full_join(camera.diet.diversity, camera.proportion.mammal, by=c('nest')) %>% 
+  full_join(camera.proportion.squirrel, by=c('nest'))
+
+# Bring in productivity data.
+camera.sites.2019 <- read_csv('../data/raw/camera_nests_2019.csv')
+
+# Add productivity to dataset.
+camera.diet.variables <- camera.sites.2019 %>% select(nest, site, n_fledge) %>% 
+  full_join(camera.diet.variables, by=c('nest'))
+
+# Make a bunch of models.
+
+# Diet diversity.
+productivity.by.diet.diversity <- 
+  lm(n_fledge ~ diet.diversity, data=camera.diet.variables) %>% 
+  summary() %>% 
+  glance() %>% 
+  mutate(variable='diet diversity')
+
+# Proportion mammal.
+productivity.by.proportion.mammal <-
+  lm(n_fledge ~ proportion.mammal, data=camera.diet.variables) %>% 
+  summary() %>% 
+  glance() %>% 
+  mutate(variable='proportion mammal')
+
+# Proportion squirrel.
+productivity.by.proportion.squirrel <- 
+  lm(n_fledge ~ proportion.squirrel, data=camera.diet.variables) %>% 
+  summary() %>% 
+  glance() %>% 
+  mutate(variable='proportion.squirrel')
+```
+
+```{r}
+bind_rows(productivity.by.diet.diversity, productivity.by.proportion.mammal,
+          productivity.by.proportion.squirrel) %>% 
+  kable() %>% kable_styling()
+```
+
+Squirrels appear to be important for high productivity, albeit based on a small sample size.
+
+```{r}
+ggplot(camera.diet.variables, aes(x=proportion.squirrel, y=n_fledge)) +
+  geom_point() +
+  geom_smooth(method='lm', col='black', formula='y ~ x', fill=unknown) +
+  labs(x='Proportion squirrel biomass', y='N. fledglings',
+       title='Reproductive success as function of squirrel biomass in diet',
+       caption='Adj. R2 = 0.64, shaded region represents 95% CI') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"))
+```
+
+## Occupancy
+
+```{r}
+# Bring in occupancy data and filter out sites with too few surveys.
+occupancy.landscape.metrics <- readRDS('../data/interim/occupancy_landscape_metrics.rds') %>% 
+  filter(years.surveyed > 1)
+
+occupancy.diet.metrics <- 
+  left_join(camera.diet.variables, occupancy.landscape.metrics, by=c('site')) %>% 
+  distinct(site, years.surveyed, proportion.occupied, diet.diversity, proportion.squirrel)
+
+glm(proportion.occupied ~ diet.diversity, data=occupancy.diet.metrics, 
+    family=binomial, weights=years.surveyed) %>% tidy()
+
+glm(proportion.occupied ~ proportion.squirrel, data=occupancy.diet.metrics, 
+    family=binomial, weights=years.surveyed) %>% tidy()
+```
+
+Albeit based on a small sample size, diet diversity and proportion squirrel do not appear to impact occupancy. This may be a bit misleading, since it assumes diet remains constant through time.
+
+# Landscape
+
+## Zones: coastal & transition
+
+FLNR has delineated a transition zone composed of drier ecosystem types intermediate between the wet coastal rainforest and the arid interior forests. These ecosystem differences may be reflected in goshawk diet between the two zones.
+
+```{r message=FALSE, warning=FALSE}
+# Bring in zone data.
+centroids <- read_csv('../data/interim/zone_centroid_sites.csv')
+
+# Add to camera diet data.
+camera.diet.variables <- centroids %>% select(site, zone) %>% right_join(camera.diet.variables, by=c('site'))
+```
+
+Of the `r camera.diet.variables %>% nrow()` camera sites from 2019, `r filter(camera.diet.variables, zone == 'cs') %>% nrow()` sites are categorized as coastal, and `r filter(camera.diet.variables, zone == 'tz') %>% nrow()` as transition.
+
+Overall, the two zones do differ in the prey categories present when using camera data. Chi-squared test using camera data:
+
+```{r}
+# Make a frequency table of groups for camera data.
+freq.camera <- centroids %>% 
+  select(site, zone) %>% right_join(diet.items, by=c('site')) %>% 
+  filter(method == 'camera') %>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  column_to_rownames(var='zone')
+
+# Chi-square test for difference in counts by zones.
+chi.camera <- chisq.test(freq.camera, correct=FALSE, simulate.p.value=TRUE)
+
+chi.camera
+```
+
+```{r}
+freq.camera %>% rownames_to_column() %>% 
+  pivot_longer(-rowname, names_to='group', values_to='count') %>% 
+  group_by(rowname) %>% 
+  mutate(total=sum(count), proportion=count/total) %>% 
+  
+  ggplot(aes(x=group, y=proportion, group=rowname, fill=group)) +
+  geom_bar(position='dodge', stat='identity') +
+  scale_fill_manual(values=c(bird, corvid, grouse,
+                             hare, mammal, squirrel,
+                             thrush, unknown)) +
+  labs(y='Proportion of items', title='Prey group frequency by zone') +
+  theme_classic() +
+  theme(text=element_text(family="Lato Semibold"), axis.title.x=element_blank(),
+        legend.position='none') +
+  facet_wrap(~rowname)
+```
+
+However, the zones do not appear different when using pellets only or combined pellets and remains. Chi-squared test using combined pellets and remains:
+
+```{r}
+freq.combined <- centroids %>% 
+  select(site, zone) %>% right_join(diet.items, by=c('site')) %>% 
+  filter(method == 'remains') %>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  drop_na(zone) %>% 
+  column_to_rownames(var='zone')
+
+# Chi-square test for difference in counts by zones.
+chisq.test(freq.combined, correct=FALSE, simulate.p.value=TRUE)
+```
+
+And chi-squared test using pellets only:
+
+```{r}
+freq.pellets <- centroids %>% 
+  select(site, zone) %>% right_join(diet.items, by=c('site')) %>% 
+  filter(source == 'P') %>%
+  group_by(zone, group) %>%
+  mutate(count=n()) %>% 
+  select(zone, group, count) %>% 
+  distinct() %>% ungroup() %>% 
+  pivot_wider(names_from='group', values_from='count', values_fill=0) %>% 
+  drop_na(zone) %>% 
+  column_to_rownames(var='zone')
+
+# Chi-square test for difference in counts by zones.
+chisq.test(freq.pellets, correct=FALSE, simulate.p.value=TRUE)
+```
+
+When looking closer at the differences between the zones in the camera data, the differences seem to lie in certain birds and other mammals, but not in groups that are predicted to be important (mostly squirrels).
+
+```{r}
+corrplot(chi.camera$residuals, is.cor=FALSE, method='number')
+```
+
+Numbers of squirrels (the dominant prey item) and grouse and hare (less common but high-value prey items) are not enormously different between the zones. But birds in the coastal zone consume much more thrush than expected, and much less assorted other mammals than expected.
+
+## Forest characteristics
+
+At scales smaller than the broad coastal and transition zones, forest characteristics may influence diet diversity, amount of squirrel in the diet, or other diet variables. Forest characteristics were described in several contexts:
+
+* ecological zone
+* vegetation composition and age
+* goshawk foraging suitability
+
+From these, an array of metrics was calculated:
+
+* Landscape composition
+  * proportion older forest
+  * proportion suitable habitat
+  * amount canopy cover*
+* Configuration
+  * edge density of landcover
+  * edge density of HSI
+  * edge density of shrub/open space
+  * edge density of suitable habitat
+* Aggregation
+  * contagion of landcover
+  * contagion of HSI 
+* Diversity
+  * Simpson's diversity index (forest type)
+  * Simpson's diversity index (landcover)
+  * Simpson's evenness index (landcover)
+  * patch richness density (landcover)
+  
+Each metric was calculated at four nested spatial scales:
+
+```{r}
+# Area is in hectares.
+landscape <- data.frame(
+  size=c('PFA', 'breeding area', 'home range', 'maximum range'),
+  area=c(60, 200, 3800, 32902.97)
+)
+
+# Convert area in hectares to radii in meters.
+landscape <- landscape %>% mutate(radius=sqrt(area*10000/pi))
+
+landscape
+```
+
+A series of univariate models were run using camera data to determine whether any of these metrics influence diet diversity or the proportion of squirrel biomass in the diet.
+
+Only one variable was found to be significant at the 0.05 level for diet diversity, proportion high canopy cover:
+
+```{r diet-diversity-table}
+
+diet.diversity.statistics <- readRDS('../data/interim/diet_diversity_stats.rds')
+
+diet.diversity.statistics <- diet.diversity.statistics %>% mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+  p.value < 0.05 ~ paste(as.character(sig), '*'),
+  TRUE ~  paste(as.character(sig))
+))
+
+diet.diversity.statistics %>% select(size, sig, variable) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(variable, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+However, four variables were found to be significant at predicting proportion of squirrel biomass: landcover contagion, landcover diversity, landcover evenness, and proportion high canopy cover.
+
+```{r squirrel-biomass-table}
+
+proportion.squirrel.statistics <- readRDS('../data/interim/proportion_squirrel_stats.rds')
+
+proportion.squirrel.statistics <- proportion.squirrel.statistics %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+  p.value < 0.05 ~ paste(as.character(sig), '*'),
+  TRUE ~  paste(as.character(sig))
+))
+
+proportion.squirrel.statistics %>% select(size, sig, variable) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(variable, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+* **Landcover contagion** is the probably that two given cells belong to type i and j. Measures both interspersion (are the different patch types mixed up randomly or do certain types always occur next to others), and dispersion (are all patches of a given types close together or really spread out).
+* **Landcover diversity** is the probability that two types selected randomly will be different. Measures both richness and evenness.
+* **Landcover evenness** is the distribution of area between different patch types.
+* **Proportion high canopy cover** is the amount of the landscape covered by forest with at least 75% canopy closure, controlling for the total size of the landscape.
+
+Then next step is to run multivariate models with different combinations of significant variables, but as some of these are highly correlated they will not go in the same models together.
+
+```{r}
+occupancy.landscape.metrics %>% 
+  right_join(camera.sites.2019, by=c('site', 'name')) %>% 
+  filter(size == 'home range') %>% 
+  select(cover.contagion, cover.diversity, cover.evenness, canopy.high) %>% 
+  ggcorr(nbreaks=5, hjust=0.75, layout.exp=1)
+```
+
+# Landscape consequences
+
+Given that landscape affects diet and diet has consequences for reproductive success, the next question is whether landscape directly affects reproductive success and site occupancy or only indirectly through the diet.
+
+## Productivity
+
+```{r}
+lm(n_fledge ~ zone, data=camera.diet.variables) %>% glance()
+```
+
+There doesn't appear to be any difference in productivity between zones, using nest camera data.
+
+At smaller scales, forest characteristics don't seem to have any impact on productivity, either.
+
+```{r}
+productivity.landscape.statistics <- readRDS('../data/interim/productivity_landscape_stats.rds')
+
+productivity.landscape.statistics <- productivity.landscape.statistics %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+  p.value < 0.05 ~ paste(as.character(sig), '*'),
+  TRUE ~  paste(as.character(sig))
+))
+
+productivity.landscape.statistics %>% select(size, sig, variable) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(variable, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+## Occupancy
+
+```{r}
+# Trim occupancy & landscape data down just to zone data.
+occupancy.zone <- occupancy.landscape.metrics %>% 
+  select(site, zone, years.surveyed, proportion.occupied)
+```
+
+If one zone, coastal or transition, represents a better overall habitat for goshawks, there could be a difference between them in site occupancy.
+
+```{r}
+glm(proportion.occupied ~ zone, data=occupancy.zone, family=binomial, weights=years.surveyed) %>% tidy()
+```
+
+However, that does not seem to be the case. 
+
+```{r}
+# Load in occupancy model outputs.
+occupancy.landscape.statistics <- readRDS('../data/interim/occupancy_landscape_stats.rds')
+
+# Clean up.
+occupancy.landscape.statistics <- occupancy.landscape.statistics %>% 
+  mutate(sig=round(p.value, digits=2)) %>% 
+  mutate(sig=case_when(
+  p.value < 0.05 ~ paste(as.character(sig), '*'),
+  TRUE ~  paste(as.character(sig))
+))
+
+# Make a table.
+occupancy.landscape.statistics %>% 
+  filter(term != '(Intercept)') %>% 
+  select(size, sig, variable) %>% 
+  pivot_wider(names_from=size, values_from=sig) %>% 
+  select(variable, PFA, everything()) %>% 
+  kable() %>% kable_styling(bootstrap_options=c('striped'))
+```
+
+On the other hand, it does appear to be the case that landscape variables affect site occupancy, but these are not the same as the ones that affect diet and they are at different, generally smaller scales.
+
+Again, the next step is to make multivariate models, but some of these variables are highly correlated.
+
+* **Gap edge density** is the length of edge along natural and artificial gaps (such as cut block and clearings), controlling for landscape size.
+* **proportion suitable** is the amount of landscape rated at suitable until the foraging HSI, controlling for landscape size.
+* **suitable habitat edge density** is the length of edge along patches of suitable habitat, controlling for landscape size.
+* **landcover richness** is the number of different landcover patch types present in the landscape, controlling for landscape size.
+
+```{r}
+occupancy.landscape.metrics %>% 
+  filter(size == 'home range' & years.surveyed > 1) %>% 
+  select(cover.diversity, cover.richness, gap.edge.density, proportion.suitable, suitable.edge.density) %>% 
+  ggcorr(nbreaks=5, hjust=0.75, layout.exp=1)
+```

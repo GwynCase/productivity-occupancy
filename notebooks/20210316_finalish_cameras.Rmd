@@ -1,6 +1,6 @@
 ---
 title: "Finalish cameras"
-output: github_document
+output: html_notebook
 ---
 
 ```{r options, include=FALSE}

@@ -1,0 +1,64 @@
+"0","# Bring in data."
+"0","source('../src/prey_attributes_revised.R')"
+"2","Parsed with column specification:
+cols(
+  X = [32mcol_double()[39m,
+  filename = [31mcol_character()[39m,
+  datetime = [34mcol_datetime(format = """")[39m,
+  serial = [31mcol_character()[39m,
+  site = [31mcol_character()[39m,
+  interest = [31mcol_character()[39m,
+  live.chicks = [32mcol_double()[39m,
+  class = [31mcol_character()[39m,
+  order = [31mcol_character()[39m,
+  family = [31mcol_character()[39m,
+  genus = [31mcol_character()[39m,
+  species = [31mcol_character()[39m,
+  common = [31mcol_character()[39m,
+  size = [31mcol_character()[39m,
+  comments = [31mcol_character()[39m,
+  sex = [31mcol_character()[39m
+)
+"
+"2","Parsed with column specification:
+cols(
+  class = [31mcol_character()[39m,
+  order = [31mcol_character()[39m,
+  family = [31mcol_character()[39m,
+  genus = [31mcol_character()[39m,
+  species = [31mcol_character()[39m,
+  binomial = [31mcol_character()[39m,
+  common = [31mcol_character()[39m,
+  category = [31mcol_character()[39m,
+  mass = [32mcol_double()[39m,
+  source = [31mcol_character()[39m
+)
+"
+"2","Missing column names filled in: 'X26' [26]"
+"2","Parsed with column specification:
+cols(
+  .default = col_character(),
+  id = [32mcol_double()[39m,
+  date = [34mcol_date(format = """")[39m,
+  zone = [32mcol_double()[39m,
+  easting = [32mcol_double()[39m,
+  northing = [32mcol_double()[39m,
+  n.northing = [32mcol_double()[39m,
+  n.easting = [32mcol_double()[39m,
+  help = [33mcol_logical()[39m
+)
+"
+"2","See spec(...) for full column specifications.
+"
+"2","Parsed with column specification:
+cols(
+  site = [31mcol_character()[39m,
+  name = [31mcol_character()[39m
+)
+"
+"0","  # Uses camera_corrected.csv"
+"0",""
+"0","# Start renaming things."
+"0","st.average <- average.sizes"
+"0",""
+"0","st.average"

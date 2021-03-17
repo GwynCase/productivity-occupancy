@@ -1,0 +1,8 @@
+"0","group.quant.pellets <- pellets %>% mutate(total.count=n(), total.mass=sum(mass)) %>% "
+"0","  group_by(group) %>% "
+"0","  mutate(group.count=n(), group.mass=sum(mass),"
+"0","         proportion.count=group.count/total.count*100,"
+"0","         proportion.mass=group.mass/total.mass*100,"
+"0","         source='pellets') %>% "
+"0","  distinct(group, group.count, proportion.count, group.mass, proportion.mass, source) %>% "
+"0","  ungroup()"

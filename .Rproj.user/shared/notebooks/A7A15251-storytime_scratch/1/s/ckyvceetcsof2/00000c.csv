@@ -1,0 +1,3 @@
+"0",""
+"0","glm(proportion.occupied ~ proportion.squirrel, data=occupancy.diet.metrics, "
+"0","    family=binomial, weights=years.surveyed) %>% tidy()"

@@ -1,0 +1,1 @@
+"0","corrplot(chi.camera$residuals, is.cor=FALSE, method='number')"

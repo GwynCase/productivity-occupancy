@@ -1,0 +1,3 @@
+"0","# Trim occupancy & landscape data down just to zone data."
+"0","occupancy.zone <- occupancy.landscape.metrics %>% "
+"0","  select(site, zone, years.surveyed, proportion.occupied)"

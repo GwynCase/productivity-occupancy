@@ -1,0 +1,8 @@
+"0","ggplot(camera.diet.variables, aes(x=proportion.squirrel, y=n_fledge)) +"
+"0","  geom_point() +"
+"0","  geom_smooth(method='lm', col='black', formula='y ~ x', fill=unknown) +"
+"0","  labs(x='Proportion squirrel biomass', y='N. fledglings',"
+"0","       title='Reproductive success as function of squirrel biomass in diet',"
+"0","       caption='Adj. R2 = 0.64, shaded region represents 95% CI') +"
+"0","  theme_classic() +"
+"0","  theme(text=element_text(family=""Lato Semibold""))"

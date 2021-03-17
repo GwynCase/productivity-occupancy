@@ -1,59 +1,17 @@
-ggplot() +
-  geom_point(data=model.data, aes(x=Tamiasciurus, y=n.fledge)) +
-  theme_classic()
 
-preds <- mods %>% mutate(pred=map2(data, model, add_predictions))
+rv.vars <- tribble(
+  ~nest, ~prop.sq.mass, ~prop.sq.count,
+'MTC2019',	0.7172089,	0.5660377,
+'MTF2019',	0.7167476,	0.6153846,
+'RLK2019',	0.7755876,	0.6486486,
+'TCR2019',	0.8112324,	0.6451613,
+'TMC2019',	0.4872569,	0.3200000,
+'UTZ2019',	0.7271142,	0.7600000)
+rv
 
-preds
+rv.vars <- camera.sites.2019 %>% select(nest, site, n_fledge) %>% 
+  full_join(rv, by=c('nest'))
 
-temp <- mods %>% mutate(pred=map(model, predict, interval='confidence')) %>% 
-  unnest(pred)
+rv.vars
 
-colnames(temp)
-
-mods %>% mutate(pred=map(model, predict, interval='confidence')) %>% 
-  mutate(pred=cbind(pred))
-
-
-ggplot(preds, aes(x=Tamiasciurus, y=pred)) +
-  geom_line(aes(group=name)) +
-  geom_point(data=model.data, aes(x=Tamiasciurus, y=n.fledge)) +
-  theme_classic()
-
-mods2 <- mods %>% unnest(data)
-mods2
-mods[1, ]
-
-ggplot(mods[1, ], aes(x=data$Tamiasciurus, y=data$n.fledge)) +
-  geom_point(aes(x=data$Tamiasciurus, y=data$n.fledge))
-#  geom_smooth(method='lm', formula=n.fledge~Tamiasciurus)
-
-
-mods %>% unnest(data) %>% 
-  ggplot(aes(x=Tamiasciurus, y=n.fledge)) +
-  geom_smooth(method='lm', formula=y~x) +
-  theme_classic()
-
-pred1 <- model.data %>% filter(nest != 'MTF2019') %>% data_grid(., Tamiasciurus, .model=mod1) %>% 
-  mutate(pred=predict(mod1, newdata=., interval='confidence')) %>% select(!Tamiasciurus)
-pred1
-
-pred1 <- predict(mod1, interval='confidence')
-
-preda
-
-pred1 <- model.data %>% filter(nest != 'MTF2019') %>% cbind(pred1)
-
-pred1 %>% mutate_if(is.list, simplify_all) %>% unnest(cols=c(1)) %>% str()
-
-ggplot() +
-  geom_point(data=model.data, aes(x=Tamiasciurus, y=n.fledge)) +
-  geom_line(data=pred1, aes(x=Tamiasciurus, y=fit), color='red') +
-  geom_line(data=pred2, aes(x=Tamiasciurus, y=fit), color='blue') +
-  geom_line(data=pred3, aes(x=Tamiasciurus, y=fit), color='purple') +
-  geom_ribbon(data=pred1, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='red', alpha=0.1) +
-  geom_ribbon(data=pred2, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='blue', alpha=0.1) +
-  geom_ribbon(data=pred3, aes(x=Tamiasciurus, y=fit, ymin=lwr, ymax=upr), fill='purple', alpha=0.1) +
-  theme_classic()
-
-
+lm(n_fledge ~ prop.sq.mass, data=rv.vars) %>% summary()

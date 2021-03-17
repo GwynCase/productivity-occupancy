@@ -1,0 +1,7 @@
+"0","ot.diet.items %>% mutate(mass=as.numeric(mass)) %>% "
+"0","  filter(!is.na(mass)) %>% "
+"0","  group_by(site) %>% "
+"0","  mutate(total=sum(mass)) %>%"
+"0","  filter(genus == 'Tamiasciurus') %>% "
+"0","  mutate(amount.sq=sum(mass), prop.sq=amount.sq/total) %>% "
+"0","  select(site, total, prop.sq) %>% distinct()"

@@ -3,7 +3,7 @@
     "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20210316_finalish_cameras.Rmd",
     "project_path": "notebooks/20210316_finalish_cameras.Rmd",
     "type": "r_markdown",
-    "hash": "3044210953",
+    "hash": "0",
     "contents": "",
     "dirty": false,
     "created": 1615999438131.0,
@@ -12,15 +12,15 @@
     "properties": {
         "tempName": "Untitled1",
         "chunk_output_type": "inline",
-        "cursorPosition": "2,23",
-        "scrollLine": "0"
+        "cursorPosition": "39,16",
+        "scrollLine": "42"
     },
     "folds": "",
-    "lastKnownWriteTime": 1616003253,
+    "lastKnownWriteTime": 1616003477,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1616003254006,
+    "last_content_update": 1616003477220,
     "read_only": false,
     "read_only_alternatives": []
 }
