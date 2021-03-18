@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table table-striped" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> class </th>
+   <th style="text-align:left;"> order </th>
+   <th style="text-align:left;"> family </th>
+   <th style="text-align:left;"> genus </th>
+   <th style="text-align:left;"> species </th>
+   <th style="text-align:left;"> common </th>
+   <th style="text-align:left;"> age </th>
+   <th style="text-align:left;"> category </th>
+   <th style="text-align:right;"> mass </th>
+   <th style="text-align:right;"> C </th>
+   <th style="text-align:right;"> P </th>
+   <th style="text-align:right;"> R </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Accipitriformes </td>
+   <td style="text-align:left;"> Accipitridae </td>
+   <td style="text-align:left;"> Accipiter </td>
+   <td style="text-align:left;"> gentilis </td>
+   <td style="text-align:left;"> northern goshawk </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 565.80000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Accipitriformes </td>
+   <td style="text-align:left;"> Accipitridae </td>
+   <td style="text-align:left;"> Accipiter </td>
+   <td style="text-align:left;"> gentilis </td>
+   <td style="text-align:left;"> northern goshawk </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 282.90000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Anseriformes </td>
+   <td style="text-align:left;"> Anatidae </td>
+   <td style="text-align:left;"> Anas </td>
+   <td style="text-align:left;"> platyrhynchos </td>
+   <td style="text-align:left;"> mallard </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 1138.50000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Anseriformes </td>
+   <td style="text-align:left;"> Anatidae </td>
+   <td style="text-align:left;"> Anas </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> duck </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 867.33000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Anseriformes </td>
+   <td style="text-align:left;"> Anatidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> duck </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 645.35273 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Charadriiformes </td>
+   <td style="text-align:left;"> Laridae </td>
+   <td style="text-align:left;"> Larus </td>
+   <td style="text-align:left;"> canus </td>
+   <td style="text-align:left;"> mew gull </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 388.50000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Columbiformes </td>
+   <td style="text-align:left;"> Columbidae </td>
+   <td style="text-align:left;"> Patagioenas </td>
+   <td style="text-align:left;"> fasciata </td>
+   <td style="text-align:left;"> band-tailed pigeon </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 379.40000 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Galliformes </td>
+   <td style="text-align:left;"> Phasianidae </td>
+   <td style="text-align:left;"> Bonasa </td>
+   <td style="text-align:left;"> umbellus </td>
+   <td style="text-align:left;"> ruffed grouse </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 523.40000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Galliformes </td>
+   <td style="text-align:left;"> Phasianidae </td>
+   <td style="text-align:left;"> Bonasa </td>
+   <td style="text-align:left;"> umbellus </td>
+   <td style="text-align:left;"> ruffed grouse </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 261.70000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Galliformes </td>
+   <td style="text-align:left;"> Phasianidae </td>
+   <td style="text-align:left;"> Dendragapus </td>
+   <td style="text-align:left;"> fuliginosus </td>
+   <td style="text-align:left;"> sooty grouse </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 1055.50000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 4 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Galliformes </td>
+   <td style="text-align:left;"> Phasianidae </td>
+   <td style="text-align:left;"> Dendragapus </td>
+   <td style="text-align:left;"> fuliginosus </td>
+   <td style="text-align:left;"> sooty grouse </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 527.75000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Galliformes </td>
+   <td style="text-align:left;"> Phasianidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> grouse </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 789.45000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 33 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Corvidae </td>
+   <td style="text-align:left;"> Corvus </td>
+   <td style="text-align:left;"> caurinus </td>
+   <td style="text-align:left;"> northwestern crow </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 387.00000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Corvidae </td>
+   <td style="text-align:left;"> Cyanocitta </td>
+   <td style="text-align:left;"> stelleri </td>
+   <td style="text-align:left;"> steller's jay </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 128.00000 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Corvidae </td>
+   <td style="text-align:left;"> Cyanocitta </td>
+   <td style="text-align:left;"> stelleri </td>
+   <td style="text-align:left;"> steller's jay </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 64.00000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Corvidae </td>
+   <td style="text-align:left;"> Perisoreus </td>
+   <td style="text-align:left;"> canadensis </td>
+   <td style="text-align:left;"> gray jay </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 70.20000 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Parulidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 32.31750 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Passerellidae </td>
+   <td style="text-align:left;"> Pipilo </td>
+   <td style="text-align:left;"> maculatus </td>
+   <td style="text-align:left;"> spotted towhee </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 41.80000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Catharus </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> thrush </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 29.80000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Catharus </td>
+   <td style="text-align:left;"> ustulatus </td>
+   <td style="text-align:left;"> swainson's thrush </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 29.80000 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Ixoreus </td>
+   <td style="text-align:left;"> naevius </td>
+   <td style="text-align:left;"> varied thrush </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 79.40000 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Ixoreus </td>
+   <td style="text-align:left;"> naevius </td>
+   <td style="text-align:left;"> varied thrush </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 39.70000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Turdus </td>
+   <td style="text-align:left;"> migratorius </td>
+   <td style="text-align:left;"> american robin </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 79.90000 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Turdus </td>
+   <td style="text-align:left;"> migratorius </td>
+   <td style="text-align:left;"> american robin </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 39.95000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 88.44500 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 32.31750 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 44.22250 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Turdidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 16.15875 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 32.31750 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 16.15875 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Passeriformes </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 88.44500 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Colaptes </td>
+   <td style="text-align:left;"> auratus </td>
+   <td style="text-align:left;"> northern flicker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 157.40000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> 5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Dryobates </td>
+   <td style="text-align:left;"> pubescens </td>
+   <td style="text-align:left;"> downy woodpecker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 27.87000 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Dryobates </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> woodpecker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 54.11000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Dryobates </td>
+   <td style="text-align:left;"> villosus </td>
+   <td style="text-align:left;"> hairy woodpecker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 80.35000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Dryocopus </td>
+   <td style="text-align:left;"> pileatus </td>
+   <td style="text-align:left;"> pileated woodpecker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 287.50000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Sphyrapicus </td>
+   <td style="text-align:left;"> ruber </td>
+   <td style="text-align:left;"> red-breasted sapsucker </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 58.20000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 3 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 88.44500 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Piciformes </td>
+   <td style="text-align:left;"> Picidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 44.22250 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Strigiformes </td>
+   <td style="text-align:left;"> Strigidae </td>
+   <td style="text-align:left;"> Strix </td>
+   <td style="text-align:left;"> varia </td>
+   <td style="text-align:left;"> barred owl </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 716.50000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large bird </td>
+   <td style="text-align:right;"> 645.35273 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium bird </td>
+   <td style="text-align:right;"> 88.44500 </td>
+   <td style="text-align:right;"> 12 </td>
+   <td style="text-align:right;"> 14 </td>
+   <td style="text-align:right;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 32.31750 </td>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Aves </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> small bird </td>
+   <td style="text-align:right;"> 16.15875 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Chiroptera </td>
+   <td style="text-align:left;"> Vespertilionidae </td>
+   <td style="text-align:left;"> Myotis </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> bat </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 5.80000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Eulipotyphla </td>
+   <td style="text-align:left;"> Soricidae </td>
+   <td style="text-align:left;"> Sorex </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> shrew </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 7.13000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Lagomorpha </td>
+   <td style="text-align:left;"> Leporidae </td>
+   <td style="text-align:left;"> Lepus </td>
+   <td style="text-align:left;"> americanus </td>
+   <td style="text-align:left;"> snowshoe hare </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large mammal </td>
+   <td style="text-align:right;"> 1340.00000 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 12 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Aplodontiidae </td>
+   <td style="text-align:left;"> Aplodontia </td>
+   <td style="text-align:left;"> rufa </td>
+   <td style="text-align:left;"> mountain beaver </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large mammal </td>
+   <td style="text-align:right;"> 1005.00000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Cricetidae </td>
+   <td style="text-align:left;"> Neotoma </td>
+   <td style="text-align:left;"> cinerea </td>
+   <td style="text-align:left;"> bushy-tailed woodrat </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 374.70000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Cricetidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> vole </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 34.37000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Muridae </td>
+   <td style="text-align:left;"> Rattus </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> rat </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 269.80000 </td>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Rodentidae </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 53.84000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Sciuridae </td>
+   <td style="text-align:left;"> Glaucomys </td>
+   <td style="text-align:left;"> sabrinus </td>
+   <td style="text-align:left;"> flying squirrel </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 155.50000 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Sciuridae </td>
+   <td style="text-align:left;"> Neotamias </td>
+   <td style="text-align:left;"> sp </td>
+   <td style="text-align:left;"> chipmunk </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 66.40000 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Sciuridae </td>
+   <td style="text-align:left;"> Tamiasciurus </td>
+   <td style="text-align:left;"> douglasii </td>
+   <td style="text-align:left;"> douglas squirrel </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 203.50000 </td>
+   <td style="text-align:right;"> 179 </td>
+   <td style="text-align:right;"> 52 </td>
+   <td style="text-align:right;"> 6 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Sciuridae </td>
+   <td style="text-align:left;"> Tamiasciurus </td>
+   <td style="text-align:left;"> douglasii </td>
+   <td style="text-align:left;"> douglas squirrel </td>
+   <td style="text-align:left;"> J </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 101.75000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Sciuridae </td>
+   <td style="text-align:left;"> Tamiasciurus </td>
+   <td style="text-align:left;"> hudsonicus </td>
+   <td style="text-align:left;"> red squirrel </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 224.50000 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large mammal </td>
+   <td style="text-align:right;"> 1172.50000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 268.12500 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Rodentia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 53.84000 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large mammal </td>
+   <td style="text-align:right;"> 1172.50000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium mammal </td>
+   <td style="text-align:right;"> 268.12500 </td>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Mammalia </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small mammal </td>
+   <td style="text-align:right;"> 53.84000 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> large item </td>
+   <td style="text-align:right;"> 908.92636 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> medium item </td>
+   <td style="text-align:right;"> 178.28500 </td>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> Unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> unknown </td>
+   <td style="text-align:left;"> A </td>
+   <td style="text-align:left;"> small item </td>
+   <td style="text-align:right;"> 43.07875 </td>
+   <td style="text-align:right;"> 73 </td>
+   <td style="text-align:right;"> - </td>
+   <td style="text-align:right;"> - </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

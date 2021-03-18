@@ -316,3 +316,18 @@ ggplot() +
 ```
 
 So no real difference whether one or the other is included, or both.
+
+One last item for David:
+
+```{r}
+glm(n.fledge ~ Tamiasciurus, family=poisson, data=model.data) %>% summary()
+glm(n.fledge ~ diet.diversity, family=poisson, data=model.data) %>% summary()
+```
+
+```{r}
+ggplot(model.data, aes(x=Tamiasciurus, y=n.fledge)) +
+  geom_smooth(method='glm', formula='y ~ x') +
+  geom_point() +
+  theme_classic()
+```
+
