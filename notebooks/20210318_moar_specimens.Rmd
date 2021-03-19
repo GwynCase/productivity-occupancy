@@ -1,0 +1,224 @@
+---
+title: "Moar specimens"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+This is the process used to take the specimen data and prep it for further analysis.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(stringr)
+
+# Make a little function for checking at random rows.
+grab.some <- function(df, n=10) {
+  index <- sample(1:nrow(df), n)
+  df[index,]
+}
+
+# Bring in the data.
+rd <- read_csv('../data/raw/20210118_specimens.csv', guess_max=7000)
+
+# Take a look.
+grab.some(rd) %>% select(-c(easting, northing))
+```
+
+First off, there are some weird cases I know I need to remove.
+
+* COM is a site from which a few specimens were collected during surveys; however, no NOGO nest or conclusive NOGO sign was detected. This means there's no real reason to assume these are NOGO prey remains and not, say, BADO prey remains.
+* Item 1120 was originally identified as SSHA, but later re-IDed as dead NOGO chick. This does not appear to be a genuine prey item  so it should be removed from the analysis.
+* Item 1171 was collected as a presumed prey item, but it appears to actually be a shed NOGO feather and so also not actually prey.
+
+```{r}
+# Remove problematic items.
+rd <- rd %>% 
+  filter(id != 1120) %>% 
+  filter(id != 1171) %>% 
+  filter(site != 'Comsock')
+```
+
+Now we start checking for typos.
+
+```{r}
+# Check for typos in site names.
+
+rd %>% distinct(site)
+```
+
+Great, but let's rename that, bring in abbreviations, and make sure everything matches.
+
+```{r message=FALSE}
+# Bring in a list of site abbreviations and site names.
+nest.list <- read_csv('../data/processed/site_abbreviations.csv')
+
+rd %>% rename(name=site) %>% left_join(nest.list, by=c('name')) %>% 
+  distinct(site, name)
+```
+
+Uh-huh so Gowan and Glacial Lake didn't join properly.
+
+```{r}
+# Rename problems.
+rd$site <- str_replace_all(rd$site, c('Gowan'='Gowan Creek', 'Glacial Lake'='Glacier Lake'))
+
+# Join again.
+rd <- rd %>% rename(name=site) %>% left_join(nest.list, by=c('name'))
+```
+
+Check again.
+
+```{r}
+distinct(rd, site, name)
+```
+
+Check for typos in class.
+
+```{r}
+distinct(rd, class)
+```
+
+Great. Order?
+
+```{r}
+distinct(rd, order)
+```
+
+Great. Family?
+
+```{r}
+distinct(rd, family)
+```
+
+Great. Genus?
+
+```{r}
+distinct(rd, genus)
+```
+
+Not precisely a typo, but I used the wrong genus (Picoides) for hairy and downy woodpeckers. There appears to be some confusion on whether it's Picoides, Leuconotopicus, or Dryobates, but BOW
+uses Dryobates.
+
+```{r}
+# Fix out-of-date taxonomy.
+rd$genus <- str_replace(rd$genus, 'Picoides', 'Dryobates')
+
+# Check again.
+distinct(rd, genus)
+```
+
+Great. On to species.
+
+```{r}
+distinct(rd, species)
+```
+
+Great. Common names?
+
+```{r}
+distinct(rd, common)
+```
+
+Ok, so some problems here in that I shouldn't have "grouse" and "duck," but I'll fix that later in the more complex cleanup stage.
+
+Finally, age and size.
+
+```{r}
+distinct(rd, age)
+
+distinct(rd, size)
+```
+
+Perfect.  And I would like to replace all the Us with "Unknown" for taxonomy.
+
+```{r message=FALSE, warning=FALSE}
+# Replace Us.
+rd <- rd %>% mutate_at(c('class', 'order', 'family', 'genus', 'species'), funs(case_when(
+    . == 'U' ~ 'Unknown',
+    TRUE ~ .
+  )))
+
+# Then make species lowercase.
+rd$species <- str_to_lower(rd$species)
+```
+
+Now let's look for oddities.
+
+```{r}
+rd %>% group_by(class, order, family, genus, species, common, size, age) %>% 
+  mutate(count=n()) %>% 
+  distinct(class, order, family, genus, species, common, size, age, count) %>% 
+  arrange(class, order, family, genus, species, common, size)
+```
+
+Numerous problems:
+
+* I don't like the ducks as both Anas sp. and Anatidae. Probably the unidentifed Anatidae is an Anas (it's that tricky feather I couldn't find the right blue-green match to), so I can make that Anas sp.
+* The unknown grouse can be given their own biomass.
+* There's really ony one Catharus option, so I should drop the sp.
+* All the voles should be given vole mass, not small mammal mass.
+* I said the Dryobates was M... and downy woodpeckers are small... so it must, therefore, be a hairy.
+
+
+```{r}
+rd <- rd %>% mutate(species=case_when(
+  genus == 'Anas' & species == 'sp' ~ 'unknown',
+  genus == 'Catharus' ~ 'ustulatus',
+  genus == 'Dryobates' & species == 'sp' ~ 'villosus',
+  TRUE ~ species
+))
+
+rd <- rd %>% mutate(common=case_when(
+  genus == 'Catharus' ~ 'swainson\'s thrush',
+  family == 'Phasianidae' & species == 'unknown' ~ 'grouse',
+  genus == 'Anas' & species == 'unknown' ~ 'duck',
+  genus == 'Dryobates' & species == 'villosus' ~ 'hairy woodpecker',
+  family == 'Anatidae' & genus == 'Unknown' ~ 'unknown', 
+  TRUE ~ common
+))
+```
+
+Check one more time.
+
+```{r}
+rd %>% group_by(class, order, family, genus, species, common, size, age) %>% 
+  mutate(count=n()) %>% 
+  distinct(class, order, family, genus, species, common, size, age, count) %>% 
+  arrange(class, order, family, genus, species, common, size)
+```
+
+And let's see how well the mass numbers join.
+
+```{r message=FALSE}
+# Bring in a list of all known prey.
+prey.list <- read_csv('../data/interim/prey_attributes.csv')
+
+# Join the biomass data to the list of diet items.
+ri <- prey.list %>% select(genus, species, binomial, common, category, mass) %>% 
+  right_join(rd, by=c('genus', 'species', 'common'))
+
+# And check.
+ri %>% distinct(class, order, family, genus, species, common, mass) %>% 
+  arrange(class, order, family, genus, species, common)
+```
+
+Looks good. Let's save it to cut down on processing later.
+
+```{r}
+write_csv(rd, '../data/processed/specimens_20210318.csv')
+```
+
+
+
+
+
+
+
+

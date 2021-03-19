@@ -1,0 +1,5 @@
+"0","# Rename problems."
+"0","rd$site <- str_replace_all(rd$site, c('Gowan'='Gowan Creek', 'Glacial Lake'='Glacier Lake'))"
+"0",""
+"0","# Join again."
+"0","rd <- rd %>% rename(name=site) %>% left_join(nest.list, by=c('name'))"

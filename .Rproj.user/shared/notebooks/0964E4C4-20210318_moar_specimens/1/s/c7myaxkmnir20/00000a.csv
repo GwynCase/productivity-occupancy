@@ -1,0 +1,5 @@
+"0","# Bring in a list of site abbreviations and site names."
+"0","nest.list <- read_csv('../data/processed/site_abbreviations.csv')"
+"0",""
+"0","rd %>% rename(name=site) %>% left_join(nest.list, by=c('name')) %>% "
+"0","  distinct(site, name)"

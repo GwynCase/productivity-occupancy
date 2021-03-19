@@ -1,4 +1,3 @@
-new.data %>% group_by(site, year=year(datetime)) %>% 
-  summarize(first=min(datetime), last=max(datetime))#, days=difftime(max, min), n=n())
-
-grab.some(new.data)
+filter(diet.items, source == 'C') %>% mutate(total=sum(mass)) %>% 
+  group_by(group) %>% mutate(mass=sum(mass), gmass=mass/total) %>% 
+  distinct(group, gmass) %>% arrange(desc(gmass))

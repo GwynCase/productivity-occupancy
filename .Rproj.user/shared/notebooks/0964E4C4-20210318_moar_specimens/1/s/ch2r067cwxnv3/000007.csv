@@ -1,0 +1,4 @@
+"0","rd %>% group_by(class, order, family, genus, species, common, size, age) %>% "
+"0","  mutate(count=n()) %>% "
+"0","  distinct(class, order, family, genus, species, common, size, age, count) %>% "
+"0","  arrange(class, order, family, genus, species, common, size)"

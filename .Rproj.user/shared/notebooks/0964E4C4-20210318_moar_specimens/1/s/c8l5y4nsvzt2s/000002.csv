@@ -1,0 +1,8 @@
+"0","# Replace Us."
+"0","rd <- rd %>% mutate_at(c('class', 'order', 'family', 'genus', 'species'), funs(case_when("
+"0","    . == 'U' ~ 'Unknown',"
+"0","    TRUE ~ ."
+"0","  )))"
+"0",""
+"0","# Then make species lowercase."
+"0","rd$species <- str_to_lower(rd$species)"

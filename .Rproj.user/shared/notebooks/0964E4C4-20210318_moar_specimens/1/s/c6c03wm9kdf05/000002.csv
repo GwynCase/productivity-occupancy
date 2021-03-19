@@ -1,0 +1,5 @@
+"0","# Remove problematic items."
+"0","rd <- rd %>% "
+"0","  filter(id != 1120) %>% "
+"0","  filter(id != 1171) %>% "
+"0","  filter(site != 'Comsock')"

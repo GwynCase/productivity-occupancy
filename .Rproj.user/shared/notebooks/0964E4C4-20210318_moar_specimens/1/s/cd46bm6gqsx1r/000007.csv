@@ -1,0 +1,5 @@
+"0","# Fix out-of-date taxonomy."
+"0","rd$genus <- str_replace(rd$genus, 'Picoides', 'Dryobates')"
+"0",""
+"0","# Check again."
+"0","distinct(rd, genus)"
