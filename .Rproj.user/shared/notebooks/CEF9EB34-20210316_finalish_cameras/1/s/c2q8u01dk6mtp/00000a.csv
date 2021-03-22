@@ -1,6 +1,0 @@
-"0","# 2019."
-"0","model.data %>% filter(year == 2019) %>% "
-"0","  ggplot(aes(x=Tamiasciurus, y=n.fledge, color=site)) +"
-"0","  geom_point(size=4) +"
-"0","  ylim(0, 3) +"
-"0","  theme_classic()"

@@ -1,4 +1,0 @@
-"0","# All the data together."
-"0","ggplot(model.data, aes(x=Tamiasciurus, y=n.fledge, color=site, shape=as.factor(year))) +"
-"0","  geom_point(size=4) +"
-"0","  theme_classic()"

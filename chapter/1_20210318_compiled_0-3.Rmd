@@ -20,6 +20,7 @@ library(sf)
 library(rmapshaper)
 library(ggspatial)
 library(vegan)
+library(broom)
 
 # Make a function to round percents nicely.
 peretty <- function(x, p=2) {
@@ -324,7 +325,7 @@ nest.count <- diet.items %>% filter(source == 'C' & binomial != 'Unidentified it
   pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0))
 
 # Total study area diversity.
-# diversity(study.area.count, index='simpson')
+study.area.diversity <- diversity(study.area.count, index='simpson')
 
 # Diversity per nest.
 nest.diversity <- plyr::ddply(nest.count, ~nest, function(x) {
@@ -464,13 +465,175 @@ sd.unknown.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) 
   mutate(total=sum(mass)) %>% filter(class == 'Unknown') %>% 
   mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
   ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Squirrels
+### Level = Study area
+
+# Calculate percent squirrel biomass for camera data for the entire study area.
+percent.squirrel.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of squirrels for camera data for the entire study area.
+count.squirrel.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'squirrel') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Squirrel
+### Level = Nest
+
+# Calculate mean percent squirrel biomass per nest.
+percent.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of squirrel biomass per nest.
+sd.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Other mammals
+### Level = Study area
+
+# Calculate percent other mammal biomass for camera data for the entire study area.
+percent.other.mammal.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of other mammals for camera data for the entire study area.
+count.other.mammal.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'mammal') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Other mammal
+### Level = Nest
+
+# Calculate mean percent other mammal biomass per nest.
+percent.other.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of other mammal biomass per nest.
+sd.other.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Unknown
+### Level = Study area
+
+# Calculate percent unknown biomass for camera data for the entire study area.
+percent.unk.gr.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of unknown for camera data for the entire study area.
+count.unk.gr.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'unknown') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Unknown
+### Level = Nest
+
+# Calculate mean percent unknown biomass per nest.
+percent.unk.gr.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of unknown biomass per nest.
+sd.unk.gr.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Thrushes
+### Level = Study area
+
+# Calculate percent other thrush biomass for camera data for the entire study area.
+percent.thrush.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of other thrushes for camera data for the entire study area.
+count.thrush.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'thrush') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Thrush
+### Level = Nest
+
+# Calculate mean percent thrush biomass per nest.
+percent.thrush.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of thrush biomass per nest.
+sd.thrush.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+# Mean nest diversity.
+mean.nest.diversity <- mean(nest.diversity$diet.diversity) %>% round(2)
+
+# Standard deviation of nest diversity.
+sd.nest.diversity <- sd(nest.diversity$diet.diversity) %>% round(2)
+
+# Mean nest overlap.
+mean.nest.overlap <- mean(nest.overlap$value) %>% round(2)
+
+# Standard deviation of nest overlap.
+sd.nest.overlap <- sd(nest.overlap$value) %>% round(2)
 ```
 
-We identified `r filter(diet.items, source == 'C') %>% distinct(binomial) %>% nrow() -1` different prey species or homogenous genera on nest cameras. By biomass, mammals made up the largest proportion of prey (`r filter(diet.items, source == 'C') %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)`% biomass, `r filter(diet.items, source == 'C') %>% mutate(total=n()) %>% filter(class != 'Mammalia') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)`% count; mean % biomass = `r filter(diet.items, source == 'C') %>% group_by(nest) %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)`, sd = `r filter(diet.items, source == 'C') %>% group_by(nest) %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)`), which was driven by the overwhelming dominance of tree squirrels (*Tamiasciurus* spp.). Birds accounted for only `r percent.avian.biomass.study.area`% of biomass (`r count.avian.items.study.area`% counts; mean % biomass = `r percent.avian.biomass.nest`, sd = `r sd.avian.biomass.nest`), and the remaining `r percent.unknown.biomass.study.area`% could not be identified to class (`r count.unknown.items.study.area` counts; mean % biomass = `r percent.unknown.biomass.nest`, sd = `r sd.unknown.biomass.nest`). The most commonly identified prey categories by biomass were squirrels (71%, mean = x, sd = x), other mammals (7%, mean = x, sd = x) and thrushes (1%, mean = x, sd = x). Based on items identified to genus or better, overall diet diversity for the study area was moderate (x = 0.53). Diet diversity of individual nests was highly variable (mean = 0.56, sd = n) and overlap between nests was low (mean = 0.26, sd = n).
+We identified `r filter(diet.items, source == 'C') %>% distinct(binomial) %>% nrow() -1` different prey species or homogenous genera on nest cameras. By biomass, mammals made up the largest proportion of prey (`r filter(diet.items, source == 'C') %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)`% biomass, `r filter(diet.items, source == 'C') %>% mutate(total=n()) %>% filter(class != 'Mammalia') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)`% count; mean % biomass = `r filter(diet.items, source == 'C') %>% group_by(nest) %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)`, sd = `r filter(diet.items, source == 'C') %>% group_by(nest) %>% mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)`), which was driven by the overwhelming dominance of tree squirrels (*Tamiasciurus* spp.). Birds accounted for only `r percent.avian.biomass.study.area`% of biomass (`r count.avian.items.study.area`% counts; mean % biomass = `r percent.avian.biomass.nest`, sd = `r sd.avian.biomass.nest`), and the remaining `r percent.unknown.biomass.study.area`% could not be identified to class (`r count.unknown.items.study.area` counts; mean % biomass = `r percent.unknown.biomass.nest`, sd = `r sd.unknown.biomass.nest`). The most commonly identified prey categories by biomass were squirrels (`r percent.squirrel.biomass.study.area`% biomass, `r count.squirrel.items.study.area`% count, mean % biomass = `r percent.squirrel.biomass.nest`, sd = `r sd.squirrel.biomass.nest`), other mammals (`r percent.other.mammal.biomass.study.area`% biomass, `r count.other.mammal.items.study.area`% count, mean % biomass = `r percent.other.mammal.biomass.nest`, sd = `r sd.other.mammal.biomass.nest`), unidentified items (`r percent.unk.gr.biomass.study.area`% biomass, `r count.unk.gr.items.study.area`% count, mean % biomass = `r percent.unk.gr.biomass.nest`, sd = `r sd.unk.gr.biomass.nest`), and thrushes (`r percent.thrush.biomass.study.area`% biomass, `r count.thrush.items.study.area`% count, mean % biomass = `r percent.thrush.biomass.nest`, sd = `r sd.thrush.biomass.nest`). Based on items identified to genus or better, overall diet diversity for the study area was moderate (x = `r round(study.area.diversity, 2)`). Diet diversity of individual nests was highly variable (mean = `r mean.nest.diversity`, sd = `r sd.nest.diversity`) and overlap between nests was low but also variable. (mean = `r mean.nest.overlap`, sd = `r sd.nest.overlap`).
 
 ## Difference between ecological regions
 
-Nests in the transition zone (*n* = 4) received a slightly larger proportion of biomass from mammalian prey than did nests in the coastal zone (*n* = 2) (85% and 79%, respectively). However, the proportion of diet composed of squirrels was equally high in both the transition zone (70%) and coastal zone (73%). Diet diversity was slightly higher in the transition zone (0.58) than the coastal zone (0.40). Diet overlap between the two zones was also high (x).
+```{r}
+# Number of transition zone sites.
+n.tz.cam.sites <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'tz' & source == 'C') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Number of coastal zone sites.
+n.cs.cam.sites <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'cs' & source == 'C') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Mean proportion mammalian biomass in transition zone.
+percent.mammal.biomass.tz <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'tz' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Mean proportion mammalian biomass in coastal zone.
+percent.mammal.biomass.cs <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'cs' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Percent mammalian biomass per zest, by zone.
+percent.mammal.biomass.zone.nest <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total) %>% 
+  distinct(zone, nest, cmass)
+
+# P-value for unpaired two-sample t-test for mammal biomass between zones.
+p.value.mammal.biomass.zone <- t.test(cmass ~ zone, 
+                                      data=percent.mammal.biomass.zone.nest, var.equal=TRUE) %>% 
+  glance() %>% select(p.value) %>% peretty()
+```
+
+Based on data from nest cameras, nests in the transition zone (*n* = `r n.tz.cam.sites`) received a slightly higher mean proportion of biomass from mammalian prey than did nests in the coastal zone (*n* = `r n.cs.cam.sites`; `r percent.mammal.biomass.tz`% and `r percent.mammal.biomass.cs`%, respectively), but this difference was not significant (*p* = `r p.value.mammal.biomass.zone`). However, the proportion of diet composed of squirrels was equally high in both the transition zone (70%) and coastal zone (73%). Diet diversity was slightly higher in the transition zone (0.58) than the coastal zone (0.40). Diet overlap between the two zones was also high (x).
 
 A chi-squared test of pellet data alone did not show a significant difference between goshawk diet in the coastal and transition zones (df = df, X = 1.9778, p = 0.66). However, a chi-squared test of pooled pellet-and-remains data did show a significant difference (df = df, X = 12.656, p = 0.04), as did a test of the camera data (chi-squared = 19.725, p = 0.007).
 

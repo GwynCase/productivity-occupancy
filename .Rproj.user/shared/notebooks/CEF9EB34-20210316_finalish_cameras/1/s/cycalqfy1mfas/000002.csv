@@ -1,0 +1,4 @@
+"0","ggplot(model.data, aes(x=Tamiasciurus, y=n.fledge)) +"
+"0","  geom_smooth(method='glm', formula='y ~ x') +"
+"0","  geom_point() +"
+"0","  theme_classic()"

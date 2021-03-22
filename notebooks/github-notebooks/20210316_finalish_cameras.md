@@ -210,7 +210,7 @@ model.data
     ##  4 TMC    2019 TMC2019        0          0.651         26.9
     ##  5 MTF    2019 MTF2019        2          0.543         53.1
     ##  6 RLK    2019 RLK2019        3          0.245         51.6
-    ##  7 MTF    2020 MTF2020        1          0.410         49.7
+    ##  7 MTF    2020 MTF2020        1          0.410         49.6
     ##  8 PCR    2020 PCR2020        1          0.420         65.7
     ##  9 PNC    2020 PNC2020        2          0             56.1
     ## 10 GOW    2020 GOW2020        1          0.311         50.8
@@ -273,17 +273,17 @@ summary(squirrel.model)
     ## 
     ## Scaled residuals: 
     ##     Min      1Q  Median      3Q     Max 
-    ## -1.2875 -0.5678  0.1342  0.4964  1.7679 
+    ## -1.2884 -0.5673  0.1333  0.4965  1.7681 
     ## 
     ## Random effects:
     ##  Groups   Name        Variance Std.Dev.
-    ##  year     (Intercept) 0.1910   0.4371  
-    ##  Residual             0.5014   0.7081  
+    ##  year     (Intercept) 0.1906   0.4366  
+    ##  Residual             0.5013   0.7081  
     ## Number of obs: 11, groups:  year, 2
     ## 
     ## Fixed effects:
     ##              Estimate Std. Error t value
-    ## (Intercept)  -0.92009    1.29662  -0.710
+    ## (Intercept)  -0.91977    1.29618  -0.710
     ## Tamiasciurus  0.04691    0.02466   1.902
     ## 
     ## Correlation of Fixed Effects:
@@ -332,9 +332,9 @@ mods %>% unnest(gl)
     ## # A tibble: 3 x 15
     ##   name  model data  r.squared adj.r.squared sigma statistic p.value    df logLik
     ##   <chr> <lis> <lis>     <dbl>         <dbl> <dbl>     <dbl>   <dbl> <int>  <dbl>
-    ## 1 mod1  <lm>  <tib~     0.181        0.0792 0.809      1.77   0.220     2  -11.0
-    ## 2 mod2  <lm>  <tib~     0.194        0.0935 0.809      1.93   0.202     2  -11.0
-    ## 3 mod3  <lm>  <tib~     0.190        0.100  0.778      2.12   0.180     2  -11.7
+    ## 1 mod1  <lm>  <tib~     0.182        0.0795 0.809      1.78   0.219     2  -11.0
+    ## 2 mod2  <lm>  <tib~     0.194        0.0937 0.809      1.93   0.202     2  -11.0
+    ## 3 mod3  <lm>  <tib~     0.191        0.101  0.778      2.12   0.179     2  -11.7
     ## # ... with 5 more variables: AIC <dbl>, BIC <dbl>, deviance <dbl>,
     ## #   df.residual <int>, td <list>
 
@@ -345,12 +345,12 @@ mods %>% unnest(td) %>% arrange(term, name)
     ## # A tibble: 6 x 9
     ##   name  model  data       gl        term    estimate std.error statistic p.value
     ##   <chr> <list> <list>     <list>    <chr>      <dbl>     <dbl>     <dbl>   <dbl>
-    ## 1 mod1  <lm>   <tibble [~ <tibble ~ (Inter~  -0.414     1.39      -0.299   0.773
-    ## 2 mod2  <lm>   <tibble [~ <tibble ~ (Inter~  -0.395     1.39      -0.284   0.783
-    ## 3 mod3  <lm>   <tibble [~ <tibble ~ (Inter~  -0.451     1.33      -0.339   0.742
-    ## 4 mod1  <lm>   <tibble [~ <tibble ~ Tamias~   0.0364    0.0273     1.33    0.220
+    ## 1 mod1  <lm>   <tibble [~ <tibble ~ (Inter~  -0.416     1.39      -0.300   0.772
+    ## 2 mod2  <lm>   <tibble [~ <tibble ~ (Inter~  -0.395     1.39      -0.285   0.783
+    ## 3 mod3  <lm>   <tibble [~ <tibble ~ (Inter~  -0.453     1.33      -0.340   0.742
+    ## 4 mod1  <lm>   <tibble [~ <tibble ~ Tamias~   0.0364    0.0273     1.33    0.219
     ## 5 mod2  <lm>   <tibble [~ <tibble ~ Tamias~   0.0378    0.0272     1.39    0.202
-    ## 6 mod3  <lm>   <tibble [~ <tibble ~ Tamias~   0.0380    0.0261     1.45    0.180
+    ## 6 mod3  <lm>   <tibble [~ <tibble ~ Tamias~   0.0380    0.0261     1.46    0.179
 
 None of them are anything like significant. This is a problem because
 even when you pull out just the 2019 data it stays insignificant.
@@ -421,3 +421,64 @@ ggplot() +
 ![](20210316_finalish_cameras_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 So no real difference whether one or the other is included, or both.
+
+One last item for David:
+
+``` r
+glm(n.fledge ~ Tamiasciurus, family=poisson, data=model.data) %>% summary()
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = n.fledge ~ Tamiasciurus, family = poisson, data = model.data)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.1869  -0.4494  -0.1706   0.4124   1.1054  
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error z value Pr(>|z|)
+    ## (Intercept)  -1.15161    1.66738  -0.691    0.490
+    ## Tamiasciurus  0.02979    0.03156   0.944    0.345
+    ## 
+    ## (Dispersion parameter for poisson family taken to be 1)
+    ## 
+    ##     Null deviance: 5.6918  on 10  degrees of freedom
+    ## Residual deviance: 4.7295  on  9  degrees of freedom
+    ## AIC: 32.176
+    ## 
+    ## Number of Fisher Scoring iterations: 5
+
+``` r
+glm(n.fledge ~ diet.diversity, family=poisson, data=model.data) %>% summary()
+```
+
+    ## 
+    ## Call:
+    ## glm(formula = n.fledge ~ diet.diversity, family = poisson, data = model.data)
+    ## 
+    ## Deviance Residuals: 
+    ##     Min       1Q   Median       3Q      Max  
+    ## -1.5637  -0.4328  -0.1943   0.5645   0.8704  
+    ## 
+    ## Coefficients:
+    ##                Estimate Std. Error z value Pr(>|z|)
+    ## (Intercept)      0.7612     0.5440   1.399    0.162
+    ## diet.diversity  -0.8612     1.1277  -0.764    0.445
+    ## 
+    ## (Dispersion parameter for poisson family taken to be 1)
+    ## 
+    ##     Null deviance: 5.6918  on 10  degrees of freedom
+    ## Residual deviance: 5.1332  on  9  degrees of freedom
+    ## AIC: 32.58
+    ## 
+    ## Number of Fisher Scoring iterations: 5
+
+``` r
+ggplot(model.data, aes(x=Tamiasciurus, y=n.fledge)) +
+  geom_smooth(method='glm', formula='y ~ x') +
+  geom_point() +
+  theme_classic()
+```
+
+![](20210316_finalish_cameras_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
