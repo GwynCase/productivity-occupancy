@@ -1,17 +1,12 @@
 
+# Make a happy data set for the models to use.
+fake.data <- productivity %>% mutate(nest=paste(site, year, sep='')) %>% 
+  left_join(nest.diversity, by=c('nest')) %>% 
+  left_join(nest.mass, by=c('nest')) %>%
+  select(site, year, nest, n.fledge, diet.diversity, Aves) %>% 
+  filter_all(all_vars(!is.na(.)))
 
-temp <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
-  filter(source == 'C') %>% group_by(nest) %>% 
-  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
-  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
-  distinct(zone, nest, cmass)
+# Make the models.
 
-t.test(cmass ~ zone, data=percent.mammal.biomass.zone.nest, var.equal=TRUE) %>% 
-  glance() %>% select(p.value) %>% peretty()
-
-
-percent.mammal.biomass.zone.nest <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
-  filter(source == 'C') %>% group_by(nest) %>% 
-  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
-  mutate(mmass=sum(mass), cmass=mmass/total) %>% 
-  distinct(zone, nest, cmass)
+fake.model <- lm(n.fledge ~ Aves, data=fake.data)
+summary(fake.model)

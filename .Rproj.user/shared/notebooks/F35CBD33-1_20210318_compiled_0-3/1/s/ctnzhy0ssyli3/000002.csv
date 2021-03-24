@@ -26,7 +26,7 @@
 "0","  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0))"
 "0",""
 "0","# Total study area diversity."
-"0","# diversity(study.area.count, index='simpson')"
+"0","study.area.diversity <- diversity(study.area.count, index='simpson')"
 "0",""
 "0","# Diversity per nest."
 "0","nest.diversity <- plyr::ddply(nest.count, ~nest, function(x) {"
