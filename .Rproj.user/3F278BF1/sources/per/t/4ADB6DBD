@@ -3,24 +3,24 @@
     "path": "C:/Users/gwync/sfuvault/productivity-occupancy/src/scratch.R",
     "project_path": "src/scratch.R",
     "type": "r_source",
-    "hash": "1614876387",
+    "hash": "1358956097",
     "contents": "",
     "dirty": false,
     "created": 1615999485519.0,
     "source_on_save": false,
     "relative_order": 2,
     "properties": {
-        "cursorPosition": "12,0",
+        "cursorPosition": "1,8",
         "scrollLine": "0",
         "source_window_id": "",
         "docOutlineVisible": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1616538143,
+    "lastKnownWriteTime": 1616632593,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1616538143636,
+    "last_content_update": 1616632593440,
     "read_only": false,
     "read_only_alternatives": []
 }

@@ -1,12 +1,20 @@
 
-# Make a happy data set for the models to use.
-fake.data <- productivity %>% mutate(nest=paste(site, year, sep='')) %>% 
-  left_join(nest.diversity, by=c('nest')) %>% 
-  left_join(nest.mass, by=c('nest')) %>%
-  select(site, year, nest, n.fledge, diet.diversity, Aves) %>% 
-  filter_all(all_vars(!is.na(.)))
+temp <- diet.items %>% group_by(class, binomial) %>% mutate(count=n()) %>% ungroup() %>% 
+  group_by(source) %>% mutate(total.source.count=n(), 
+                              total.source.mass=sum(mass)) %>% ungroup() %>% 
+  group_by(source, class, binomial) %>% mutate(source.count=n(), 
+                                               source.mass=sum(mass),
+                                               per.source.count=source.count/total.source.count*100,
+                                               per.source.mass=source.mass/total.source.mass*100) %>% 
+  distinct(source, class, binomial, count, per.source.count, per.source.mass) %>% 
+  mutate(source2=paste0(source, '2')) %>% 
+  pivot_wider(names_from=source, values_from=per.source.count) %>% 
+  pivot_wider(names_from=source2, values_from=per.source.mass) %>% ungroup() %>% 
+  group_by(class, binomial) %>% 
+  fill(everything(), .direction='downup') %>% 
+  distinct() %>% left_join(prey.list, by=c('class', 'binomial')) %>% 
+  select(class, common, binomial, C, C2, P, P2, R, R2) %>% 
+  mutate(common=replace_na(common, 'unknown'),
+         binomial=str_replace(binomial, 'Unidentified item', NA_character_),
+         common=str_to_sentence(common, locale='en'))
 
-# Make the models.
-
-fake.model <- lm(n.fledge ~ Aves, data=fake.data)
-summary(fake.model)

@@ -1,0 +1,7 @@
+"0","# Calculate productivity for each nest by zone."
+"0","productivity.zone <- left_join(productivity, centroids.sf, by=c('site', 'name')) %>% "
+"0","  select(site, year, n.fledge, zone) %>% "
+"0","  mutate(nest=paste0(site, year))"
+"0",""
+"0","p.value.productivity.zone <- t.test(n.fledge ~ zone, data=productivity.zone) %>% glance() %>% "
+"0","  select(p.value) %>% peretty()"

@@ -7,6 +7,7 @@ bibliography: chapter-one.bib
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+options(knitr.kable.NA = '-')
 ```
 
 ```{r libraries, message=FALSE, warning=FALSE}
@@ -21,6 +22,9 @@ library(rmapshaper)
 library(ggspatial)
 library(vegan)
 library(broom)
+library(knitr)
+library(kableExtra)
+library(stringr)
 
 # Make a function to round percents nicely.
 peretty <- function(x, p=2) {
@@ -443,7 +447,7 @@ zone.chi <-zone.counts %>% pivot_wider(names_from=source, values_from=count) %>%
         gl=map(ch, glance))
 ```
 
-To determine the potential reproductive consequences of dietary variation, we examined how two aspects of diet, diet diversity and proportion of biomass composed of squirrel, influenced productivity. We used linear regressions in R [@R_2020] with productivity as the response variable and diet as the explanatory variable. Because productivity data were available only from sites with nest cameras and nest-level diet data from pellets and prey remains were sparse, we performed this analysis using only diet data from nest cameras.
+To determine the potential reproductive consequences of dietary variation, we examined how two aspects of diet, diet diversity and proportion of biomass composed of squirrel, influenced productivity. We used linear regressions in R [@r_core_team_r_2020] with productivity as the response variable and diet as the explanatory variable. Because productivity data were available only from sites with nest cameras and nest-level diet data from pellets and prey remains were sparse, we performed this analysis using only diet data from nest cameras.
 
 ```{r models, warning=FALSE, message=FALSE}
 # Make a happy data set for the models to use.
@@ -461,6 +465,37 @@ squirrel.model <- lm(n.fledge ~ squirrel, data=model.data)
 # Results
 
 ## Goshawk Diet
+
+```{r}
+biomass.table <- diet.items %>% group_by(class, binomial) %>% mutate(count=n()) %>% ungroup() %>% 
+  group_by(source) %>% mutate(total.source.count=n(), 
+                              total.source.mass=sum(mass)) %>% ungroup() %>% 
+  group_by(source, class, binomial) %>% mutate(source.count=n(), 
+                                               source.mass=sum(mass),
+                                               per.source.count=source.count/total.source.count*100,
+                                               per.source.mass=source.mass/total.source.mass*100) %>% 
+  distinct(source, class, binomial, count, per.source.count, per.source.mass) %>% 
+  mutate(source2=paste0(source, '2')) %>% 
+  pivot_wider(names_from=source, values_from=per.source.count) %>% 
+  pivot_wider(names_from=source2, values_from=per.source.mass) %>% ungroup() %>% 
+  group_by(class, binomial) %>% 
+  fill(everything(), .direction='downup') %>% 
+  distinct() %>% left_join(prey.list, by=c('class', 'binomial')) %>% 
+  select(class, common, binomial, count, C, C2, P, P2, R, R2) %>% 
+  mutate(common=replace_na(common, 'unknown'),
+         binomial=str_replace(binomial, 'Unidentified item', NA_character_),
+         common=str_to_sentence(common, locale='en')) %>% 
+  arrange(class, binomial)
+
+biomass.table %>% 
+  kable(digits=1, col.names=c('Class', 'Species', ' ', 'N',
+                              '% items', '% biomass', 
+                              '% items', '% biomass', 
+                              '% items', '% biomass')) %>% 
+  kable_styling(bootstrap_options=c('striped')) %>% 
+  column_spec(3, italic=TRUE) %>% 
+  add_header_above(c(' '=4, 'Camera'=2, 'Pellets'=2, 'Remains'=2))
+```
 
 We identified a total of `r diet.items %>% filter(source == 'P') %>% summarize(n()) %>% as.numeric()` prey items from pellets collected at `r diet.items %>% filter(source == 'P') %>% distinct(site) %>% summarize(n()) %>% as.numeric()` sites. Of these, `r diet.items %>% filter(source == 'P') %>% mutate(total=n()) %>% filter(genus != 'Unknown') %>% mutate(genus=n(), to.genus=genus/total*100) %>% distinct(to.genus) %>% peretty(0)`% could be identified to genus or better, and no item could not be identified at least to class. From pellets alone, only `r diet.items %>% filter(source == 'P' & binomial != 'Unidentified item') %>% distinct(binomial) %>% summarize(n()) %>% as.numeric()` unique prey species or homogenous genera (i.e. *Neotamias*) were identified. Another `r diet.items %>% filter(source == 'R') %>% summarize(n()) %>% as.numeric()` items were identified from prey remains collected at `r diet.items %>% filter(source == 'R') %>% distinct(site) %>% summarize(n()) %>% as.numeric()` sites, of which `r diet.items %>% filter(source == 'R') %>% mutate(total=n()) %>% filter(genus != 'Unknown') %>% mutate(genus=n(), to.genus=genus/total*100) %>% distinct(to.genus) %>% peretty(0)`% were identified to genus or better and none could not be identified to class. From the combined pellets-and-remains sample a total of `r diet.items %>% filter(source != 'C' & binomial != 'Unidentified item') %>% distinct(binomial) %>% summarize(n()) %>% as.numeric()` unique prey species or homogenous genera were identified.
 
@@ -773,11 +808,13 @@ We found no affect on goshawk productivity of either the proportion of diet comp
 
 # Discussion
 
-Northern goshawks are a generalist predator known to consume a broad range of prey species across their global distribution, but not all prey species contribute equally. A single key prey species or taxa often contributes disproportionately to goshawk diet and, in some cases, to goshawk reproductive success. The identity of this species or taxa may be specific to each goshawk population. In coastal British Columbia we found goshawks consumed 22 different species during the breeding season, but the majority of their diet was composed of tree squirrels in the genus *Tamiasciurus*. Across the entire study area this single taxa made up x% of the total biomass recorded, with the percent biomass at individual nests ranging from % to %. We found no difference in the importance of squirrels between the two ecological zones found within our study area. Despite this clear dominance, the proportion of tree squirrel biomass in the diet did not influence productivity, nor did dietary diversity.
+Northern goshawks are a generalist predator known to consume a broad range of prey species across their global distribution, but not all prey species contribute equally. A single key prey species often contributes disproportionately to goshawk diet, and the identity of this species may be specific to each goshawk population. In coastal British Columbia we found goshawks consumed 22 different species during the breeding season, but the majority of their diet was composed of tree squirrels in the genus *Tamiasciurus*. Across the entire study area this single taxa made up x% of the total biomass recorded, with the percent biomass at individual nests ranging from % to %. Despite this clear dominance, the proportion of tree squirrel biomass in the diet did not influence productivity, nor did dietary diversity.
 
-In much of North America, the key goshawk prey species is almost always mammalian, usually of the family Leporidae or Sciuridae [@boal_northern_1994; @doyle_population_1994; @destefano_ecology_2006; @miller_effects_2014]. However, in the coastal temperate rainforests of the Pacific Northwest goshawk diet generally contains more birds than mammals and the key prey is usually a species of grouse (subfamily Tetraoninae) [@watson_prey_1998; @thraikill_diet_2000; @bloxton_prey_2002; @lewis_northern_2006]. <!-- Watson uses pooled pellets + remains and finds 47.1:52.6% biomass birds:mammals in western Washington. --> Despite inhabiting coastal rainforest, goshawks on Vancouver Island consume primarily red squirrels (*T. hudsonicus*), with this single species making up x% of the diet [@ethier_breeding_1999]. Our results from the coastal mainland are consistent with findings from Vancouver Island and more broadly with results from the interior of North America, but stand in contrast to findings from other areas in the Pacific Northwest. 
+Across much of North America the key goshawk prey species is usually mammalian, often from the family Leporidae or Sciuridae [@boal_northern_1994; @doyle_population_1994; @destefano_ecology_2006; @miller_effects_2014]. However, in the coastal temperate rainforests of the Pacific Northwest goshawk diet generally contains more birds than mammals and the key prey is usually a species of grouse (subfamily Tetraoninae) [@watson_prey_1998; @thraikill_diet_2000; @bloxton_prey_2002; @lewis_northern_2006]. <!-- Watson uses pooled pellets + remains and finds 47.1:52.6% biomass birds:mammals in western Washington. --> Despite inhabiting coastal rainforest, goshawks on Vancouver Island, BC, consume primarily red squirrels (*T. hudsonicus*), with this single species making up x% of the diet [@ethier_breeding_1999]. Our results from the coastal mainland of BC are consistent with findings from Vancouver Island and more broadly with results from the interior of North America, but stand in contrast to findings from other areas in the Pacific Northwest.
 
-Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region where coastal and interior goshawk populations may overlap [@ngrt_recovery_2008]. This transition zone provided us with a fortuitous opportunity to examine dietary variation over intermediate scales. Just as our study area is slightly drier than other regions of the coastal Pacific Northwest, the transition zone is slightly drier than the majority of our study area. <!--Other authors have speculated the dominance of avian prey in the diet of coastal Pacific Northwest goshawks is due to lower abundance or availability of mammalian prey in temperate rainforest ecosystems (Rutz et al 2006, McClaren et al 2015). -->We might therefore expect hawks in the transition zone to consume more or more variety of mammalian prey than hawks in the coastal zone. We did find a significant difference in diet between the transition and coastal zones, with hawks in the transition zone consuming a more diverse diet with a greater proportion of mammalian prey, but we found no difference in either the consumption of tree squirrels or in goshawk productivity. This similarity between ecological zones supports the conclusion that, although goshawks may opportunistically hunt prey species which are locally available, they specialize on a single high-value prey resource which strongly influences their reproductive success.
+The variation in key prey species between goshawk populations reflects the diversity of habitats which goshawks inhabit. Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region of intermediate habitat types where coastal and interior goshawk populations may overlap [@ngrt_recovery_2008]. At this smaller scale, we found evidence of a difference in diet composition and diversity between the coastal and transition zones. However, the identity of the key prey, tree squirrels, was the same in both zones and comprised an equally large proportion of the diet in each. This suggests that, while transition zone habitats give hawks access to a wider range of prey species than coastal zone habitats, these alternate prey fail to replace tree squirrels in importance.
+
+<!-- Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region where coastal and interior goshawk populations may overlap [@ngrt_recovery_2008]. This transition zone provided us with a fortuitous opportunity to examine dietary variation over intermediate scales. Just as our study area is slightly drier than other regions of the coastal Pacific Northwest, the transition zone is slightly drier than the majority of our study area. --><!--Other authors have speculated the dominance of avian prey in the diet of coastal Pacific Northwest goshawks is due to lower abundance or availability of mammalian prey in temperate rainforest ecosystems (Rutz et al 2006, McClaren et al 2015). --><!--We might therefore expect hawks in the transition zone to consume more or more variety of mammalian prey than hawks in the coastal zone. We did find a significant difference in diet between the transition and coastal zones, with hawks in the transition zone consuming a more diverse diet with a greater proportion of mammalian prey, but we found no difference in either the consumption of tree squirrels or in goshawk productivity. This similarity between ecological zones supports the conclusion that, although goshawks may opportunistically hunt prey species which are locally available, they specialize on a single high-value prey resource which strongly influences their reproductive success.-->
 
 Multiple studies have found a link between the abundance of a key prey taxa and goshawk demographics, including reproductive success. Following the assumption that a generalist predator consumes prey species relative to their abundance, diet composition may be used as proxy for prey abundance, although this assumption has rarely been made in raptors (but see so-and-so) and never in goshawks. Under this assumption, if tree squirrel abundance influences goshawk productivity, the proportion of squirrel biomass delivered to a nest should be related to the number of young fledged. Alternatively, a highly diverse diet may indicate a diverse prey base which buffers against fluctuations in the abundance of any single prey species. Our study found no support for either hypothesis. There is evidence that goshawks select prey in proportion to their abundance, but also that goshawks can be highly specialized. Without data on prey abundance within our study sties it is difficult to draw any strong conclusions regarding goshawk selectivity and its reproductive consequences; however, it is notable that the only nest in our study to experience a complete breeding failure received the smallest proportion of squirrel biomass of any nest.
 
