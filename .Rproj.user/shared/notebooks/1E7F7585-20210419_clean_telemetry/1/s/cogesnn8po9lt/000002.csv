@@ -1,0 +1,4 @@
+"0","```r
+# Finally, remove the nest coordinates again.
+df <- df %>% select(!c(n.lat, n.lon))
+```"

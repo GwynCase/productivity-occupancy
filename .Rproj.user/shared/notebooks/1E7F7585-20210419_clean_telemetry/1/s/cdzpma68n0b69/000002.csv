@@ -1,0 +1,16 @@
+"0","```r
+# Now join to main data frame.
+df <- left_join(df, nest.coords, by=c('id', 'year'))
+
+# Fill missing coordinates when bird is at the nest.
+df <- df %>% mutate(
+  lat=case_when(
+    at.base == 1 & is.na(lat) ~ n.lat,
+    TRUE ~ lat
+  ),
+  lon=case_when(
+    at.base == 1 & is.na(lon) ~ n.lon,
+    TRUE ~ lon
+  )
+)
+```"

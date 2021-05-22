@@ -1,0 +1,4 @@
+"0","```r
+# Look closer at some more duplicate points.
+df %>% filter(id == 'HAR03' & date == '2020-06-14' & time == '15:1816')
+```"

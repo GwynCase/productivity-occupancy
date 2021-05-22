@@ -1,0 +1,7 @@
+"0","```r
+# Read in HAR07 csv.
+HAR07 <- read_csv(\"../data/raw/HAR07_RAW_2018-07-08_2019-05-09.csv\")
+
+# Let's take a peek at it.
+head(HAR07)
+```"

@@ -1,0 +1,102 @@
+---
+title: "Bookends"
+output: html_notebook
+---
+
+# Introduction
+
+* Forest management
+  * Forests initially managed for high timber yields, or not managed at all
+  * Shift in focus to preservation of biodiversity
+  * Result of changing values, desire to preserve species (MAMU, marten)
+  * Further shift toward ecosystem function, ecosystem services
+  * Managing ecosystems is hard
+* Surrogate species & ecosystem management
+  * Surrogate species, etc. proposed as solutions
+  * Discussion of 1-2 select surrogate species concepts
+  * Extends single-species management toward ecosystem-based management
+  * A few examples of how how surrogate species have been encoded into management
+* Case study: spotted owls
+  * NSPOW declines lead to NWFP
+  * NSPOW management under the NWFP
+  * NWFP extended to other species, functions
+* Goshawks & Reynolds '92
+  * NOGO declines & listing in parallel to NSPOW
+  * A little about NOGO biology
+  * Reynolds's landscape-scale management plan
+  * Plan acknowledges ecosystem linkages necessary for single-species recovery
+  * Plan similar to ecosystem-based management
+* Goshawks in BC
+  * PNW very different ecosystem than SW
+  * Subspecies description - potential adaptation to ecosystem
+  * History of listing
+  * Existing management, knowledge gaps
+
+
+# Conclusion
+
+**Overview**
+
+* Introduction/review of chapter
+  * Management depends on understanding basic species biology, ecology
+  * Diet has important implications for management, conservation viability
+  * Population & ecosystem relationships
+  * Review of findings
+* Theory
+  * Specialists
+    * Narrow range of prey, which affects most aspects of life history
+    * Diet consistent across range & habitat, range/habitat may be limited by prey
+    * When prey scarce, respond with decreases in density, productivity, population size
+  * Generalists - v different
+    * Wide range of prey, although small number may be important
+    * Diet varies across range & habitat, reflecting local abundance/availability
+    * When prey scarce, may respond like specialist or switch to other prey
+  * Gray area
+    * Oversimplification
+    * Species contain gradient of generalist & specialist individuals
+* Case study: NSPOW - highlights importance of understanding diet
+    * Considered habitat specialist, but partially (largely?) due to dependence on specialist prey (range/habitat is limited by prey)
+    * High dependence on few spp of prey, but this varies across range (north vs south) reflecting local prey abundance
+    * Diet scales up to habitat selection & population dynamics (home range size)
+* NOGO & results
+  * In contrast - NOGO is generalist although key prey spp may be driver
+  * Diet quantification - diverse diet but primarily squirrel
+  * Ecological zones - diet varies within study area but squirrel is constant, suggests abundance likewise constant
+  * Productivity - no affect of squirrel in diet on productivity - possible explanations
+
+**Directions for future research**
+
+  * Knowledge gaps
+    * NOGO vs. NSPOW shows clear gaps in NOGO knowledge
+    * Prey abundance - used to determine degree of selectivity, affects of prey abundance on pop dy
+    * Space use - used to determine home range size, habitat selection
+  * Review of telemetry
+    * Methods - tag info, capture technique
+    * Results - home range size (males vs females), maximum range
+  * Telemetry methods discussion
+    * Capture method favors females over males
+    * Data retrieval method favors females over males
+    * Pros of geolocator vs VHF/satellite
+  * Discussion of telemetry
+    * Despite setbacks, prelim data provide clues for management
+    * Irregular shape =/ estimated buffers
+    * Irregular use indicates patchy use - some areas outside WHAs clearly important, not captured by nest protections
+  
+**Management implications**
+
+  * The *laingi* problem
+    * laingi protected subspecies whose distribution is estimated based on ecosystem mapping
+    * genetic evidence calls this distribution into question
+    * this work indicates south coast population ecologically similar to Vancouver Island, Haida Gwaii, and interior-ish BC (Smithers), but dissimilar to SE AK, Washington (grouse-dependent) and also dissimilar to NOGO pops elsewhere in west (hare-dependent)
+    * indicates some support for designatable unit status
+    * does not indicate blanket management solution for these populations, as squirrels are introduced in Haida Gwaii
+    * Highlights importance of population-specific knowledge, which this study provides
+  * Population level-implications
+    * Although this study found no evidence of productivity ~ squirrel!diet, data from other studies suggests it likely that productivity ~ squirrel!abundance
+    * Squirrels themselves tied to cyclical food source (seed cone crop)
+    * Alternatively, weather may be largest factor influencing NOGO nest initiation
+    * Both affected by climate change, so this represents a crucial direction for future research.
+  
+  
+  
+  

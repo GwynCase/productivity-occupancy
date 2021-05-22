@@ -1,0 +1,4 @@
+"0","# Pull out and reorganize residuals for camera data for comparison."
+"0","filter(post.hoc.camera, Value == 'Residuals') %>% select(!Value) %>% "
+"0","  pivot_longer(-Dimension, names_to='zone', values_to='resids') %>% "
+"0","  pivot_wider(names_from=Dimension, values_from=resids)"

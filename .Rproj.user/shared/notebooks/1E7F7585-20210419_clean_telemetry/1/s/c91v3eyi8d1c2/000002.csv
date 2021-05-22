@@ -1,0 +1,10 @@
+"0","```r
+# Rename columns for consistency.
+HAR07 <- HAR07 %>% 
+  rename(Latitude=Lat,
+         Longitude=Long,
+         `Searching time`=SearchT,
+         `Logger ID`=LoggerID,
+         Temperature=Temp,
+         `No GPS - timeout`=NoGPS)
+```"

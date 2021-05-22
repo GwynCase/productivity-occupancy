@@ -1,0 +1,14 @@
+"0","```r
+# Make a single datetime column.
+# Note that the timezone recorded by the tags is UTC, so that's specified here.
+df$datetime <-
+  strptime(paste(df$Year, df$Month, df$Day, df$Hour, df$Minute, df$Second),
+           format='%Y%m%d%H%M%S', tz='UTC')
+
+# Then convert the datetime to the correct timezone.
+df$datetime <- with_tz(df$datetime, tzone = \"America/Los_Angeles\")
+
+# For some things, I find it helpful to have a separate \"date\" and \"time\" column.
+df$date <- date(df$datetime)
+df$time <- format(ymd_hms(df$datetime), '%H:%M%S')
+```"

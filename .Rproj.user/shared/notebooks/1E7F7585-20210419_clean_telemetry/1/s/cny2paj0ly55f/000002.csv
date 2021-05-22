@@ -1,0 +1,10 @@
+"0","```r
+# Use the function to read in all the files in the file list all at once, 
+# and put all their contents into a single data frame.
+df <- lapply(file.list, read)
+
+# Take a look.
+head(df)
+```"
+"1","[[1]]
+"

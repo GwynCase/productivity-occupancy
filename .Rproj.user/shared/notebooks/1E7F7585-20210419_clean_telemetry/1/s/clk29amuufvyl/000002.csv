@@ -1,0 +1,13 @@
+"0","```r
+# Some HAR09 points were taken in Vancouver; remove them.
+df <- df %>% filter(id != 'HAR09' | lat >= 50)
+
+# Do the exact same for HAR10.
+df <- df %>% filter(id != 'HAR10' | lat >= 50)
+
+# There is an erroneous point for HAR07 in Washington.
+df <- df %>% filter(id != 'HAR07' | lat >= 47)
+
+# There is also an erroneous point for HAR02 somewhere in Nunavut.
+df <- df %>% filter(id != 'HAR02' | lat <= 52)
+```"

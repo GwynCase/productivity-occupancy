@@ -1,0 +1,61 @@
+---
+title: "Citation hunting"
+output: html_document
+---
+
+Debate over cause of spotted owl dependency on old growth
+
+Forsman 1977 Spotted owl abundance in young versus old-growth forests
+  via Zabel 1995
+Carey 1990 Spotted owl home range and habitat use in southern Oregon Coast Ranges
+  via Zabel 1995
+
+*Single-species management*
+
+Simberloff 1998* Flagships umbrellas, and keystone: is single-species management passe in the landscape era
+  via Heinen etal 2020
+Franklin 1993 Preserving biodiversity: species, ecosystems, or landscapes?
+  via Lambeck
+
+*Ecosystem-based management*
+Borrett et al 2014 The rise of network ecology: maps of thetopic diversity and scientific collaboration
+
+*Specialist vs generalist + life history*
+Roth et al 2007
+dit Durell SEALV (2000) via Terraube & Arroyo 2011 (individual specialization)
+Egan & Funk 2006 via Terraube & Arroyo 2011 (individual specialization)
+Glasser 1982 via Terrauba & arroyo 2011 (individual specialization)
+Millon 2008 via Terraube & Arroyo 2011
+Woo 2008 via Terraube & Arroyo 2011 (individual specialization = diet specialization)
+Millon & Bretagnolle 2008 via Resano-Mayor 2016
+Anderson & Eringe 1977 via Resano-Mayor 2016
+
+*Range restriction of predators due to prey specialization*
+Hansson & Henttonen 1988 via Roth et al 2007
+
+*Physiological specialization*
+Dukas & Kamil 2001 via Terraube et al 2011
+Rice 1982
+Simmons 2000
+Negro et al 2006
+
+*Relative efficiency of specialist v generalist*
+Partridge & Green 1987 via Terraube et al 2011
+Annet and Pierotti 1999 via Terraube et al 2011
+Golet et al 2000 via Terraube et al 2011
+Bolnick et al 2003 via Terraube et al 2011
+Svanback and Evlov 2003 via Terraube et al 2011
+Tinker et al 2008 via Terraube et al 2011
+
+
+
+
+
+
+
+
+
+
+
+
+

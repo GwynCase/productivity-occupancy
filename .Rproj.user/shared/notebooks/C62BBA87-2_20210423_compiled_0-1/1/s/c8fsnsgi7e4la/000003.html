@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;"> size </th>
+   <th style="text-align:left;"> model </th>
+   <th style="text-align:right;"> AICc </th>
+   <th style="text-align:right;"> K </th>
+   <th style="text-align:right;"> delta.AICc </th>
+   <th style="text-align:right;"> log.likelihood </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr grouplength="9"><td colspan="6" style="border-bottom: 1px solid;"><strong>PFA</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 175.5904 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> -85.70823 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.suitable.plus.hsi.edge </td>
+   <td style="text-align:right;"> 176.9794 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 1.3890676 </td>
+   <td style="text-align:right;"> -85.31325 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.mature.plus.openings.edge </td>
+   <td style="text-align:right;"> 177.5111 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 1.9207440 </td>
+   <td style="text-align:right;"> -85.57909 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.suitable.plus.suitable.edge </td>
+   <td style="text-align:right;"> 177.6871 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2.0966737 </td>
+   <td style="text-align:right;"> -85.66706 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 183.4247 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 7.8343397 </td>
+   <td style="text-align:right;"> -89.62540 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 184.2986 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 8.7081923 </td>
+   <td style="text-align:right;"> -91.12071 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.mature.plus.mature.edge </td>
+   <td style="text-align:right;"> 185.0037 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 9.4133535 </td>
+   <td style="text-align:right;"> -89.32540 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.proportion.high.canopy </td>
+   <td style="text-align:right;"> 186.4152 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 10.8248667 </td>
+   <td style="text-align:right;"> -91.12067 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> PFA </td>
+   <td style="text-align:left;"> m.high.canopy.plus.canopy.edge </td>
+   <td style="text-align:right;"> 186.4152 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 10.8248667 </td>
+   <td style="text-align:right;"> -91.12067 </td>
+  </tr>
+  <tr grouplength="9"><td colspan="6" style="border-bottom: 1px solid;"><strong>Breeding area</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.mature.plus.openings.edge </td>
+   <td style="text-align:right;"> 176.1948 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> -84.92095 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.suitable.plus.hsi.edge </td>
+   <td style="text-align:right;"> 177.6486 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 1.4537861 </td>
+   <td style="text-align:right;"> -85.64784 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 178.4951 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2.3002887 </td>
+   <td style="text-align:right;"> -87.16061 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.suitable.plus.suitable.edge </td>
+   <td style="text-align:right;"> 180.1510 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 3.9562126 </td>
+   <td style="text-align:right;"> -86.89905 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 184.2770 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 8.0822019 </td>
+   <td style="text-align:right;"> -90.05156 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 184.2986 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 8.1037344 </td>
+   <td style="text-align:right;"> -91.12071 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.mature.plus.mature.edge </td>
+   <td style="text-align:right;"> 184.9040 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 8.7091413 </td>
+   <td style="text-align:right;"> -89.27552 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.proportion.high.canopy </td>
+   <td style="text-align:right;"> 185.7933 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 9.5984381 </td>
+   <td style="text-align:right;"> -90.80968 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> breeding area </td>
+   <td style="text-align:left;"> m.high.canopy.plus.canopy.edge </td>
+   <td style="text-align:right;"> 185.7933 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 9.5984381 </td>
+   <td style="text-align:right;"> -90.80968 </td>
+  </tr>
+  <tr grouplength="9"><td colspan="6" style="border-bottom: 1px solid;"><strong>Home range</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 179.8091 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> -88.87556 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.mature.plus.openings.edge </td>
+   <td style="text-align:right;"> 180.2955 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.4864294 </td>
+   <td style="text-align:right;"> -86.96865 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 180.4571 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 0.6480555 </td>
+   <td style="text-align:right;"> -88.14033 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 180.9969 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1.1878327 </td>
+   <td style="text-align:right;"> -88.41022 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.proportion.high.canopy </td>
+   <td style="text-align:right;"> 181.7997 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1.9905706 </td>
+   <td style="text-align:right;"> -88.81159 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.high.canopy.plus.canopy.edge </td>
+   <td style="text-align:right;"> 181.7997 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 1.9905706 </td>
+   <td style="text-align:right;"> -88.81159 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.mature.plus.mature.edge </td>
+   <td style="text-align:right;"> 182.4807 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2.6716017 </td>
+   <td style="text-align:right;"> -88.06124 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.suitable.plus.suitable.edge </td>
+   <td style="text-align:right;"> 182.6240 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2.8148788 </td>
+   <td style="text-align:right;"> -88.13288 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> home range </td>
+   <td style="text-align:left;"> m.suitable.plus.hsi.edge </td>
+   <td style="text-align:right;"> 182.6244 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 2.8153411 </td>
+   <td style="text-align:right;"> -88.13311 </td>
+  </tr>
+  <tr grouplength="9"><td colspan="6" style="border-bottom: 1px solid;"><strong>Maximum range</strong></td></tr>
+<tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.mature.plus.openings.edge </td>
+   <td style="text-align:right;"> 177.7029 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 0.0000000 </td>
+   <td style="text-align:right;"> -85.67233 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.proportion.mature </td>
+   <td style="text-align:right;"> 179.7162 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 2.0133385 </td>
+   <td style="text-align:right;"> -87.76986 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.null </td>
+   <td style="text-align:right;"> 179.8091 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:right;"> 2.1062231 </td>
+   <td style="text-align:right;"> -88.87556 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.mature.plus.mature.edge </td>
+   <td style="text-align:right;"> 181.7001 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 3.9972719 </td>
+   <td style="text-align:right;"> -87.67096 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.proportion.suitable </td>
+   <td style="text-align:right;"> 181.8350 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 4.1321590 </td>
+   <td style="text-align:right;"> -88.82927 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.proportion.high.canopy </td>
+   <td style="text-align:right;"> 181.9274 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 4.2244961 </td>
+   <td style="text-align:right;"> -88.87544 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.high.canopy.plus.canopy.edge </td>
+   <td style="text-align:right;"> 181.9274 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:right;"> 4.2244961 </td>
+   <td style="text-align:right;"> -88.87544 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.suitable.plus.suitable.edge </td>
+   <td style="text-align:right;"> 183.7093 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 6.0064848 </td>
+   <td style="text-align:right;"> -88.67557 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left; padding-left: 2em;" indentlevel="1"> maximum range </td>
+   <td style="text-align:left;"> m.suitable.plus.hsi.edge </td>
+   <td style="text-align:right;"> 183.9966 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:right;"> 6.2937107 </td>
+   <td style="text-align:right;"> -88.81918 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,507 @@
+---
+title: "Bookends 0.3"
+output: html_notebook
+---
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+# Introduction
+
+Once valued primarily for high timber yields, temperate rainforests of the Pacific Northwest are now managed with increased emphasis on the conservation of biodiversity (Thomas et al. 2006). Among the drivers of this shift are declining populations of species whose life histories depend on old-growth forests. Some of these species have been placed under federal, provincial, or state protection: the marbled murrelet (*Brachyramphus marmoratus*) is protected under the Species at Risk Act in Canada (COSEWIC 2014)<!-- you have the old one from 2012 but it looks like there's a new one -->, and the coastal population of the pacific marten (*Martes caurina*) is protected under the Endangered Species Act in the United States (US Fish & Wildlife Service 2020). Management under these types of legislation is typically reactive and focuses on conserving each imperiled species on a case-by-case basis (Simberloff 1998). This approach has been widely criticized for failing to provide management for broader ecosystems, including the very ecosystems on which the imperiled species depend (Lambeck 1997). Alternatively, focusing on the larger scales of landscapes or ecosystems should preserve the ecosystem processes and services on which wild species and humans alike depend (Franklin 1993<!-- plus something for ecosystem services-->). Yet ecosystem-based management is itself beset by numerous practical, theoretical, and even philosophical challenges which have made it difficult to implement (Lambeck 1997, Simberloff 1998).
+
+<!-- Simberloff 1998: "It is reactive, rather than proactive, and explicitly targets species and populations, in that it specifically provides protection for species (and, in certain instances, some populations rather than entire species) that are already felt to be doomed to extinction if new action is not taken to redress their decline." -->
+
+<!-- Lambeck 1997: "Species-based approaches have been criticized on the grounds that they do not provide whole-landscape solutions to conservation problems, that they cannot be conducted at a rate sufficient to deal with the urgency of the threats, and that they consume a disproportionate amount of conservation funding." -->
+
+Managers have often turned to surrogate species as a solution for the dilemma posed by the single-species and ecosystem-based management debate. At the core of the surrogate species concept is the belief that the requirements or wellbeing of a single species, or a small suite of species, can stand in for the needs and health of numerous co-occurring species or entire ecosystems (Caro 2010). A myriad variations and conflicting definitions are present in the literature, but the original may be the concept of the *indicator species*. The presence and population size of an indicator species is believed to reflect ecosystem processes or the populations of other species (Landres et al. 1988). <!-- Under this model, the indicator species itself may not be of conservation concern, but is strongly correlated with species and ecosystems which are. -->Perhaps more widespread than indicator species is the *umbrella species* concept. Protections which benefit umbrella species--typically wide-ranging habitat specialists--are assumed to confer protection to co-occurring species with smaller ranges and less restrictive habitat requirements (Roberge & Angelstam 2004, Seddon & Leech 2008). A related concept is the *flagship species*, a species whose protection, like an umbrella species, confers benefit on other species, but which is selected for its charisma and ability to serve as a rallying point for conservation (Andelman & Fagan 2000). These concepts all attempt to extend the relative simplicity of single-species methods to achieve the promise of ecosystem-based management (Lambeck 1997).
+
+<!-- Roberge & Angelstam 2004: "A potentially consensual alternative could be a species whose conservation confers protection to a large number of naturally co-occurring species."
+
+"It hinges on the assumption that providing enough space for species with large area requirements will also shelter a whole suite of species with more modest spatial needs." -->
+
+<!-- Seddon & Leech 2008: "It has been suggested that the home range size of an umbrella species should be large in comparison to sympatric species to ensure that the habitat requirements of other co-occurring species are met." 
+
+"Habitat specialists are considered ideal umbrella species because their area requirements may be larger than those of generalists"-->
+
+<!-- Lambeck 1997: "The challenge then is to find an efficient means of meeting the needs of all species without studying each one individually. In order to overcome this dilemma, proponents of sing-species studies have developed the concept of umbrella species." -->
+  
+No species better embodies the challenges of managing forest species and ecosystems in the Pacific Northwest than the Northern spotted owl (*Strix occidentalis caurina*). The spotted owl is strongly associated with old-growth forest (Forsman et al. 1984) and has at various points been proposed as an indicator (Lee 1985<!-- via Simberloff? -->), an umbrella (Tracy & Brussard 1994), and a flagship species () for this ecosystem. In the late 1980s, public outcry and litigation in the United States led to the development of a spotted owl conservation strategy concurrent with the species' listing as threatened under the Endangered Species Act (Thomas et al. 1990). This single-species plan rapidly expanded to include other species, particularly the marbled murrelet and several salmon stocks, and ultimately evolved into the Northwest Forest Plan. The Northwest Forest Plan remained rooted in spotted owl management, but also included protections for watersheds, monitoring of rare species, and a sustainable annual timber harvest (DeSala & Williams 2006). Not all the Northwest Forest Plan's goals have been achieved--notably, spotted owl and marbled murrelet populations have continued to decline, although at a slower rate--and some parts of the plan have been eroded under subsequent presidential administrations (DeSalla et al. 2015). Yet the Northwest Forest Plan remains a powerful example of an ecosystem-scale management plan with a single species at its core.
+
+The story of the northern goshawk (*Accipiter gentilis*) in North America parallels that of the spotted owl. Goshawks are present in boreal forests across the continent and in the west range as far south as the high-elevation forests of the American Southwest and northern Mexico. Two subspecies (*A. g. atricapillus* and *A. g. laingi*) are widely recognized and a third (*A. g. apache*) is recognized by some authors (Squires et al. 2020). Goshawks are not associated with old-growth forest to the same degree as the spotted owl, but do show a clear preference for extensive tracts of mature forest with large-diameter trees and closed canopies (Andersen et al. 2005, Squires & Kennedy 2006). Like the spotted owl, goshawks have been proposed as a flagship (Sergio et al. 2006), an indicator (), and an umbrella species (Ozaki et al. 2006). While the Northwest Forest Plan was developing in the Pacific Northwest, alarms were sounded over the impact of timber harvest on northern goshawks in the American Southwest (Crocker-Bedford 1990). Decades of litigation failed to result in listing the southwestern population (proposed subspecies *apache*) under the Endangered Species Act, but <!--it has been classified as a sensitive species since 1982 and--> a new management plan was developed under the National Forest Management Act in the 1990s (reveiwed in Peck 2000). This single-species management plan disallowed timber harvest near known nests and required a minimum amount of mature forest within the larger home range surrounding known nests (Reynolds et al. 1992). Notably, the plan also specified the inclusion of younger forest, small clearings, snags, and woody debris to provide habitat for eight important goshawk prey species. This recommendation was based on the assumption that goshawks are habitat generalists limited by the abundance, not the availability, of prey--an assumption which has been the subject of heated debate (Greenwald et al. 2005, Reynolds et al. 2007). However, by incorporating multiple species, dynamic ecosystem processes, and human use, the goshawk management plan approaches the principles of ecosystem-based management and shows its potential to scale up to a more cohesive plan in the style of the Northwest Forest Plan (Graham et al. 1994, Peck et al. 2000).
+
+In the Pacific Northwest,  naturalists described a small, dark subspecies of goshawk unique to  the coastal temperate rainforests of Haida Gwaii and Vancouver Island (Taverner 1940). The size and plumage characteristics of *A. g. laingi* may be an adaptation the dark, dense forests the subspecies inhabits (Ethier 1999) and the agile avian prey believed to dominate its diet (McClaren et al. 2015). The precise range of *laingi* is unclear; based on morphometrics, genetics, and ecosystem mapping, it is believed to extend along the west coast and islands of British Columbia, from Southeast Alaska south to Washington's Olympic Peninsula (NGRT 2008, Sonsthagen 2012). In the portion of its range within the United States the *laingi* subspecies has no additional protections, but in Canada it is designated as Threatened by the Committee on the Status of Endangered Wildlife in Canada (COSEWIC). The *laingi* subspecies is further Red-listed by the British Columbia Conservation Data Centre and is an Identified Wildlife Species under the Forest Practices Code (COSEWIC 2013). Existing management plans call for the creation of buffers around known goshawk nests and the maintenance of a minimum amount of mature forest within the larger home range (McClaren et al. 2015, Parks Canada Agency 2018), similar to the plan from the American Southwest, but do not include recommendations for goshawk prey species. To some extent this is due to the single-species focus of this plan, but it is also a result of several knowledge gaps. Goshawk managers have acknowledged that a landscape-scale plan would be superior to the current fine-scale plan, and ecosystem-based management has been implemented elsewhere in British Columbia, most notably the Great Bear Rainforest (Price et al 2009<!--but can do better-->). Together these suggest an ecosystem-based approach incorporating the goshawk as a focal species may be possible for coastal rainforests elsewhere in British Colubmia. Yet while *laingi* nesting habitat is relatively well documented, foraging behavior and habitat of goshawks remains poorly understood across North America in general and coastal British Columbia in particular. These knowledge gaps hinder current single-species and potential ecosystem-based management alike. 
+
+<!-- NGRT 2008: "However, managing A. gentilis laingi on a nest-by-nest basis is an ineffective management approach at a population scale because individuals have large breeding and winter home ranges and they build multiple nests within breeding areas throughout their lifetime. Additionally, A. gentilis laingi are difficult to detect and locating all nests within a breeding home range is virtually impossible because nests will fall out of trees over time and new nests will be constructed. The recovery team recommends addressing the management of A. gentilis laingi at a landscape or watershed level to ensure that suitable breeding, foraging, and wintering habitats exist throughout the landscape."-->
+
+My thesis attempts to fill one small knowledge gap by providing basic ecological information regarding the breeding season diet of goshawks in coastal British Columbia. This first chapter provides background on endangered species conservation in relation to forest management and establishes a rationale for my research. The second chapter describes my research quantifying goshawk diet in coastal British Columbia and investigating potential links between dietary variation and goshawk reproductive success. The final chapter summarizes my results in the context of Pacific Northwest forest management and suggests both implications for management and direction for further research.
+
+
+# Conclusion
+
+**Overview**
+
+<!--
+* Introduction/review of chapter
+  * Management depends on understanding basic species biology, ecology
+  * Diet has important implications for management, conservation viability
+  * Population & ecosystem relationships
+  * Review of findings
+-->
+  
+<!-- The diet of a species is a basic aspect of its biology and defines some of its most important ecological relationships. Understanding a species's diet is crucial for successful management (Stier et al. 2016), and may even determine the limitations of recovery (Ferrer & Negro 2004). The diet of individuals can scale up to the population level, with consequences for population growth rates. In this thesis I examined dietary variation and its fitness consequences for northern goshawks in coastal British Columbia. I quantified diet at large (study area) and small (individual nest) scales for breeding goshawks and found that although goshawks consumed a wide variety of prey, consistent with their status as generalist predators, they showed a specialist-like reliance on tree squirrels of the genus *Tamiasciurus*, the extent of which varied from nest to nest. I then examined variation in diet across two ecological zones within my study area, the wetter *coastal zone* and drier *transitional zone* and found that although there were slight differences between the zones, the reliance on tree squirrels remained constant. Finally, I investigated whether two aspects of diet, diversity and specialization on tree squirrels, affected goshawk fitness, but found little evidence to support an affect of diet on productivity. -->
+
+Specialist and generalist predators differ in their selectivity of prey species relative to prey abundance, with cascading consequences for many aspects of their life history (Korpimaki & Norrdhal 1991, Resano-Mayor et al. 2016). Specialists are highly efficient hunters of their main prey at the cost of decreased efficiency when hunting others, whereas generalists exhibit less variation in foraging efficiency across multiple prey species (Terraube et al. 2011). A specialist is relatively ill-equipped to compensate with other prey when its preferred prey becomes scarce, but generalists readily switch to alternate prey (Steenhof & Kochert 1988, Terrabue & Arroyo 2011). As a result, specialists are forced to respond with reductions in density as individuals disperse to areas with more abundant food, in productivity as individuals chose not to breed or suffer breeding failures, or even in total population size (Korpimaki & Norrdhal 1991, Terraube et al. 2011). Specialists may even be limited in geographic range or habitat use by the presence and abundance of their main prey (Ferrer & Negro 2004, Peers et al. 2003). In contrast, generalists exhibit relatively greater population stability (Hanski et al. 1991, Andersson & Erlinge 1977). <!-- and are more widespread -->
+
+<!--Korpimaki & Norrdhall 1991: "The ability of nomadic specialists to track population fluctuations of microtines without time lags seems to result from a numerical response based mainly on mobility. In contrast, the numerical responses of resident generalists are based mostly on changes in natality and mortality, causing their response to lag behind the population fluctuations of microtines." -->
+
+<!-- Terraube et al. 2011: "...our study also shows that the specialist had lower foraging success than the closely related generalist species when its main prey was scarce..."
+
+"This helps understand 1) why fewer pallid harriers breed when voles are scarce, and why most fail to breed successfully (Table 1), and 2) the nomadic behaviour of the vole specialist pallid harrier. It might be more efficient to move to a different area rather than to stay in an area where the preferred prey is scarce, even when alternative prey are abundant. -->
+
+This dichotomy between specialist and generalist species is, however, an oversimplification. Most species exist on a continuum of specialization and generalization, and for a generalist predator the abundance of a single prey species can be a major driver of reproductive success (Elmhagen et al. 2000, Resano-Mayor et al. 2006). In a single species, some populations (Salamolard et al. 2000, Roth et al. 2007) or some individuals within a population (Woo et al. 2008) may be more or less specialized. Even a single individual may shift its position along the specialist-generalist continuum over its lifetime in response to age and experience (Rutz 2006) or to changing conditions (that one lynx paper). The degree of specialization, and its associated impact on demographic parameters, can scale up from individuals through populations to entire species, with profound consequences for conservation (Terraube et al. 2011, Resano-Mayor 2016).
+
+The complex relationship between dietary specialization and conservation are exemplified by the northern spotted owl. Spotted owls depend on old-growth forests, but the cause of this association has been a source of speculation from the earliest years of spotted owl research (). In part, the selection of old-growth forest appears to be driven by the spotted owl's relatively specialized diet (Carey et al. 1992, Ward et al. 1998). More than half the biomass spotted owls consume comes from just two taxa, flying squirrels (*Glaucomys sabrinus*) and woodrats (bushy-tailed woodrat *Neotoma cinerea* and dusky-footed woodrat *N. fuscipes*; reviewed in Carey et al. 1992<!-- but find a newer citation-->). This pattern remains constant across the subspecies' range, although the relative contribution of each taxa varies with geographic region and forest type to reflect local prey abundance. In Washington's Olympic Peninsula, where woodrats are absent, spotted owls consume primarily flying squirrels (Carey et al. 1992), whereas in northern California flying squirrels make up a relatively small portion of the diet and woodrats, which are more abundant, dominate (Ward et al. 1998). Even within a single population, some individuals specialize to a greater degree on one taxa or the other (Zabel et al. 1995). Home range sizes in the flying squirrel-dependent Olympic Peninsula are among the largest ever recorded for spotted owls (Carey at al. 1992), and where both flying squirrels and woodrats are consumed, owls which consume more flying squirrels have larger home ranges than those which consume more woodrats (Zabel et al. 1995). Evidently diet and prey abundance do affect some demographic parameters, including breeding density, but not others, such as spotted owl productivity (Rosenberg et al. 2003). Instead, productivity appears to be the result of complex interactions between climate and prey abundance (Glenn et al. 2011). Increasing prey abundance has been recommended as a management tool to aid spotted owl recovery (Forsman et al. 2014).<!-- This needs a concluding sentence --><!-- Also needs something about NSPOW pop dynamics -->
+
+<!-- Carey et al 1992; "Six nonexclusive hypotheses have been proposed to explain the requirement of spotted owls for old growth, but only abundance of prey can explain the requirement of Spotted Owls for large areas of old growth." -->
+
+<!-- Ward et al. 1998: "First, we showed that Northern Spotted Owls occurring in mixed evergreen forests of northwestern California selected the dusky-footed woodrat over other prey species. Second, we found that these owls selected certain foraging sites where dusky-footed woodrats were more abundant. [...] the owls. Collectively, these findings provided only a partial explanation for the owl's affinity for late seral forest." -->
+
+<!-- Ward et al. 1998: "Site selection by owls was most pronounced at the ecotone between late and early seral stages where dusky-footed woodrats were most abundant." -->
+
+<!--    
+* NOGO & results
+  * In contrast - NOGO is generalist although key prey spp may be driver
+  * Diet quantification - diverse diet but primarily squirrel
+  * Ecological zones - diet varies within study area but squirrel is constant, suggests abundance likewise constant
+  * Productivity - no affect of squirrel in diet on productivity - possible explanations
+-->
+
+In contrast to the spotted owl's reliance on a few prey species, the northern goshawk is considered a generalist predator and consumes an enormous diversity of prey across its wide geographic range (reviewed in Drennen 2006). I identified **25** different prey species in the diet of goshawks in coastal British Columbia, consistent with a generalist foraging strategy. However, is some goshawk populations a key prey species is a major driver of productivity, survival, and other demographic parameters (Doyle & Smith 1994, Tornberg et al. 2005). Over 60% of goshawk diet in my study area was composed of tree squirrels (*Tamiasciurus* spp.), which indicates a level of specialization greater than that of the spotted owl. Tree squirrels are the same key prey taxon identified on Vancouver Island (Ethier 1999) but not from other regions of the Pacific Northwest, where the key prey is generally grouse (Watson et al. 1998, Thraikill et al. 2000, Bloxton 2002, Lewis et al. 2006). The key prey taxon from my study area is more similar to those identified elsewhere in western North America, where the most important prey species is also mammal, generally either a sciurid or a leporid (Boal and Mannan 1994, Doyle and Smith 1994, DeStefano et al. 2006, Rogers et al. 2006, Miller et al. 2014).
+
+Although goshawks in my study area clearly specialize on tree squirrels, the variation between diet within my study area and others is in keeping with a generalist's ability to adapt to local prey across its range and between habitat types. However, I found no major variation across ecological zones within my study area, suggesting that while these two zones are slightly ecologically different, the abundance of squirrels, the most important prey, is likely also the same. 
+
+I also found no affect of dietary variation on productivity. There are several possible explanations for this unexpected result. Individuals goshawks may specialize on squirrels to a greater or lesser degree, but this specialization may not confer any increase in productivity. Diet outside the breeding season, which I was not able to measure in this study, may be a larger driver of productivity than diet during the breeding season. Finally, goshawks may not truly specialize on squirrels at all and take prey in proportion to their abundance, which varies between territories. In this case, total prey abundance may be a stronger driver of productivity.
+
+**Directions for future research**
+
+<!--
+  * Knowledge gaps
+    * NOGO vs. NSPOW shows clear gaps in NOGO knowledge
+    * Prey abundance - used to determine degree of selectivity, affects of prey abundance on pop dy
+    * Space use - used to determine home range size, habitat selection
+--> 
+
+Comparing the northern spotted owl and the northern goshawk highlights the existence of several persistent knowledge gaps regarding goshawk biology, particularly regarding foraging behavior. As a controversial, high-profile species at the heart of a major regional management strategy, the spotted owl has been the focus of an extraordinary quantity of research. While controversy still surrounds the goshawk and knowledge has improved significantly since the initial petition for listing under the ESA, it has not received the same level of attention as the spotted owl. Furthermore, as a widespread generalist, it is far more difficult to generalize results from one goshawk population than it is for the more restricted, specialized spotted owl. 
+
+For goshawks in coastal British Columbia, one major knowledge gap is how changes in prey populations scale up to changes in the goshawk population. Without data on prey abundance, it is impossible to test any of the hypotheses outlined above for the independence of productivity and diet. Data on prey abundance would permit inferences regarding goshawk preference for squirrels beyond the quantification of dietary specialization I have provided here. These data could be further used to understand the factors limiting the goshawk populations and the direct effects of prey abundance on productivity, occupancy, and other drivers of demographics. A second major knowledge gap is how goshawks use space outside the area immediately around the nest for foraging. Across their range, goshawk home range size varies widely and goshawks have been observed foraging in a wide variety of habitat types, leading to controversy regarding how forest should be best managed to provide foraging habitat. Some of this variation in foraging may, similar to in spotted owls, be linked to variation in diet. Understanding how diet shapes habitat use in coastal British Columbia will require detailed data on goshawk movement and space use.
+
+<!-- 
+  * Review of telemetry
+    * Methods - tag info, capture technique
+    * Results - home range size (males vs females), maximum range
+-->
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(sf)
+library(adehabitatHR)
+library(recurse)
+library(flextable)
+library(rmapshaper)
+library(ggspatial)
+
+# Read in table of nest coordinates.
+telemetry.sites <- read_csv('../data/processed/telemetry_sites.csv')
+
+# Twist wide so each id gets its own row.
+captures <- select(telemetry.sites, m_tag, f_tag, year, date, site, nest) %>%
+  pivot_longer(!c(year, date, site, nest), names_to='sex', values_to='id') %>%
+  drop_na(id) %>%
+  mutate(sex=case_when(
+    sex == 'm_tag' ~ 'm',
+    sex == 'f_tag' ~ 'f'
+  )) %>% 
+  distinct(nest, id, .keep_all=TRUE)
+
+# Number of males and females.
+n.males <- filter(captures, sex == 'm') %>% nrow()
+n.females <- filter(captures, sex == 'f') %>% nrow()
+
+# Bring in the clean telemetry data.
+telemetry.data <- read_csv('../data/processed/20210420_clean_telemetry.csv', guess_max=15000)
+
+# Define breeding season.
+breeding.2018 <- interval(ymd(20180420), ymd(20180915))
+breeding.2019 <- interval(ymd(20190420), ymd(20190915))
+breeding.2020 <- interval(ymd(20200420), ymd(20200915))
+
+# Select only points that fall within the breeding season.
+breeding.telemetry <- telemetry.data %>% 
+  filter(date %within% c(breeding.2018, breeding.2019, breeding.2020))
+
+# Summary of days of telemetry data.
+min.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% slice_min(period) %>% 
+  select(period) %>% as.numeric()
+
+max.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% slice_max(period) %>% 
+  select(period) %>% as.numeric()
+
+mean.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% 
+  summarize(mean=mean(period)) %>% as.numeric() %>% round(digits=2)
+
+sd.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% 
+  summarize(sd=sd(period)) %>% as.numeric() %>% round(digits=2)
+
+# Summary of location points.
+mean.points <- breeding.telemetry %>% group_by(id, date) %>% 
+  summarize(n=n()) %>% ungroup() %>% 
+  summarize(mean=mean(n)) %>% as.numeric() %>% round(digits=2)
+
+# Set of birds used to calculate home ranges.
+home.range.set <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), n.points=n(), period=max-min) %>% 
+  distinct(id, site, n.points, min, max, period) %>% 
+  left_join(captures, by=c('id', 'site')) %>% 
+  filter(period > 3)
+
+# Number of birds in set.
+n.males.hr <- filter(home.range.set, sex == 'm') %>% nrow()
+n.females.hr <- filter(home.range.set, sex == 'f') %>% nrow()
+```
+
+As a pilot study of goshawk movement in coastal British Columbia, the British Columbia Ministry of Forests, Lands, Natural Resource Operations and Rural Development (FLNRORD) and I tagged a `r nrow(captures)` goshawks in 2018-2020. We conducted captures during the early breeding season using a dho-gaza trap with a live great-horned owl (*Bubo virginianus*) as a lure (Bloom et al. 2007). Goshawks were fitted with a 14-gram geolocator tags (Ecotone Telmetry brand, Harrier model) attached via backpack-style harness. Tags were programmed to take a location point every 15 minutes and to download data to a base station placed at the nest when within range. We tagged a `r n.males` and `r n.females` females. Over the course of the study period we had only one probable mortality. From each tag we collected between 0 and `r max.days` days of breeding season (20 April - 15 September) data. Of the tags from which at least one day of data were retrieved, we collected between `r min.days` and `r max.days` (mean `r mean.days` $\pm$ `r sd.days` standard deviation) days of data, with an average of `r mean.points` locations per tag per day. <!--We excluded the individual with only three days of location data from most further analysis due to insufficient data, leaving us with a sample of `r n.males.hr` males and `r n.females.hr` females. -->
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Make a spatial object.
+telemetry.sf <- breeding.telemetry %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord'), remove=FALSE) %>%
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Calculate MCPs.
+mcp <- telemetry.sf %>%
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp.area(percent=c(50, 95), unin='m', unout='ha', plotit=FALSE) %>% 
+  rownames_to_column(var='percent') %>% 
+  pivot_longer(-percent, names_to='id', values_to='area') %>% 
+  mutate(method='mcp')
+
+# Calculate KDEs.
+kde <- telemetry.sf %>%
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  kernelUD() %>% 
+  kernel.area(percent=c(50, 95), unin='m', unout='ha') %>% 
+  rownames_to_column(var='percent') %>% 
+  pivot_longer(-percent, names_to='id', values_to='area') %>% 
+  mutate(method='kde')
+
+# And in the darkness bind them.
+homerange <- bind_rows(mcp, kde)
+
+# Also calculate maximum distance.
+max.dist <- telemetry.sites %>% select(n.xcoord=x_coord, n.ycoord=y_coord, nest) %>% 
+  right_join(breeding.telemetry, by=c('nest')) %>% 
+  mutate(dist=sqrt((xcoord-n.xcoord)^2 + (ycoord-n.ycoord)^2)) %>% 
+  group_by(id) %>% 
+  arrange(desc(dist)) %>% 
+  slice(1) %>% 
+  select(id, dist, sex)
+
+# Calculate number of points taken at nest.
+nest.points <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(total.points=n(), base.points=sum(at.base), prop.at.base=base.points/total.points*100) %>% 
+  distinct(id, sex, site, prop.at.base)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Mean 95% MCP for all birds.
+mean.95.mcp.hr <- homerange %>% 
+  filter(method == 'mcp' & percent == 95) %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% KDE for all birds.
+mean.95.kde.hr <- homerange %>% 
+  filter(method == 'kde' & percent == 95) %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% MCP for males.
+male.95.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='m') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% KDE for males.
+male.95.kde.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'kde' & percent == 95 & sex =='m') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% MCP for females.
+female.95.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='f') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% KDE for females.
+female.95.kde.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'kde' & percent == 95 & sex =='f') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 50% MCP for males.
+male.50.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='m') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 50% MCP for females.
+female.50.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='f') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance for males.
+male.max.dist <- max.dist %>% ungroup() %>% 
+  filter(sex == 'm') %>% 
+  summarize(mean=mean(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance for females.
+female.max.dist <- max.dist %>% ungroup() %>% 
+  filter(sex == 'f') %>% 
+  summarize(mean=mean(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Average points at nest for females.
+female.nest.points <- nest.points %>% 
+  filter(sex == 'f') %>% ungroup() %>% 
+  summarize(mean=mean(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Average points at nest for males.
+male.nest.points <- nest.points %>% 
+  filter(sex == 'm') %>% ungroup() %>% 
+  summarize(mean=mean(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD points at nest for females.
+female.nest.sd <- nest.points %>% 
+  filter(sex == 'f') %>% ungroup() %>% 
+  summarize(sd=sd(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD points at nest for males.
+male.nest.sd <- nest.points %>% 
+  filter(sex == 'm') %>% ungroup() %>% 
+  summarize(sd=sd(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+```
+
+The mean breeding season home range was `r mean.95.mcp.hr` ha (95% minimum convex polygon) but I observed a large difference in home range size between males and females. Mean male home range was `r male.95.mcp.hr` ha whereas mean female home range was much smaller, `r female.95.mcp.hr` ha. Core-use area were more similar, but still larger for males at `r male.50.mcp.hr` ha (50% minimum convex polygon) than for females at `r female.50.mcp.hr` ha. The smaller female home ranges were due to the amount of time females spent on the nest. An average of `r female.nest.points`% ($\pm$ `r female.nest.sd`) of female location points were taken within approximately 100 m of the nest, while only `r male.nest.points`% ($\pm$ `r male.nest.sd`) of male points were taken at the nest. Males also traveled further from the nest: the mean furthest distance from the nest a male traveled was `r male.max.dist` km, while females never ventured more than an average of `r female.max.dist` km from the nest. As the breeding season progressed, the length of time spent away from the nest increased noticeably for males but not for females
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Make the summary table.
+summary.table <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), n.points=n(), period=max-min) %>% 
+  distinct(id, site, n.points, min, max, period) %>% 
+  left_join(max.dist, by=c('id')) %>% 
+  left_join(homerange, by=c('id')) %>% 
+  left_join(nest.points, by=c('id', 'site', 'sex')) %>% 
+  pivot_wider(names_from=c(method, percent), names_sep='.', values_from=area) %>% 
+  arrange(sex, site) %>%
+  rownames_to_column(var='order') %>% mutate(order=as.numeric(order)) %>% 
+  mutate(order=case_when(
+    sex == 'f' ~ order - 1,
+    sex == 'm' ~ order,
+    TRUE ~ order
+  ),
+  period=as.numeric(period)) %>% 
+  mutate(., across(where(is.numeric), round, digits=2))
+
+# Find where total rows should be inserted.
+table.breaks <- summary.table %>% group_by(sex) %>% 
+  summarize(max=max(order), .groups='drop') %>% ungroup() %>% 
+  select(max) %>% as.vector()
+
+# Summarize female data.
+female.summary <- summary.table %>% filter(sex == 'f') %>% ungroup() %>%  
+  summarise(., across(where(is.numeric), mean)) %>% 
+  mutate(order=table.breaks$max[1] + 1, id='AVERAGE', site=NA, min=NA, max=NA, n.points=NA, sex='f')
+
+# Summarize male data.
+male.summary <- summary.table %>% filter(sex == 'm') %>% ungroup() %>%  
+  summarise(., across(where(is.numeric), mean)) %>% 
+  mutate(order=table.breaks$max[2] + 1, id='AVERAGE', site=NA, min=NA, max=NA, n.points=NA, sex='m')
+
+bind_rows(summary.table, female.summary, male.summary) %>% 
+  arrange(order) %>% column_to_rownames(var='order') %>% 
+  select(-sex) %>% relocate(n.points, .after=period) %>% 
+  flextable() %>% 
+  colformat_num(na_str='-', digits=0) %>% 
+  add_header_row(values=c(' ', 'Days of data collected', 'Relation to nest', 'Home range (ha)'), 
+                 colwidths=c(2, 3, 3, 4)) %>% 
+  set_header_labels(id='ID', site='Site', min='first', max='last', n.points='N. points',
+                    period='N. days', dist='Max. distance from nest (m)', 
+                    prop.at.base='% points taken at nest',
+                    mcp.50='50% MCP', mcp.95='95% MCP', kde.50='50% KDE', kde.95='95% KDE')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, eval=FALSE}
+select(captures, id, sex) %>% right_join(homerange, by=c('id')) %>% 
+  group_by(method, sex, percent) %>% 
+  summarize(n=n(), mean.area=mean(area)) %>% 
+  pivot_wider(names_from=method, values_from=mean.area) %>% 
+  ungroup() %>% #select(percent, mcp, kde) %>% 
+  flextable() %>% 
+  add_header_row(values=c(' ', 'area (ha)'), colwidths=c(3, 2))
+```
+
+<!--By the end of the study period, one goshawk was a probable mortality, one's fate was unknown, five were likely resident near their capture sites but had not been conclusively relocated since the season they were tagged, and six were still extant.-->
+
+<!--
+* Telemetry methods discussion
+    * Capture method favors females over males
+    * Data retrieval method favors females over males
+    * Pros of geolocator vs VHF/satellite
+-->
+
+We encountered several challenges over the course of the three-year project. The capture method we used favors the capture of females over males, as females are more aggressive near the nest. Because females forage very little during the breeding season, this provided us with little foraging location data. The geolocator tags we used only downloaded data to the base station, placed at the nest, when within range of base station and on a certain schedule. Because males spend so little time near the nest, we obtained frequent data downloads from females but only occasional downloads from males. Overall, our methods therefore favor collection of data from females, which is uninformative regarding foraging. We also struggled to relocate birds in subsequent years and therefore were unable to obtain locations for multiple breeding seasons or for winter movement. As a result, we collected much less data than expected. However, the data we did retrieve was of a much higher resolution than VHF data and much higher accuracy than satellite data, indicating this technology may be especially well suited to recording foraging behavior.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Make a map.
+
+# Calculate 50% and 95% MCPs for female.
+rlk.f.mcp.95 <- telemetry.sf %>%
+  filter(id == 'HAR02') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=95, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# 50% MCP
+rlk.f.mcp.50 <- telemetry.sf %>%
+  filter(id == 'HAR02') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=50, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# Calculate 50% and 95% MCPs for male.
+rlk.m.mcp.95 <- telemetry.sf %>%
+  filter(id == 'HAR04') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=95, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+rlk.m.mcp.50 <- telemetry.sf %>%
+  filter(id == 'HAR04') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=50, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# Pull out points for each.
+rlk.m.points <- telemetry.sf %>% 
+  filter(id == 'HAR04')
+
+rlk.f.points <- telemetry.sf %>% 
+  filter(id == 'HAR02')
+
+# Pull out points for all.
+rlk.points <- telemetry.sf %>% 
+  filter(site == 'RLK')
+
+# Pull out the nests.
+rlk.nests <- telemetry.sites %>% 
+  filter(site == 'RLK') %>% 
+  st_as_sf(coords=c('x_coord', 'y_coord'), remove=FALSE) %>%
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Calculate a buffer around each nest.
+area <- 200
+
+radius <- sqrt(area*10000/pi)
+
+rlk.buffer <- st_buffer(rlk.nests, radius)
+
+ggplot() +
+  geom_sf(data=rlk.f.points, alpha=0.25) +
+  geom_sf(data=rlk.f.mcp.50, fill='white') +
+  geom_sf(data=rlk.f.mcp.95, fill=NA) +
+  geom_sf(data=rlk.buffer, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.nests, color='red', size=2) +
+  annotation_scale(location='br') +
+  theme_void() +
+  coord_sf(xlim=c(st_bbox(rlk.points)[1] - 0.5, st_bbox(rlk.points)[3] + 0.5), 
+           ylim=c(st_bbox(rlk.points)[2] - 0.25, st_bbox(rlk.points)[4] + 0.25))
+
+ggplot() +
+  geom_sf(data=rlk.m.mcp.50, fill=NA) +
+  geom_sf(data=rlk.m.mcp.95, fill=NA) +
+  geom_sf(data=rlk.buffer, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.m.points, alpha=0.25) +
+  geom_sf(data=rlk.nests, color='red', size=2) +
+  annotation_scale(location='br') +
+  theme_void() +
+  coord_sf(xlim=c(st_bbox(rlk.points)[1] - 0.5, st_bbox(rlk.points)[3] + 0.5), 
+         ylim=c(st_bbox(rlk.points)[2] - 0.25, st_bbox(rlk.points)[4] + 0.25))
+```
+
+<!-- 
+  * Discussion of telemetry
+    * Despite setbacks, prelim data provide clues for management
+    * Irregular shape =/ estimated buffers
+    * Irregular use indicates patchy use - some areas outside WHAs clearly important, not captured by nest protections
+-->
+
+Despite these setbacks, our preliminary results are suggestive. The high fidelity of females to the nest area confirms the utility of buffers around nests to prevent disturbance during the breeding season. However, the maximum distance traveled by males and the irregular shape of their home ranges clearly shows that circular buffers generated around nests based on estimates of mean home range size are not good approximations of the space goshawks actually use. Home ranges were rarely circular but were frequently shaped by geographic constraints such as coastlines or mountain peaks. Within male home ranges, kernel density estimates show habitat use is not even across a male's territory, but rather there are clusters of activity around high-use areas which are presumably high-quality foraging habitat. These areas often fall outside the nest area and so would not be captured by current habitat protections. Incorporating these factors into management plans would ensure sufficient foraging habitat to support goshawks breeding within protected areas and is a major goal of management agencies, but much additional research is needed before the factors influencing goshawk foraging habitat selection and space use can be understood.
+
+<!-- Carey et al. 1992 (re: maximum distance): "The old forest set aside must be within some area the owl can reasonably traverse. Our range lengths suggest that 5 km is a reasonable distance for owls to traverse on an annual basis. A circle of 2.5 km radius is 2000 ha. Such a circle could be used as a template. If > 950 ha of old forest were present within the 2000 ha circle, there is a reasonably high expectation that the area could support a pair of owls for 1 year." -->
+
+**Management implications**
+
+<!--
+  * The *laingi* problem
+    * laingi protected subspecies whose distribution is estimated based on ecosystem mapping
+    * genetic evidence calls this distribution into question
+    * this work indicates south coast population ecologically similar to Vancouver Island, Haida Gwaii, and interior-ish BC (Smithers), but dissimilar to SE AK, Washington (grouse-dependent) and also dissimilar to NOGO pops elsewhere in west (hare-dependent)
+    * indicates some support for designatable unit status
+    * does not indicate blanket management solution for these populations, as squirrels are introduced in Haida Gwaii
+    * Highlights importance of population-specific knowledge, which this study provides
+-->
+
+<!--
+  * Population level-implications
+    * Although this study found no evidence of productivity ~ squirrel!diet, data from other studies suggests it likely that productivity ~ squirrel!abundance
+    * Squirrels themselves tied to cyclical food source (seed cone crop)
+    * Alternatively, weather may be largest factor influencing NOGO nest initiation
+    * Both affected by climate change, so this represents a crucial direction for future research.
+-->  
+
+Although my thesis found no evidence of a link between productivity and the dominance of squirrel in the diet, data from multiple other studies suggests it is likely that squirrel abundance does affect productivity, although I was not able to test for this in my thesis. If this is the case, it would have important implications for management. In particular, squirrel abundance is itself tied to a cyclical food source, the conifer cone crop. Previous work on Vancouver Island found a correlation between cone crop size and goshawk productivity, supporting the supposition that goshawks in coastal British Columbia are impacted by squirrel populations. However, in some goshawk populations early spring weather, not prey abundance, has been found to be a greater factor in goshawk productivity. Resolving which is the primary driving factor in coastal British Columbia is a worthy goal in its own right, but is especially pertinant in light of global climate change. Currently little is known or even speculated about how climate change will affect northern goshawks, but as both cone crop and spring temperatures are expected to be affected by climate change this represent a crucial direction for future research.
+
+My thesis examines a single population of goshawks on the south coast of British Columbia which is currently classified as belonging to the subspecies *laingi*. The boundaries of the *laingi* subspecies have always been unclear; a combination of morphometric and genetic data, along with ecosystem mapping, has tentatively defined the eastern edge of its range within British Columbia as the Coast Mountains. This range is the foundation for goshawk management in British Columbia.  However, recent genetic evidence has called this distribution into question. Geraldes et al. (2019) identified the Haida Gwaii population as highly unique and distinct from populations on Vancouver Island and the south coast. They further found little genetic distinctness between populations in Vancouver Island, the south coast, and elsewhere in North America. This suggests the distribution of *laingi* is restricted to Haida Gwaii, and that the population under consideration in my thesis may not be a part of this subspecies. However, my results suggest a strong ecological similarity between goshawks on the south coast and Vancouver Island with the Haida Gwaii population, which is also highly reliant on tree squirrels. The diet of these populations stand in contrast to that of other populations currently considered part of *laingi*, such as northwest Washington and Southeast Alaska, where goshawks consume primarily birds,  especially grouse. It also stands in contrast to the diet of populations elsewhere in North America, where goshawks do consume mainly mammals, but primarily hare or ground squirrels. This suggests that while goshawks in coastal British Columbia may be genetically dissimilar to those in Haida Gwaii, they may be ecologically similar and unique relative to other population, potentially supporting a status as a designatable unit. However, it does not indicate a single management strategy for all goshawk populations in coastal British Columbia. Red squirrels are native to Vancouver Island and douglas's squirrels to the coastal mainland, but red squirrels are introduced to Haida Gwaii. These ecosystems must therefore be managed differently. This highlights the importance of the type of population-specific ecological information my thesis provides.  

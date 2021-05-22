@@ -1,0 +1,3 @@
+"0","# Join them?"
+"0","jn <- oc %>% fuzzy_inner_join(og, by=c('name'='TerrName'), match_fun=str_detect) %>% "
+"0","  select(site, name, TerrName, NName, YrFound, everything())"

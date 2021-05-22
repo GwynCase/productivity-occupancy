@@ -1,0 +1,181 @@
+---
+title: "Bookends 0.2"
+output: html_notebook
+---
+
+# Introduction
+<!--
+* Forest management
+  * Forests initially managed for high timber yields, or not managed at all
+  * Shift in focus to preservation of biodiversity
+  * Result of changing values, desire to preserve species (MAMU, marten)
+  * Further shift toward ecosystem function, ecosystem services
+  * Managing ecosystems is hard
+-->
+
+Once valued primarily for high timber yields, forests of the Pacific Northwest are now managed with a greater emphasis on the conservation of biodiversity (Thomas et al. 2006). Among the drivers of this shift are declining populations of species dependent on late successional forests. Some of these species have been placed under government protection, including the marbled murrelet (*Brachyramphus marmoratus*; COSWEWIC 2012), or are considered species of conservation concern, such as the Pacific marten (*Martes caurina*; USFWS 2018). Early management efforts, in Pacific Northwest forests and elsewhere in North America, attempted to conserve at-risk species on a case-by-case basis. Over time, greater emphasis was placed on conserving ecosystem function. This occurred in response to increased awareness of the complex web of ecological interactions required to preserve a single species, as well as acknowledgment of human reliance on services provided by functioning ecosystems. However, managing whole ecosystems poses a significant set of logistic and even philosophical challenges that has made ecosystem-based management difficult to put into practice.
+  
+<!--  
+* Surrogate species & ecosystem management
+  * Surrogate species, etc. proposed as solutions
+  * Discussion of 1-2 select surrogate species concepts
+  * Extends single-species management toward ecosystem-based management
+  * A few examples of how how surrogate species have been encoded into management
+--> 
+
+Due to the challenges associated with multi-species or ecosystem-based management, single-species management plans based on rare or endangered species are often implemented under the assumption, implicit or explicit, that their conservation benefits a range of co-occurring species and functions (Caro 2010). This method, in different forms, goes by a number of names and slightly different definitions. One of the first proposed was the *umbrella species* concept. Under this model, protecting large amounts of habitat for a species with significant spatial requirements ensures sufficient habitat is preserved for other species which use similar habitat but have smaller spatial requirements. A variation is the *surrogate species* or closely related *sentinal species* concept. In this model, a the fate of one species is believed to mirror the state of the larger ecosystem on which it depends, and so monitoring this single species is equivalent to monitoring the entire ecosystem. These and other related concepts attempt to extend the relative simplicity of single-species management to the more scientifically sound but logistically difficult ecosystem-based management. The surrogate species concept has been put into practice by the United States Fish and Wildlife Service.
+  
+<!--  
+* Case study: spotted owls
+  * NSPOW declines lead to NWFP
+  * NSPOW management under the NWFP
+  * NWFP extended to other species, functions
+-->
+  
+No species better embodies the changes and challenges of forest management in the Pacific Northwest than the Northern spotted owl (*Strix occidentalis caurina*). Dependent on old-growth forests which were rapidly disappearing due to decades of intense timber harvest, the spotted owl was in steep decline by the 1970s. Following rising public pressure and litigation, a forest management plan based on spotted owl habitat requirements was developed for US federal forests in the Pacific Northwest. This single-species plan was rapidly expanded to include other species, including the marbled murrelet and multiple salmon stocks, and ultimately developed into the Northwest Forest Plan. The Northwest Forest Plan remains centered around spotted owl management and includes spotted-owl specific actions such as the establishment of buffers around known spotted owl nests. However, it also included large reserves of old-growth forest, buffers around key watersheds, and an annual allowable timber harvest. The history of spotted owl management clearly demonstrates the shift from no management through single-species management to an ecosystem-based approach that considers human communities as well as wildlife populations.
+
+<!-- 
+* Goshawks & Reynolds '92
+  * NOGO declines & listing in parallel to NSPOW
+  * A little about NOGO biology
+  * Reynolds's landscape-scale management plan
+  * Plan acknowledges ecosystem linkages necessary for single-species recovery
+  * Plan similar to ecosystem-based management
+-->
+
+The northern goshawk has followed a similar trajectory in North America to the spotted owl. Although not an old-growth forest obligate like the spotted owl, goshawks are reliant on forested habitat across their Holarctic distribution. The type and amount of forest varies widely across this range, so widely that some European authors have questioned whether goshawks are truly a forest species, but in North America the goshawk shows a clear dependence on large tracts of mature forests with large-diameter trees and closed canopies. At the same time the Northwest Forest Plan was being developed, the northern goshawk population in the western United States was proposed for listing under the Endangered Species Act. Despite more than a decade of litigation, the goshawk remains unlisted but is considered a species of concern by the US Forest Service. A single-species management plan was developed to protect and develop goshawk habitat in the US Southwest (primarily Arizona and New Mexico). This plan has not been expanded to include other species or ecosystem function, but it does more closely resemble multi-species or ecosystem-based management than do many single-species plans. In addition to protections for individual goshawk nests, it recommends forest-wide creation of habitat for goshawk prey in the form of gaps or openings along with snags and downed logs. By incorporating these ecological connections, this single-species plan showed a clear sensitivity toward the principles of ecosystem-based management.
+
+<!--  
+* Goshawks in BC
+  * PNW very different ecosystem than SW
+  * Subspecies description - potential adaptation to ecosystem
+  * History of listing
+  * Existing management, knowledge gaps
+-->
+
+The coastal ecosystems of the Pacific Northwest contain a radically different type of forest than the mountains of the Southwest. On the Haida Gwaii archipelago and Vancouver Island, naturalists described a subspecies of goshawk unique to these temperate rainforests, which they described as smaller, darker, and fiercer than the large, pale hawks found elsewhere in North America. These characteristics may represent adaptations to the close, shadowy forests *laingi* inhabits and the smaller, more agile avian prey that make up a large portion of their diet. Based on morphometrics, genetics, and ecosystem mapping, the range of *laingi* is believed to extend along the west coast and islands of British Columbia, from Southeast Alaska south to Washington's Olympic Peninsula. In Canada, the coastal population was recognized as a designatable unit of special concern by the Committee on the Status of Endangered Wildlife in Canada. The population was later recognized as the subspecies *laingi* and upgraded to Threatened under the Species at Risk Act. Provincially, *laingi* is designated as Red-listed by the British Columbia Conservation Data Centre and as an Identified Wildlife Species under the Forest Practices Code. Existing management practices call for the creation of protected buffers around known goshawk nests, similar to the plan from the US Southwest. However, it does not include landscape-scale recommendations, nor does it include recommendations for prey species. While to some extent this is due to the single-species strategy of the management plan, but to a large extent it is simply due to knowledge gaps. There is relatively little information on goshawk ecology in the Pacific Northwest, and relatively little information on goshawk foraging throughout North America.
+
+My thesis represents an attempt to fill those knowledge gaps by providing foundational ecological information about goshawks in coastal British Columbia. This information is necessary to improve existing single-species management plans and to open the door to improved forest management through multi-species or ecosystem-based management strategies. This first chapter provides background on forest management in the context of endangered species conservation, especially of the northern goshawk, and establishes a rationale for my research. The second chapter describes my work quantifying goshawk diet in coastal British Columbia and investigating possible links between dietary variation and goshawk productivity. The final chapter summarizes my results in the context of goshawk management and suggests both implications for management and direction for further research.
+
+
+# Conclusion
+
+**Overview**
+
+<!--
+* Introduction/review of chapter
+  * Management depends on understanding basic species biology, ecology
+  * Diet has important implications for management, conservation viability
+  * Population & ecosystem relationships
+  * Review of findings
+-->
+  
+The diet of a species is a basic aspect of its biology and defines some of its most important ecological relationships. Understanding a species's diet is crucial for successful management (Stier et al. 2016), and may even determine the limitations of recovery (Ferrer & Negro 2004). The diet of individuals can scale up to the population level, with consequences for population growth rates. In this thesis I examined dietary variation and its fitness consequences for northern goshawks in coastal British Columbia. I quantified diet at large (study area) and small (individual nest) scales for breeding goshawks and found that although goshawks consumed a wide variety of prey, consistent with their status as generalist predators, they showed a specialist-like reliance on tree squirrels of the genus *Tamiasciurus*, the extent of which varied from nest to nest. I then examined variation in diet across two ecological zones within my study area, the wetter *coastal zone* and drier *transitional zone* and found that although there were slight differences between the zones, the reliance on tree squirrels remained constant. Finally, I investigated whether two aspects of diet, diversity and specialization on tree squirrels, affected goshawk fitness, but found little evidence to support an affect of diet on productivity.
+
+<!--
+* Theory
+  * Specialists
+    * Narrow range of prey, which affects most aspects of life history
+    * Diet consistent across range & habitat, range/habitat may be limited by prey
+    * When prey scarce, respond with decreases in density, productivity, population size
+-->
+
+Specialist predators selectively consume a narrow range of prey species regardless of their abundance, which ultimately affects many, if not most, aspects of their life history. By specializing on single species or type of prey, the specialist can, through physiological or behavioral adaptation, become an extremely efficient hunter of that prey; however, specialization limits their ability to hunt other prey. As a result, a specialists' diet remains fairly consistent across its geographic range and the various types of habitat it inhabits. Indeed, the presence or abundance of its preferred prey may limit the range or types of habitat available to it. When a specialists' preferred prey becomes temporarily or chronically scarce, the specialist must respond in terms of decreases--decreases in density as individuals disperse to areas with more abundant food, decreases in productivity as individuals chose not to breed or suffer breeding failures, and even decreases in total population size that may place the species at risk of extinction.
+
+<!--
+* Generalists - v different
+    * Wide range of prey, although small number may be important
+    * Diet varies across range & habitat, reflecting local abundance/availability
+    * When prey scarce, may respond like specialist or switch to other prey
+  * Gray area
+    * Oversimplification
+    * Species contain gradient of generalist & specialist individuals    
+-->    
+
+In contrast, generalists opportunistically consume a wide range of prey species and readily switch between species in response to changes in prey abundance. A generalists' diet therefore varies across its range and the various habitat types it inhabits, reflecting the local availability and abundance of prey species. When preferred prey become scare, the generalist can respond by switching to alternate prey. While decreases may still occur, their severity is buffered by the generalists' ability to hunt additional species. This classic dichotomoy between specialist and generalist species is, however, an oversimplification. even in a generalist predator a single key prey species can be of disproportionate importance (Elmhagen et al. 2000, Resano‐Mayor et al. 2016). Within a single species, individuals exist on a gradient of specialization and generalization, a behavioral adaptation that may shift over an individual's lifetime in response to age and experience (Rutz) or to changing conditions (lynxes).
+
+<!--
+* Case study: NSPOW - highlights importance of understanding diet
+    * Considered habitat specialist, but partially (largely?) due to dependence on specialist prey (range/habitat is limited by prey)
+    * High dependence on few spp of prey, but this varies across range (north vs south) reflecting local prey abundance
+    * Diet scales up to habitat selection & population dynamics (home range size)
+-->
+
+The practical application of this theory is highlighted by the northern spotted owl. Spotted owls are dependent on old-growth forests, and spotted owl population declines are the direct result of loss of old-growth forest habitat. However, this habitat specialization is partially driven by an underlying dietary specialization: spotted owl diet consists largely of two species, bushy-tailed woodrat and northern flying squirrel. Both species are themselves dietary specialists, consuming fungi which are most abundant in old-growth forests. Spotted owl habitat is to some extent therefore limited by dietary specialization at two trophic levels. Despite this specialist-like dependence on few prey species, spotted owl diet does vary across the species's range in response to prey abundance, with spotted owls in one area consuming more woodrats and in another consuming more flying squirrels. This dietary variation scales up to the population, with spotted owl population that consume woodrats having different habitat selection, smaller home ranges, and higher productivity than those which consume flying squirrels.
+
+<!--    
+* NOGO & results
+  * In contrast - NOGO is generalist although key prey spp may be driver
+  * Diet quantification - diverse diet but primarily squirrel
+  * Ecological zones - diet varies within study area but squirrel is constant, suggests abundance likewise constant
+  * Productivity - no affect of squirrel in diet on productivity - possible explanations
+-->
+
+In contrast to the spotted owl's dependence on a few prey species, the northern goshawk is a generalist predator that consumes a wide range of prey. I found goshawks in coastal British Columbia to consume x prey species. Yet a key prey species is often a driver of northern goshawk productivity, survival, and other demographics. I found the majority of goshawk diet in my study area was composed of tree squirrels. This key prey species is the same as that identified on Vancouver Island, but is different from that identified in other areas of Pacific Northwest temperate rainforest, where grouse are most important. It is also different, but more in line with, findings elsewhere in western North America, where the most important prey species is also a mammal, either a sciurid or a leporid. Although goshawks in my study area clearly specialize on tree squirrels, the variation between diet within my study area and others is in keeping with a generalist's ability to adapt to local prey across its range and between habitat types. However, I found no major variation across ecological zones within my study area, suggesting that while these two zones are slightly ecologically different, the abundance of squirrels, the most important prey, is likely also the same. 
+
+I also found no affect of dietary variation on productivity. There are several possible explanations for this unexpected result. Individuals goshawks may specialize on squirrels to a greater or lesser degree, but this specialization may not confer any increase in productivity. Diet outside the breeding season, which I was not able to measure in this study, may be a larger driver of productivity than diet during the breeding season. Finally, goshawks may not truly specialize on squirrels at all and take prey in proportion to their abundance, which varies between territories. In this case, total prey abundance may be a stronger driver of productivity.
+
+**Directions for future research**
+
+<!--
+  * Knowledge gaps
+    * NOGO vs. NSPOW shows clear gaps in NOGO knowledge
+    * Prey abundance - used to determine degree of selectivity, affects of prey abundance on pop dy
+    * Space use - used to determine home range size, habitat selection
+--> 
+
+Comparing the northern spotted owl and the northern goshawk highlights the existence of several persistent knowledge gaps regarding goshawk biology, particularly regarding foraging behavior. As a controversial, high-profile species at the heart of a major regional management strategy, the spotted owl has been the focus of an extraordinary quantity of research. While controversy still surrounds the goshawk and knowledge has improved significantly since the initial petition for listing under the ESA, it has not received the same level of attention as the spotted owl. Furthermore, as a widespread generalist, it is far more difficult to generalize results from one goshawk population than it is for the more restricted, specialized spotted owl. 
+
+For goshawks in coastal British Columbia, one major knowledge gap is how changes in prey populations scale up to changes in the goshawk population. Without data on prey abundance, it is impossible to test any of the hypotheses outlined above for the independence of productivity and diet. Data on prey abundance would permit inferences regarding goshawk preference for squirrels beyond the quantification of dietary specialization I have provided here. These data could be further used to understand the factors limiting the goshawk populations and the direct effects of prey abundance on productivity, occupancy, and other drivers of demographics. A second major knowledge gap is how goshawks use space outside the area immediately around the nest for foraging. Across their range, goshawk home range size varies widely and goshawks have been observed foraging in a wide variety of habitat types, leading to controversy regarding how forest should be best managed to provide foraging habitat. Some of this variation in foraging may, similar to in spotted owls, be linked to variation in diet. Understanding how diet shapes habitat use in coastal British Columbia will require detailed data on goshawk movement and space use.
+
+<!-- 
+  * Review of telemetry
+    * Methods - tag info, capture technique
+    * Results - home range size (males vs females), maximum range
+-->
+
+As a pilot study to gather preliminary data on goshawk movement in coastal British Columbia, we <!-- who is we? --> tracked a small number of goshawks in 2018-2020. We captured goshawks during the early breeding season using a dho-gaza trap with a live great-horned owl (*Bubo virginianus*) as a lure (Bloom et al. 2007). Goshawks were fitted with a 14-gram geolocator tag (Ecotone brand, Harrier model) attached via backpack-style harness constructed of Teflon ribbon. We tagged a total of 13 birds, 4 of which were males and 9 females. Over the course of the study period we had only one probable mortality, although one additional individual could not be located in the subsequent breeding season. We collected between 0 and 73 days of location data from each tag; by the end of the study period no data had been retrieved from 4 of the tags. Of the tags from which some data were retrieved, we had between 3 and 73 days of data, with an average of x points per day. We excluded the tag with 3 days of locations from further analysis due to insufficient data. This left us with a sample of x females and x males.  The average breeding season (20 April - 15 September) home range was x when calculated using a 95% minimum convex polygon and x when calculated using a 95% kernel density estimator. However, we observed a large difference in the home range size between males and females. Mean male home range was x-x (95% MCP or 95% KDE, respectively), while mean female home range was much smaller, x-x (95% MCP or 95% KDE, respectively). Core-use area were more similar, but still larger for males at x-x (50% MCP or 50% KDE, respectively) than for females at x-x (50% MCP or 50% KDE, respectively). The smaller female home ranges were due to the amount of time females spent on the nest, which averaged 82% of their location points. Males spent more time away from the nest, and as the season progressed males visited the nest area less frequently. The mean distance a female traveled from the nest was 2.5 kilometers, while the mean distance traveled by males was 7 kilometers.
+
+<!--By the end of the study period, one goshawk was a probable mortality, one's fate was unknown, five were likely resident near their capture sites but had not been conclusively relocated since the season they were tagged, and six were still extant.-->
+
+<!--
+* Telemetry methods discussion
+    * Capture method favors females over males
+    * Data retrieval method favors females over males
+    * Pros of geolocator vs VHF/satellite
+-->
+
+We encountered several challenges over the course of the three-year project. The capture method we used favors the capture of females over males, as females are more aggressive near the nest. Because females forage very little during the breeding season, this provided us with little foraging location data. The geolocator tags we used only downloaded data to the base station, placed at the nest, when within range of base station and on a certain schedule. Because males spend so little time near the nest, we obtained frequent data downloads from females but only occasional downloads from males. Overall, our methods therefore favor collection of data from females, which is uninformative regarding foraging. We also struggled to relocate birds in subsequent years and therefore were unable to obtain locations for multiple breeding seasons or for winter movement. As a result, we collected much less data than expected. However, the data we did retrieve was of a much higher resolution than VHF data and much higher accuracy than satellite data, indicating this technology may be especially well suited to recording foraging behavior.
+
+<!-- 
+  * Discussion of telemetry
+    * Despite setbacks, prelim data provide clues for management
+    * Irregular shape =/ estimated buffers
+    * Irregular use indicates patchy use - some areas outside WHAs clearly important, not captured by nest protections
+-->
+
+Despite these setbacks, our preliminary results are suggestive. The high fidelity of females to the nest area confirms the utility of buffers around nests to prevent disturbance during the breeding season. However, the maximum distance traveled by males and the irregular shape of their home ranges clearly shows that circular buffers generated around nests based on estimates of mean home range size are not good approximations of the space goshawks actually use. Home ranges were rarely circular but were frequently shaped by geographic constraints such as coastlines or mountain peaks. Within male home ranges, kernel density estimates show habitat use is not even across a male's territory, but rather there are clusters of activity around high-use areas which are presumably high-quality foraging habitat. These areas often fall outside the nest area and so would not be captured by current habitat protections. Incorporating these factors into management plans would ensure sufficient foraging habitat to support goshawks breeding within protected areas and is a major goal of management agencies, but much additional research is needed before the factors influencing goshawk foraging habitat selection and space use can be understood.
+
+**Management implications**
+
+<!--
+  * The *laingi* problem
+    * laingi protected subspecies whose distribution is estimated based on ecosystem mapping
+    * genetic evidence calls this distribution into question
+    * this work indicates south coast population ecologically similar to Vancouver Island, Haida Gwaii, and interior-ish BC (Smithers), but dissimilar to SE AK, Washington (grouse-dependent) and also dissimilar to NOGO pops elsewhere in west (hare-dependent)
+    * indicates some support for designatable unit status
+    * does not indicate blanket management solution for these populations, as squirrels are introduced in Haida Gwaii
+    * Highlights importance of population-specific knowledge, which this study provides
+-->
+
+<!--
+  * Population level-implications
+    * Although this study found no evidence of productivity ~ squirrel!diet, data from other studies suggests it likely that productivity ~ squirrel!abundance
+    * Squirrels themselves tied to cyclical food source (seed cone crop)
+    * Alternatively, weather may be largest factor influencing NOGO nest initiation
+    * Both affected by climate change, so this represents a crucial direction for future research.
+-->  
+
+Although my thesis found no evidence of a link between productivity and the dominance of squirrel in the diet, data from multiple other studies suggests it is likely that squirrel abundance does affect productivity, although I was not able to test for this in my thesis. If this is the case, it would have important implications for management. In particular, squirrel abundance is itself tied to a cyclical food source, the conifer cone crop. Previous work on Vancouver Island found a correlation between cone crop size and goshawk productivity, supporting the supposition that goshawks in coastal British Columbia are impacted by squirrel populations. However, in some goshawk populations early spring weather, not prey abundance, has been found to be a greater factor in goshawk productivity. Resolving which is the primary driving factor in coastal British Columbia is a worthy goal in its own right, but is especially pertinant in light of global climate change. Currently little is known or even speculated about how climate change will affect northern goshawks, but as both cone crop and spring temperatures are expected to be affected by climate change this represent a crucial direction for future research.
+
+My thesis examines a single population of goshawks on the south coast of British Columbia which is currently classified as belonging to the subspecies *laingi*. The boundaries of the *laingi* subspecies have always been unclear; a combination of morphometric and genetic data, along with ecosystem mapping, has tentatively defined the eastern edge of its range within British Columbia as the Coast Mountains. This range is the foundation for goshawk management in British Columbia.  However, recent genetic evidence has called this distribution into question. Geraldes et al. (2019) identified the Haida Gwaii population as highly unique and distinct from populations on Vancouver Island and the south coast. They further found little genetic distinctness between populations in Vancouver Island, the south coast, and elsewhere in North America. This suggests the distribution of *laingi* is restricted to Haida Gwaii, and that the population under consideration in my thesis may not be a part of this subspecies. However, my results suggest a strong ecological similarity between goshawks on the south coast and Vancouver Island with the Haida Gwaii population, which is also highly reliant on tree squirrels. The diet of these populations stand in contrast to that of other populations currently considered part of *laingi*, such as northwest Washington and Southeast Alaska, where goshawks consume primarily birds,  especially grouse. It also stands in contrast to the diet of populations elsewhere in North America, where goshawks do consume mainly mammals, but primarily hare or ground squirrels. This suggests that while goshawks in coastal British Columbia may be genetically dissimilar to those in Haida Gwaii, they may be ecologically similar and unique relative to other population, potentially supporting a status as a designatable unit. However, it does not indicate a single management strategy for all goshawk populations in coastal British Columbia. Red squirrels are native to Vancouver Island and douglas's squirrels to the coastal mainland, but red squirrels are introduced to Haida Gwaii. These ecosystems must therefore be managed differently. This highlights the importance of the type of population-specific ecological information my thesis provides.  

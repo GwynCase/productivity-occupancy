@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+
+</head>
+<body>
+<table class="table" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:left;">   </th>
+   <th style="text-align:left;"> id </th>
+   <th style="text-align:left;"> site </th>
+   <th style="text-align:left;"> min </th>
+   <th style="text-align:left;"> max </th>
+   <th style="text-align:right;"> period </th>
+   <th style="text-align:right;"> n.points </th>
+   <th style="text-align:right;"> dist </th>
+   <th style="text-align:right;"> prop.at.base </th>
+   <th style="text-align:right;"> mcp.50 </th>
+   <th style="text-align:right;"> mcp.95 </th>
+   <th style="text-align:right;"> kde.50 </th>
+   <th style="text-align:right;"> kde.95 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;"> 0 </td>
+   <td style="text-align:left;"> HAR12 </td>
+   <td style="text-align:left;"> FMT </td>
+   <td style="text-align:left;"> 2020-06-25 </td>
+   <td style="text-align:left;"> 2020-06-28 </td>
+   <td style="text-align:right;"> 3.0 </td>
+   <td style="text-align:right;"> 104 </td>
+   <td style="text-align:right;"> 2302.320 </td>
+   <td style="text-align:right;"> 3.850 </td>
+   <td style="text-align:right;"> 0.680 </td>
+   <td style="text-align:right;"> 103.660 </td>
+   <td style="text-align:right;"> 13.040 </td>
+   <td style="text-align:right;"> 152.140 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 1 </td>
+   <td style="text-align:left;"> HAR03 </td>
+   <td style="text-align:left;"> GRV </td>
+   <td style="text-align:left;"> 2020-06-08 </td>
+   <td style="text-align:left;"> 2020-06-28 </td>
+   <td style="text-align:right;"> 20.0 </td>
+   <td style="text-align:right;"> 2964 </td>
+   <td style="text-align:right;"> 2441.140 </td>
+   <td style="text-align:right;"> 95.880 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 0.000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 2 </td>
+   <td style="text-align:left;"> HAR10 </td>
+   <td style="text-align:left;"> MTC </td>
+   <td style="text-align:left;"> 2019-05-02 </td>
+   <td style="text-align:left;"> 2019-06-29 </td>
+   <td style="text-align:right;"> 58.0 </td>
+   <td style="text-align:right;"> 315 </td>
+   <td style="text-align:right;"> 5456.710 </td>
+   <td style="text-align:right;"> 78.410 </td>
+   <td style="text-align:right;"> 0.350 </td>
+   <td style="text-align:right;"> 58.880 </td>
+   <td style="text-align:right;"> 8.720 </td>
+   <td style="text-align:right;"> 113.410 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 3 </td>
+   <td style="text-align:left;"> HAR02 </td>
+   <td style="text-align:left;"> RLK </td>
+   <td style="text-align:left;"> 2020-06-13 </td>
+   <td style="text-align:left;"> 2020-07-08 </td>
+   <td style="text-align:right;"> 25.0 </td>
+   <td style="text-align:right;"> 977 </td>
+   <td style="text-align:right;"> 4013.480 </td>
+   <td style="text-align:right;"> 72.060 </td>
+   <td style="text-align:right;"> 5.440 </td>
+   <td style="text-align:right;"> 280.590 </td>
+   <td style="text-align:right;"> 12.730 </td>
+   <td style="text-align:right;"> 267.380 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 4 </td>
+   <td style="text-align:left;"> HAR08 </td>
+   <td style="text-align:left;"> TCR </td>
+   <td style="text-align:left;"> 2019-06-10 </td>
+   <td style="text-align:left;"> 2019-06-27 </td>
+   <td style="text-align:right;"> 17.0 </td>
+   <td style="text-align:right;"> 45 </td>
+   <td style="text-align:right;"> 76.500 </td>
+   <td style="text-align:right;"> 82.220 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 0.190 </td>
+   <td style="text-align:right;"> 0.030 </td>
+   <td style="text-align:right;"> 0.400 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 5 </td>
+   <td style="text-align:left;"> AVERAGE </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 24.6 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 2858.030 </td>
+   <td style="text-align:right;"> 66.484 </td>
+   <td style="text-align:right;"> 1.294 </td>
+   <td style="text-align:right;"> 88.664 </td>
+   <td style="text-align:right;"> 6.904 </td>
+   <td style="text-align:right;"> 106.666 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 6 </td>
+   <td style="text-align:left;"> HAR09 </td>
+   <td style="text-align:left;"> MTC </td>
+   <td style="text-align:left;"> 2019-05-02 </td>
+   <td style="text-align:left;"> 2019-07-02 </td>
+   <td style="text-align:right;"> 61.0 </td>
+   <td style="text-align:right;"> 409 </td>
+   <td style="text-align:right;"> 4413.190 </td>
+   <td style="text-align:right;"> 2.440 </td>
+   <td style="text-align:right;"> 530.110 </td>
+   <td style="text-align:right;"> 2611.200 </td>
+   <td style="text-align:right;"> 636.340 </td>
+   <td style="text-align:right;"> 3032.760 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 7 </td>
+   <td style="text-align:left;"> HAR04 </td>
+   <td style="text-align:left;"> RLK </td>
+   <td style="text-align:left;"> 2019-06-22 </td>
+   <td style="text-align:left;"> 2019-07-08 </td>
+   <td style="text-align:right;"> 16.0 </td>
+   <td style="text-align:right;"> 532 </td>
+   <td style="text-align:right;"> 7773.290 </td>
+   <td style="text-align:right;"> 9.020 </td>
+   <td style="text-align:right;"> 423.000 </td>
+   <td style="text-align:right;"> 4441.080 </td>
+   <td style="text-align:right;"> 662.280 </td>
+   <td style="text-align:right;"> 4407.620 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 8 </td>
+   <td style="text-align:left;"> HAR05 </td>
+   <td style="text-align:left;"> SKA </td>
+   <td style="text-align:left;"> 2019-06-23 </td>
+   <td style="text-align:left;"> 2019-09-04 </td>
+   <td style="text-align:right;"> 73.0 </td>
+   <td style="text-align:right;"> 1557 </td>
+   <td style="text-align:right;"> 8026.150 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 1548.170 </td>
+   <td style="text-align:right;"> 6052.920 </td>
+   <td style="text-align:right;"> 1642.200 </td>
+   <td style="text-align:right;"> 6674.730 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 9 </td>
+   <td style="text-align:left;"> HAR07 </td>
+   <td style="text-align:left;"> TCR </td>
+   <td style="text-align:left;"> 2018-07-08 </td>
+   <td style="text-align:left;"> 2018-09-14 </td>
+   <td style="text-align:right;"> 68.0 </td>
+   <td style="text-align:right;"> 637 </td>
+   <td style="text-align:right;"> 7976.540 </td>
+   <td style="text-align:right;"> 0.000 </td>
+   <td style="text-align:right;"> 904.780 </td>
+   <td style="text-align:right;"> 4531.450 </td>
+   <td style="text-align:right;"> 850.600 </td>
+   <td style="text-align:right;"> 5263.070 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> 10 </td>
+   <td style="text-align:left;"> AVERAGE </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:left;"> NA </td>
+   <td style="text-align:right;"> 54.5 </td>
+   <td style="text-align:right;"> NA </td>
+   <td style="text-align:right;"> 7047.292 </td>
+   <td style="text-align:right;"> 2.865 </td>
+   <td style="text-align:right;"> 851.515 </td>
+   <td style="text-align:right;"> 4409.163 </td>
+   <td style="text-align:right;"> 947.855 </td>
+   <td style="text-align:right;"> 4844.545 </td>
+  </tr>
+</tbody>
+</table>
+</body>
+</html>

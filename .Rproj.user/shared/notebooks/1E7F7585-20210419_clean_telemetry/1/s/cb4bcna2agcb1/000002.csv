@@ -1,0 +1,13 @@
+"0","```r
+# Rearrange the nest coordinates a little so they're easier to join with the location data.
+nest.coords <- select(telemetry.sites, lat, lon, m_tag, f_tag, year, site, nest) %>%
+  pivot_longer(!c(lat, lon, year, site, nest), names_to='sex', values_to='id') %>%
+  drop_na(id) %>% rename(n.lat=lat, n.lon=lon) %>%
+  mutate(sex=case_when(
+    sex == 'm_tag' ~ 'm',
+    sex == 'f_tag' ~ 'f'
+  ))
+
+# Look again.
+head(nest.coords)
+```"

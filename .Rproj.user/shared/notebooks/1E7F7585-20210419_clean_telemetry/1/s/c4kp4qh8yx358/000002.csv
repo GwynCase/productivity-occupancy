@@ -1,0 +1,10 @@
+"0","```r
+# Make a list of all the extra columns we don't need.
+e.cols <- c('Month', 'Day', 'Hour', 'Minute', 'Second',
+            'Altitude', 'Div up', 'Div down', 'No GPS - diving', 'Diving duration',
+            'Raw latitude', 'Raw Longitude', 'Decision voltage', 'Milisecond',
+            'Acc_X', 'Acc_Y', 'Acc_Z')
+
+# Remove them from the data frame.
+df <- select(df, !any_of(e.cols))
+```"

@@ -1,0 +1,4 @@
+"0","```r
+# Remove any missed points.
+df <- df %>% filter(!is.na(lat))
+```"

@@ -1,0 +1,32 @@
+---
+title: "Bookends"
+output: html_notebook
+---
+
+# Introduction
+
+* Forest management
+* Surrogate species & ecosystem management
+* Case study: spotted owls
+* Goshawks & Reynolds '92
+* 
+
+
+# Conclusion
+
+* Overview
+  * Introduction/review of chapter
+  * Diet quantification
+  * Variation across ecological regions
+  * Link between diet and productivity
+* Directions for future research
+  * Knowledge gaps (overview)
+  * Prey abundance
+  * Scale & selectivity in foraging
+  * Review of telemetry (methods and results)
+  * Challenges of telemetry
+  * Discussion of telemetry
+* Management implications
+  * Paragraph one
+  * Paragraph two
+  * Paragraph three

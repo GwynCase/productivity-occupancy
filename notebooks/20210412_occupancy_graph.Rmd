@@ -1,0 +1,92 @@
+---
+title: "An occupancy graph"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+I saw a pretty graph in a paper (I can't remember which at the moment) and want to try to recreate it with my own data.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(ggplot2)
+library(fuzzyjoin)
+library(stringr)
+
+# Load in occupancy data.
+og <- read_csv('../data/external/SC_nest_database.csv')
+
+oc <- read_csv('../data/processed/occupancy_sc.csv')
+```
+
+So a problem is that these data are rather messy and not very standardized. `og` is the original, and `oc` is a cleaned-up version, but that one doesn't have "year found," which I need. So Ill try to join the two sets together.
+
+```{r}
+# Join them?
+jn <- oc %>% fuzzy_inner_join(og, by=c('name'='TerrName'), match_fun=str_detect) %>% 
+  select(site, name, TerrName, NName, YrFound, everything())
+```
+
+Worked great, except for two instances. Also, the year found column is not a consistent type, so that needs to get fixed.
+
+```{r}
+# Fix them.
+jn <- jn %>% mutate(name=case_when(
+  name == 'Upper Elaho' & TerrName == 'Elaho' ~ 'Elaho',
+  name == 'Big Silver' & TerrName == 'Silver' ~ 'Silver',
+  name == 'Birkenhead River' & TerrName == 'Birkenhead' ~ 'Birkenhead',
+  TRUE ~ name
+), 
+              site=case_when(
+  name == 'Upper Elaho' ~ 'UPE',
+  name == 'Silver' ~ 'SLV',
+  name == 'Birkenhead' ~ 'BKH',
+  TRUE ~ site
+),
+  YrFound=case_when(
+  YrFound == '?' ~ NA_character_,
+  YrFound == '????' ~ NA_character_,
+  YrFound == 'I ha' ~ NA_character_,
+  TRUE ~ YrFound
+))
+```
+
+Now to reorganize. I need just one line per site, with the earliest "year found" value retained.
+
+```{r}
+# Rearrange, do some cleanup.
+jn <- jn %>% group_by(name) %>% arrange(YrFound) %>% 
+  slice(1) %>% drop_na(YrFound) %>% 
+  select(!c(TerrName, NName), year.found=YrFound)
+```
+
+The next step is to take the data and make some calculations. I need, for each year, the cumulative number of sites found, how many sites were surveyed in that year, and how many of them were occupied (status > 1).
+
+```{r}
+# Calculate survey numbers.
+surveys <- jn %>% 
+  pivot_longer(cols=starts_with('status'), names_to='survey.year', values_to='status') %>% 
+  filter(status > 0) %>% group_by(survey.year) %>% 
+  mutate(n.surveyed=n()) %>% 
+  filter(status > 1) %>% 
+  mutate(n.occupied=n()) %>% distinct(survey.year, n.surveyed, n.occupied)
+
+# Clean up year column.
+# A bit awkward but oh well.
+surveys$survey.year <- str_split(surveys$survey.year, 'status.', simplify=TRUE)[,2]
+
+# Calculate cumulative number of sites found and smush together.
+surveys <- jn %>% group_by(year.found) %>% mutate(n.found=n()) %>% 
+  distinct(n.found) %>% ungroup() %>% arrange(year.found) %>%  
+  mutate(cum.found=cumsum(n.found)) %>% 
+  left_join(surveys, by=c('year.found'='survey.year'))
+```
+
+Now let's graph it??
+

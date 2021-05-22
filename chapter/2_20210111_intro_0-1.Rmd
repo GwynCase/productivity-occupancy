@@ -4,20 +4,30 @@ output: html_notebook
 always_allow_html: true
 ---
 
-Landscape at multiple scales, hierarchical resource selection
+Resource selection occurs at multiple scales, from the placement of home ranges within the landscape to the choice of food items within the home range. (Johnson 1980, and...?)<!--Johnson 1980 1st-4th order selection.--> 
 
-<!--Johnson 1980 1st-4th order selection.-->
-
-Selection does not mean good, territory quality
+* These choices have important fitness consequences. (A few examples, citations needed) 
+<!--For example, a poorly-selected nest site may lead to nest failure due to exposure or predation.--> 
+* However, selection can only occur out of the available pool of resources. (Johnson 1980 again and...?)
+* Selection may may be further constrained by other factors beyond the simple "best" option.
 
 <!-- Newton 1998 (Pop limit in birds) definition of territory -->
 
-<!-- Fretwell & Lucas 1970 Ideal free distribution/ideal dominance distribution: individuals compete for high quality habitat where populations are expected to denser and more successful due to greater suitability -->
+The ideal despotic distribution describes one system of selection under constraint. 
 
-<!-- Sergio & Newton 2003 Occupancy as measure of territory quality -->
+* Under this framework, competition for high-quality sites relegates less-competitive individuals to lower quality sites. (Fretwell & Lucas 1970, and...?)<!-- Fretwell & Lucas 1970 Ideal free distribution/ideal dominance distribution: individuals compete for high quality habitat where populations are expected to denser and more successful due to greater suitability --> 
+* In raptors, high-quality sites can be identified by denser settlement, higher productivity, and higher survival. (A few examples, citations needed.) 
+* In particular, territory occupancy rate is a reliable indicator of territory quality. <!-- Sergio & Newton 2003 Occupancy as measure of territory quality --> (Sergio & Newton 2003, and...?)
 
-NOGO, management at nest scale or landscape scale
+The northern goshawk is a large, forest-dwelling raptor with a Holarctic distribution. 
 
-NOGO in BC
+* Across its range its habitat is variable, but there is a consistent preference for large trees and closed canopies. (Many citations needed.)
+* In North America this has led to conflict with the timber industry, significant habitat loss, and listing as a species of conservation concern. 
+* A conceptual model of goshawk territories describes four nested spatial scales at which habitat selection may be driven by different factors and quality may be defined by different variables. (Citations definitely needed.)
 
-Here we
+The coastal population of northern goshawks in British Columbia is the subject of federal and provincial management efforts. 
+
+* Management focuses on forest preservation at the smallest scales around the nest, but does not address how forest management at larger scales affects territory quality.
+* And...?
+
+Here we explore how several habitat variables, measured at four spatial scales, affect an index and a direct measure of territory quality.

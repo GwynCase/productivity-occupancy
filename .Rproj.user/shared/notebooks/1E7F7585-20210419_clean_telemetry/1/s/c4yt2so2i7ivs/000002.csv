@@ -1,0 +1,17 @@
+"0","```r
+# Make a list of the files containing \"HAR\".
+file.list <- list.files('../data/raw', pattern='HAR', full.names=TRUE)
+
+file.list
+```"
+"1"," [1] \"../data/raw/2020_HAR02_Ruby Female_Base Station.csv\"   
+ [2] \"../data/raw/2020_HAR03_Gravell Female_BaseStation1.csv\"
+ [3] \"../data/raw/2020_HAR03_Gravell Female_BaseStation2.csv\"
+ [4] \"../data/raw/2020_HAR12_Fire Mountain Base Station.csv\" 
+ [5] \"../data/raw/HAR04_RAW_2019-06-22_2019-07-08.csv\"       
+ [6] \"../data/raw/HAR05_RAW_2019-06-23_2019-09-04.csv\"       
+ [7] \"../data/raw/HAR07_RAW_2018-07-08_2019-05-09.csv\"       
+ [8] \"../data/raw/HAR08_RAW_2019-06-10_2019-06-27.csv\"       
+ [9] \"../data/raw/HAR09_RAW_2019-05-02_2019-07-02.csv\"       
+[10] \"../data/raw/HAR10_RAW_2019-05-02_2019-06-29.csv\"       
+"

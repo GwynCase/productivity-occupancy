@@ -52,7 +52,7 @@ levels(r.suitable) <- suitable.levels
 lapply(c(r.bec, r.landcover, r.older, r.gaps, r.canopy, r.hsi, r.suitable), 
        function(x) {crs(x) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')})
 
-# Doesn't work for BEC???
+# Lapply doesn't work for several, so add manually.
 crs(r.bec) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 crs(r.hsi) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
 crs(r.suitable) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')

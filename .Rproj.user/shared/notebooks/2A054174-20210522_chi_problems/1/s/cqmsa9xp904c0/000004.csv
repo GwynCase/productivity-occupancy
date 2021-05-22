@@ -1,0 +1,2 @@
+"0","# Output for camera data chi-squared test."
+"0","filter(zone.chi, source == 'C') %>% unnest(gl)"

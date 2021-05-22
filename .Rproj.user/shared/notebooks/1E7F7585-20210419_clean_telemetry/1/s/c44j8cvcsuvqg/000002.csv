@@ -1,0 +1,6 @@
+"0","```r
+# Here's the function.
+read <- function(x) {
+  read_delim(x, ';')
+}
+```"

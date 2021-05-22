@@ -1,0 +1,4 @@
+"0","```r
+# Drop the seventh item from the data frame.
+df[[7]] <- NULL
+```"

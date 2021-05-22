@@ -1,0 +1,7 @@
+"0","```r
+# Read in table of nest coordinates.
+telemetry.sites <- read_csv('../data/processed/telemetry_sites.csv')
+
+# Take a quick look.
+head(telemetry.sites)
+```"

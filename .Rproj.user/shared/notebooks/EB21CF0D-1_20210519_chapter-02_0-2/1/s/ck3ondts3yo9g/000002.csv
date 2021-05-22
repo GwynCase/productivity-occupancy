@@ -1,0 +1,4 @@
+"0","### Cameras"
+"0",""
+"0","# Percent count mammal from cameras."
+"0","#filter(diet.items, source == 'C') %>% mutate(total=n()) %>% filter(class != 'Mammalia') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)"

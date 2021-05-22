@@ -1,0 +1,583 @@
+---
+title: "Chapter Two: Methods 0.1"
+output: html_notebook
+always_allow_html: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+options(knitr.kable.NA = '-')
+```
+
+# Methods
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(flextable)
+library(sf)
+library(broom)
+```
+
+```{r load-rasters, eval=FALSE, message=FALSE}
+## For making rasters of the fHSI data, see 'rasterizing_hsi.R'.
+## For making rasters of the VRI data, see 'rasterizing_vri.R'.
+
+library(raster)
+
+# Load all the rasters.
+r.bec <- raster('../data/external/bec_raster_full.tif')
+r.landcover <- raster('../data/processed/vri_sc_all-sites.tif')
+r.older <- raster('../data/processed/older_sc_100.tif')
+r.gaps <- raster('../data/processed/gaps_sc_100.tif')
+r.canopy <- raster('../data/processed/canopy_sc_100.tif')
+r.hsi <- raster('../data/processed/foraging_sc.tif')
+r.suitable <- raster('../data/processed/foraging_sc_suitable.tif')
+
+# Define levels for each raster.
+bec.levels <- levels(r.bec) %>% data.frame()
+
+landcover.levels <- data.frame(ID=0:11, class.name=
+                                 c('undefined', 'rock', 'ocean', 'freshwater',
+                                   'alpine', 'wetland',
+                                   'shrub', 'deciduous', 'regen',
+                                   'young', 'mature', 'old'))
+
+older.levels <- data.frame(ID=0:1, class.name=
+                             c('undefined', 'older'))
+
+gap.levels <- data.frame(ID=0:1, class.name=
+                           c('undefined', 'gap'))
+
+canopy.levels <- data.frame(ID=c(-1, 0, 50, 75), 
+                            class.name=c('undefined', 'none', 'moderate', 'high'))
+
+hsi.levels <- data.frame(ID=c(-10, -2, -1, 0, 1, 2, 3), 
+                         class.name=c('ocean', 'freshwater', 'river', 
+                                      'nil', 'low', 'moderate', 'high'))
+
+suitable.levels <- data.frame(ID=c(0, 4), 
+                              class.name=c('unsuitable', 'suitable'))
+
+# Add levels to each raster.
+levels(r.landcover) <- landcover.levels
+levels(r.older) <- older.levels
+levels(r.gaps) <- gap.levels
+levels(r.canopy) <- canopy.levels
+levels(r.hsi) <- hsi.levels
+levels(r.suitable) <- suitable.levels
+
+# Finally, assign a CRS.
+lapply(c(r.bec, r.landcover, r.older, r.gaps, r.canopy, r.hsi, r.suitable), 
+       function(x) {crs(x) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')})
+
+# Lapply doesn't work for several, so add manually.
+crs(r.bec) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+crs(r.hsi) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+crs(r.suitable) <- CRS('+proj=utm +zone=10 +datum=NAD83 +units=m +no_defs')
+```
+
+```{r calc-metric, eval=FALSE, message=FALSE, warning=FALSE}
+#source('../src/load_rasters.R')
+library(landscapemetrics)
+
+### BEC zones
+
+# Make a list of BEC metrics to calculate.
+bec.metrics <- c('lsm_l_sidi')
+
+# Make a function to do the calculations and formatting.
+calc.bec.metrics <- function(x) {
+  sample_lsm(r.bec, y=sites.sf, size=x, plot_id=site.names, shape='circle', what=bec.metrics) %>% 
+    left_join(bec.levels, by=c('class'='ID')) %>% 
+    group_by(plot_id, metric) %>% 
+    top_n(1, value) %>% ungroup() %>%  
+    fill(category) %>% 
+    filter(level == 'landscape') %>% 
+    pivot_wider(names_from=metric, values_from=value) %>% 
+    mutate(radius=x)%>% 
+    rename(bec.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+bec.landscape.metrics <- map_df(landscape$radius, calc.bec.metrics)
+
+# Tidy things up.
+bec.landscape.metrics <- bec.landscape.metrics %>% 
+  select(nest=plot_id, bec.diversity=sidi, radius, bec.inside)
+
+bec.landscape.metrics <- select(landscape, radius, size) %>% 
+  right_join(bec.landscape.metrics, by='radius')
+
+### Landcover classes
+
+# Make a list of landcover metrics to calculate.
+landcover.metrics <- c('lsm_c_pland', 'lsm_l_ed', 'lsm_l_contag', 'lsm_l_sidi', 'lsm_l_siei', 'lsm_l_prd')
+
+# Make a function to do the calculations and formatting.
+calc.landcover.metrics <- function(x) {
+  sample_lsm(r.landcover, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=landcover.metrics) %>% 
+    left_join(landcover.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x)%>% 
+    rename(landcover.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+landcover.landscape.metrics <- map_df(landscape$radius, calc.landcover.metrics)
+
+# Do some cleanup: fill NAs with zeros and rename columns, calculate mature forest.
+landcover.landscape.metrics <- landcover.landscape.metrics %>% 
+  replace_na(list(old=0, mature=0)) %>% 
+  mutate(proportion.cover.mature=mature + old) %>% 
+  mutate(siei=case_when(
+    siei == 'NaN' ~ NA_real_,
+    TRUE ~ siei
+  )) %>% 
+  select(radius, nest=plot_id, landcover.inside,
+         proportion.cover.mature,
+         cover.edge.density=ed, cover.contagion=contag,
+         cover.diversity=sidi, cover.evenness=siei, cover.richness=prd)
+
+landcover.landscape.metrics <- select(landscape, radius, size) %>%
+  right_join(landcover.landscape.metrics)
+
+### Mature forest.
+
+# Make a list of landcover metrics to calculate.
+mature.metrics <- c('lsm_c_pland', 'lsm_l_ed')
+
+# Make a function to do the calculations and formatting.
+calc.mature.metrics <- function(x) {
+  sample_lsm(r.older, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=mature.metrics) %>% 
+    left_join(older.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x)%>% 
+    rename(mature.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+mature.landscape.metrics <- map_df(landscape$radius, calc.mature.metrics)
+
+mature.landscape.metrics <- mature.landscape.metrics %>% 
+  replace_na(list(undefined=0, older=0)) %>% 
+  select(radius, nest=plot_id, mature.inside,
+         mature.edge.density=ed, 
+         proportion.mature=older, proportion.undefined=undefined)
+
+mature.landscape.metrics <- select(landscape, radius, size) %>%
+  right_join(mature.landscape.metrics)
+
+### Gaps
+
+# Make a list of gap metrics to calculate.
+gap.metrics <- c('lsm_l_ed')
+
+# Make a function to do the calculations and formatting.
+calc.gap.metrics <- function(x) {
+  sample_lsm(r.gaps, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=gap.metrics) %>% 
+    left_join(landcover.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x) %>% 
+    rename(gap.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+gap.landscape.metrics <- map_df(landscape$radius, calc.gap.metrics)
+
+# Tidy things up.
+gap.landscape.metrics <- gap.landscape.metrics %>% 
+  select(nest=plot_id, gap.edge.density=ed, radius, gap.inside)
+
+gap.landscape.metrics <- select(landscape, radius, size) %>% right_join(gap.landscape.metrics)
+
+### Canopy cover.
+
+# Make a list of canopy metrics to calculate.
+canopy.metrics <- c('lsm_c_pland')
+
+# Make a function to do the calculations and formatting.
+calc.canopy.metrics <- function(x) {
+  sample_lsm(r.canopy, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=canopy.metrics) %>% 
+    left_join(canopy.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x) %>% 
+    rename(canopy.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+canopy.landscape.metrics <- map_df(landscape$radius, calc.canopy.metrics)
+
+# Do some cleanup: fill NAs with zeros and rename columns, calculate mature forest.
+canopy.landscape.metrics <- canopy.landscape.metrics %>% 
+  mutate_all(~replace(., is.na(.), 0)) %>%  
+  select(radius, nest=plot_id, canopy.inside,
+         canopy.none=none,
+         canopy.moderate=moderate,
+         canopy.high=high)
+
+canopy.landscape.metrics <- select(landscape, radius, size) %>% 
+  right_join(canopy.landscape.metrics, by=c('radius'))
+
+### HSI
+
+# Make a list of metrics to calculate.
+hsi.metrics <- c('lsm_l_ed', 'lsm_l_contag')
+
+# Make a function to do the calculations and formatting.
+calc.hsi.metrics <- function(x) {
+  sample_lsm(r.hsi, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=hsi.metrics) %>% 
+    left_join(hsi.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x) %>% 
+    rename(hsi.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+hsi.landscape.metrics <- map_df(landscape$radius, calc.hsi.metrics)
+
+# Do some cleanup
+hsi.landscape.metrics <- hsi.landscape.metrics %>% #replace(is.na(.), 0) %>% 
+  select(radius, hsi.inside, nest=plot_id, hsi.edge.density=ed, hsi.contagion=contag)
+
+hsi.landscape.metrics <- select(landscape, radius, size) %>% 
+  right_join(hsi.landscape.metrics, by=c('radius'))
+
+### Suitable habitat.
+
+# Make a list of metrics to calculate.
+suitable.metrics <- c('lsm_c_pland', 'lsm_l_ed')
+
+# Make a function to do the calculations and formatting.
+calc.suitable.metrics <- function(x) {
+  sample_lsm(r.suitable, y=sites.sf, size=x, plot_id=site.names, shape='circle', 
+             what=suitable.metrics) %>% 
+    left_join(hsi.levels, by=c('class'='ID')) %>% 
+    mutate(class.name=ifelse(is.na(class.name), metric, class.name)) %>% 
+    select(-class, -metric, -level) %>%  
+    pivot_wider(names_from=class.name, values_from=value) %>% 
+    mutate(radius=x) %>% 
+    rename(suitable.inside=percentage_inside)
+}
+
+# Run the function for each sample size.
+suitable.landscape.metrics <- map_df(landscape$radius, calc.suitable.metrics)
+
+# Do some cleanup
+suitable.landscape.metrics <- suitable.landscape.metrics %>% # replace(is.na(.), 0) %>% 
+  select(radius, suitable.inside, nest=plot_id, suitable.edge.density=ed, proportion.suitable=pland)
+
+suitable.landscape.metrics <- select(landscape, radius, size) %>% 
+  right_join(suitable.landscape.metrics, by=c('radius'))
+
+### Wrap-up.
+
+landscape.data <- full_join(bec.landscape.metrics, suitable.landscape.metrics, 
+                            by=c('nest', 'radius', 'size')) %>% 
+  full_join(landcover.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(mature.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(hsi.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(gap.landscape.metrics, by=c('nest', 'radius', 'size')) %>% 
+  full_join(canopy.landscape.metrics, by=c('nest', 'radius', 'size'))
+
+write_csv(landscape.data, '../data/processed/landscape_metrics_plain.csv')
+```
+
+## Study Area and Species
+
+In North America, the northern goshawk ranges from boreal forests of the Yukon south to high-elevation forests of Arizona and New Mexico. Two subspecies are recognized: the widespread *atricapillus* and the limited *laingi* (Squires et al. 2020). The *laingi* subspecies was first described on the Haida Gwaii archipelago in British Columbia and is smaller and darker than the *atricapillus* subspecies found elsewhere on the continent (Taverner 1940). The range of this subspecies is limited to the west coast of North America from southeast Alaska through mainland British Columbia and Vancouver Island, possibly as far south as Washington’s Olympic Peninsula (COSEWIC 2013). *A. g. laingi* is considered a species at risk in British Columbia by both the federal and provincial governments due to significant habitat loss from industrial timber harvest (Team 2008, COSEWIC 2013).
+
+Several models have been proposed to describe the components of a goshawk territory and capture the hierarchical nature of goshawk habitat selection (reviewed in Squires & Kennedy 2005, Andersen et al. 2006). At the largest scale, the home range or foraging area includes the total area used by the male and female during the breeding season. Within the home range, the breeding area is the core-use area for adults and is used by fledglings across multiple years prior to dispersal. At the smallest scale around each nest, the post-fledging area is used by fledglings within a single year after fledging but prior to dispersal (*sensu* McClaren et al. 2015). Goshawks often build multiple nests within the breeding area, and each nest has an associated post-fledging area.
+
+We studied goshawks in southwestern British Columbia, a region characterized by rugged mountains interspersed with coastal fjords and low-lying valleys. The maritime climate supports temperate rainforest dominated by Douglas-fir (*Pseudotsuga menziesii*), western redcedar (*Thuja plicata*), and western hemlock (*Tsuga heterophylla*) (Meidinger and Pojar 1991). The goshawk population in southwestern British Columbia is currently classified as *A. g. laingi*, though new genetic evidence may lead to future reclassification (Geraldes et al. 2018). Two habitat suitability models (HSIs; USFWS 1981) were developed for the coastal goshawk population to aid in management planning and action (Mahon 2008). These models rate goshawk habitat quality based on its estimated suitability for either nesting or foraging using data from known goshawk territories and expert knowledge.
+
+## Goshawk territories
+
+```{r occupancy-data, message=FALSE, warning=FALSE}
+# Bring in occupancy data.
+occupancy.history <- read_csv('../data/processed/occupancy_sc.csv')
+## In this dataset: 
+# 0 = not visited
+# 1 = visited, no detection
+# 2 = visited, with detection
+# 3 = visited, breeding
+
+# Remove problem child Turbid Creek. This site has a known error with the GIS data.
+occupancy.history <- filter(occupancy.history, site != 'TCR')
+
+# Remove any sites that have never been visited (status in all years = 0).
+occupancy.history <- occupancy.history %>% 
+  filter_at(vars(starts_with('status')), any_vars(. > 0))
+
+# Twist occupancy data long.
+occupancy.data <- occupancy.history %>% 
+  pivot_longer(-c(site, name), names_to='year', values_to='status') %>% 
+  filter(status > 0) %>%
+  group_by(site, status) %>% 
+  add_tally() %>% 
+  distinct(site, status, .keep_all=TRUE) %>% 
+  select(-year) %>% 
+  pivot_wider(names_from=status, values_from=n, values_fill=0) %>% 
+  ungroup() %>% rowwise(site, name) %>% 
+  mutate(years.surveyed=sum(c(`3`, `2`, `1`)),
+         years.detect=sum(c(`3`, `2`)),
+         years.no.detect=years.surveyed-years.detect) %>%
+  select(site, name, years.surveyed, years.detect, years.no.detect)
+
+# Bring in calculated landscape data.
+landscape.data <- read_csv('../data/processed/landscape_metrics_plain.csv')
+
+# Join to occupancy data.
+occupancy.data <- occupancy.data %>% left_join(landscape.data, by=c('site'='nest'))
+
+# Filter out everything with insufficient GIS coverage (less than 90%).
+occupancy.data <- occupancy.data %>% filter_at(vars(contains('inside')), all_vars(. >=90))
+```
+
+Goshawk territories were located as part of long-term population monitoring conducted by the British Columbia Ministry of Forests, Lands, Natural Resource Operations and Rural Development (FLNRO). Nest locations were collected by from 2013-2020 by FLNRO surveyors, timber industry professionals, and members of the public and compiled in a database of goshawk sites within the study area. From this dataset we removed all territories which had never been visited by a FLRNO surveyor, or which lacked sufficient GIS data coverage (see below), producing a set of `r distinct(occupancy.data, site) %>% nrow()` territories retained for analysis. Sites were not surveyed every year, and most sites had a single survey visit for each year it was surveyed. We defined a site as "active" if a goshawk was detected during a survey or definitive signs of breeding activity were observed, and "not active" if no goshawks were detected. A single survey visit has a low (%, source) probability of detecting breeding activity and the probability of detection increases with survey effort. We make no attempt to correct for survey effort and acknowledge that our data likely underestimate site activity.
+
+## Landscape metrics
+
+```{r nest-centroids, message=FALSE, warning=FALSE}
+# Bring in nest data.
+nests <- read_csv('../data/processed/sc_nests.csv')
+
+# Calculate a centroid for each site.
+centroids <- nests %>% group_by(site) %>% 
+  mutate(mean.x=mean(xcoord), mean.y=mean(ycoord)) %>% 
+  distinct(site, name, mean.x, mean.y)
+
+sites <- centroids %>% rename(xcoord=mean.x, ycoord=mean.y)
+
+# Make it a spatial object for later.
+sites.sf <- sites %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord')) %>% 
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs') %>% 
+  st_as_sf()
+
+# Also make a list of site names for later.
+site.names <- sites.sf$site
+```
+
+```{r spatial-scales}
+# Set up the smaller landscape scales.
+landscape <- data.frame(
+  size=c('PFA', 'breeding area', 'home range'),
+  area=c(60, 200, 3800)
+)
+
+# Calculate the maxiumum range.
+max.dist <- c(7773, 8023, 7977, 4413) %>% mean()
+## These numbers are from four males goshawks tagged in the South Coast in 2019. 
+## Data are from 20 April to 15 September.
+
+# Convert to area.
+max.area <- (pi*max.dist^2)/10000
+
+# Add to landscapes.
+landscape <- data.frame(
+  size='maximum range',
+  area=max.area
+) %>% 
+  bind_rows(landscape) %>% arrange(area)
+
+# Convert area in hectares to radii in meters.
+landscape <- landscape %>% mutate(radius=sqrt(area*10000/pi))
+```
+
+We calculated habitat composition and configuration at four scales (60 ha, 200 ha, 3800 ha, and 15600 ha) around each nest centroid. Nest centroids were calculated by taking the mean location of all nests within each territory. The three smallest scales were defined using estimates of the post-fledging area (McClaren 2005), breeding area (FLNRO 2013 or whatever, and McClaren 2005 again?), and breeding season home range (McClaren et al. 2015 works but actually McClaren... 2005?), respectively. Because the space-use of goshawks in southwestern British Columbia is largely unknown, these estimates come from Vancouver Island, British Columbia, which is ecologically highly similar to our study area. The largest scale is based on the mean maximum distance traveled from the nest during the breeding seasons by four geolocator-tagged male goshawks during the breeding season (unpublished data). This number attempts to capture the largest extent available for goshawk foraging.
+
+We used data from two sources, the foraging habitat suitability index (fHSI, Mahon 2008) and the British Columbia Vegetation Resource Inventory (VRI, cite), to characterize goshawk habitat within our study area. From these data we extracted habitat suitability, and forest type and age. Habitat suitability was classified as suitable (suitability index $\ge$ 2) or unsuitable (suitability index < 2). Landcover was classified as mature forest (> 70 years old), openings (shrubby areas, regenerating burns, very young forest < 5 years), and all other landcover types. We then calculated two composition metrics (proportion suitable habitat and proportion of mature forest) and two fragmentation metrics (edge density of suitable habitat and edge density of openings) for the four spatial scales around each nest.
+<!--
+We used data from two sources, the foraging habitat suitability index (fHSI, Mahon 2008) and the British Columbia Vegetation Resource Inventory (VRI, cite), to characterize goshawk habitat within our study area. From these data we extracted twelve landcover classes (undefined, bare rock, ocean, freshwater, alpine, wetland, shrub, deciduous forest, recent clearcut/regenerating forest [< 20 years], young forest [20 - 69 years], moderately-aged forest [70-250 years], and old forest [> 250 years]). We grouped some classes into openings (shrubby areas, regenerating burns, very young forest < 5 years) and mature forest (> 70 years). From the VRI we also extracted canopy cover (undefined, none [0-49% cover], moderate [50-75% cover], and high [> 75% cover]). Additionally, we used the foraging habitat suitability index (Mahon et al. 2008) to extract four suitability classes (nil, poor, moderate, and good). 
+-->
+```{r univariate-models}
+# Nest the data frame.
+univariates <- occupancy.data %>% group_by(size) %>% nest()
+
+# Proportion mature.
+m.proportion.cover.mature <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=df, family=binomial(logit))
+}
+
+# Cover edge density.
+m.cover.edge.density <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ cover.edge.density, data=df, family=binomial(logit))
+}
+
+# Cover contagion
+m.cover.contagion <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=df, family=binomial(logit))
+}
+
+# Cover diversity
+m.cover.diversity <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ cover.diversity, data=df, family=binomial(logit))
+}
+
+# Cover richness.
+m.cover.richness <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ cover.diversity, data=df, family=binomial(logit))
+}
+
+# Cover evenness.
+m.cover.evenness <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ cover.evenness, data=df, family=binomial(logit))
+}
+
+# Gap edge density.
+m.gap.edge.density <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ gap.edge.density, data=df, family=binomial(logit))
+}
+
+# Canopy cover.
+m.canopy.cover <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ canopy.high, data=df, family=binomial(logit))
+}
+
+# HSI edge density.
+m.hsi.edge.density <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ hsi.edge.density, data=df, family=binomial(logit))
+}
+
+# HSI contagion.
+m.hsi.contagion <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ hsi.contagion, data=df, family=binomial(logit))
+}
+
+# Proportion suitable.
+m.proportion.suitable <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.suitable, data=df, family=binomial(logit))
+}
+
+# Suitable edge density.
+m.suitable.edge.density <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ suitable.edge.density, data=df, family=binomial(logit))
+}
+
+# Apply the functions to the data.
+univariates <- univariates %>% mutate(
+  m.proportion.cover.mature=map(data, m.proportion.cover.mature),
+  m.cover.edge.density=map(data, m.cover.edge.density),
+  m.cover.contagion=map(data, m.cover.contagion),
+  m.cover.diversity=map(data, m.cover.diversity),
+  m.cover.richness=map(data, m.cover.richness),
+  m.cover.evenness=map(data, m.cover.evenness),
+  m.gap.edge.density=map(data, m.gap.edge.density),
+  m.canopy.cover=map(data, m.canopy.cover),
+  m.hsi.edge.density=map(data, m.hsi.edge.density),
+  m.hsi.contagion=map(data, m.hsi.contagion),
+  m.proportion.suitable=map(data, m.proportion.suitable),
+  m.suitable.edge.density=map(data, m.suitable.edge.density)
+)
+```
+
+```{r eval=FALSE}
+# A table of univariate info.
+univariates %>% select(-data) %>% 
+  pivot_longer(-size, names_to='variable', values_to='model') %>% 
+  mutate(td=map(model, tidy)) %>% 
+  unnest(td) %>% filter(term != '(Intercept)') %>% 
+  mutate(gl=map(model, glance)) %>% unnest(gl) %>% 
+  select(size, term, estimate, std.error, statistic, p.value, AIC) %>% 
+  arrange(size, AIC)
+```
+
+```{r univariate-analysis}
+n.significant.variables <- univariates %>% select(-data) %>% 
+  pivot_longer(-size, names_to='variable', values_to='model') %>% 
+  mutate(td=map(model, tidy)) %>% 
+  unnest(td) %>% filter(term != '(Intercept)') %>% 
+  filter(p.value <= 0.05) %>% ungroup() %>% distinct(variable) %>% nrow()
+```
+
+We created 100-m resolution raster maps for each variable and from these extracted four metrics of diversity<!-- 1. Simpson's diversity index (forest type), 2. Simpson's diversity index (landcover type), 3. Simspon's evenness index (landcover type), and 4. patch richness density (landcover type) -->, two metrics of aggregation<!-- 1. landcover contagion, 2. fHSI contagion-->, four metrics of fragmentation<!-- 1. landcover edge density, 2. fHSI edge density, 3. gap edge density, 4. suitable edge density -->, and three metrics of composition<!-- 1. proportion mature, 2. proportion suitable, 3. amount canopy cover--> (see table). We screened variables using univariate generalized linear models with the number of years the site was active as the response variable, weighted by the number of years the site was surveyed. We retained only habitat variables which were significant at the *p* < 0.05 level for at least one spatial scale. Variable screening produced a set of `r n.significant.variables`.
+
+```{r correlation, eval=FALSE}
+# Correleogram for the suitability variables.
+occupancy.data %>% ungroup() %>% 
+  select(proportion.suitable, suitable.edge.density, size) %>% 
+  ggpairs(columns=1:2, ggplot2::aes(color=size))
+
+# Correleogram for the forest age variables.
+occupancy.data %>% ungroup() %>% 
+  select(proportion.mature, mature.edge.density, size) %>% 
+  ggpairs(columns=1:2, ggplot2::aes(color=size))
+```
+
+
+
+
+
+
+We developed a set of seven generalized linear models to test hypotheses regarding the influence of forest characteristics at different scales on the probability of goshawk activity. We predicted the probability of goshawk use would increase with greater amounts of preferred habitat, as measured by the habitat suitability index or forest age, and decrease with greater amounts of fragmentation.
+
+```{r models}
+# Proportion suitable.
+proportion.suitable.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.suitable, data=df, family=binomial(logit))
+}
+
+# Proportion suitable + suitable edge density.
+suitable.edge.density.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.suitable + suitable.edge.density, data=df, family=binomial(logit))
+}
+
+# Proportion mature forest.
+proportion.mature.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature, data=df, family=binomial(logit))
+}
+
+# Proportion mature + gap edge density
+mature.edge.density.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature + gap.edge.density, data=df, family=binomial(logit))
+}
+
+# Proportion mature + mature edge density.
+mature.edge.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ proportion.cover.mature + gap.edge.density, data=df, family=binomial(logit))
+}
+
+# Null.
+null.model <- function(df) {
+  glm(cbind(years.detect, years.no.detect) ~ 1, data=df, family=binomial(logit))
+}
+
+# Nest the data frame.
+nf <- occupancy.data %>% group_by(size) %>% nest()
+
+# Apply the models.
+nf <- nf %>% 
+  mutate(
+    m.proportion.suitable=map(data, proportion.suitable.model),
+    m.suitable.edge.density=map(data, suitable.edge.density.model),
+    m.proportion.mature=map(data, proportion.mature.model),
+    m.mature.edge.density=map(data, mature.edge.density.model),
+    m.mature.edge=map(data, mature.edge.model),
+    m.null=map(data, null.model)
+         )
+```
+
+
+
+
+

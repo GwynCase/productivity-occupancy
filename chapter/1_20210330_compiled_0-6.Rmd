@@ -1,0 +1,1364 @@
+---
+title: "Dietary Variation in the Northern Goshawk in British Columbia"
+output: html_notebook
+always_allow_html: true
+bibliography: chapter-one.bib
+csl: the-journal-of-wildlife-management.csl
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+options(knitr.kable.NA = '-')
+```
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(sf)
+library(rmapshaper)
+library(ggspatial)
+library(vegan)
+library(broom)
+library(knitr)
+library(kableExtra)
+library(stringr)
+library(flextable)
+
+# Make a function to round percents nicely.
+peretty <- function(x, p=2) {
+  as.numeric(x) %>% 
+    round(p)
+}
+```
+
+# Introduction
+
+Effective wildlife conservation often requires understanding diet composition and its consequences for population demographics [@ferrer_near_2004; @stier_ecosystem_2016]. Specialist predators selectively consume a narrow range of prey species regardless of their abundance, whereas generalists opportunistically consume a wider range and readily switch between species in response to changes in prey abundance [@steenhof_dietary_1988; @terraube_factors_2011]. Specialization increases foraging efficiency on the preferred prey at the potential cost of decreased reproductive success for the specialist when that prey is scarce [@newton_population_1998]. However, even in a generalist predator a single key prey species can be a major driver of reproductive success [@elmhagen_arctic_2000; @resanomayor_dietdemography_2016]. For at-risk predators, increasing the abundance of key prey species may be a useful conservation tool [@ferrer_near_2004;  @forsman_diets_2004; @resanomayor_dietdemography_2016].
+
+<!-- Newton 1998: "Much depends on how varied the diet is, and whether alternate prey are available when favoured prey are scarce. The more diverse the diet, the less the chance of all prey-species being scarce at the same time. Raptors that have fairly stable food-supplies show some of the most extreme stability in breeding population recorded in birds.... Moreover, the same species may fluctuate numerically in one region, but not another, depending on the stability of the local prey supply." -->
+
+<!-- Elmhagen et al. 2000: "The arctic fox thus manages to combine an opportunistic feeding strategy which ensures survival in a low productivity habitat, with a remarkable ability to exploit lemming peaks for a large reproductive output." -->
+
+<!--Resano-Major et al 2016: "We found that several key demographic parameters of an endangered raptor such as Bonelli’s eagle in western Europe are dependent on the consumption of preferred and alternative prey species and on diet diversity." -->
+
+<!-- Forsman et al. 2004: "Experimental tests of these hypotheses have not been conducted, but it is obvious that Spotted Owls in the Pacific Northwest rely on a few species of nocturnal mammals for the majority of their food, and that forest management practices  that produce healthy populations of these species should benefit Spotted Owls. -->
+
+The northern goshawk (*Accipiter gentilis*) is a large forest-dwelling raptor with a Holarctic distribution. A generalist predator, the goshawk hunts a variety of small- and medium-sized mammals and birds, including squirrels, rabbits and hares, grouse, jays and crows, and pigeons [@squires_northern_2020]. Despite this diverse diet, a single prey species or narrow suite of species has a strong effect on the demographics of many goshawk populations. In the Yukon, goshawks depend on snowshoe hare (*Lepus americanus*) and show strong variation in productivity, mortality, and space use in response to cyclical changes in hare abundance [@doyle_population_1994]. Goshawks in Scandinavia likewise rely on a single prey taxon and show changes in productivity and occupancy based on the annual abundance of four grouse species (subfamily Tetraoninae) [@tornberg_delayed_2005]. In contrast, goshawks in the American Southwest have a wide prey base and regularly take some fourteen different species [@boal_northern_1994]. Fluctuations in goshawk productivity in this region are small and driven by total prey abundance, though the most influential single species is red squirrel (*Tamiasciurus hudsonicus*) [@salafsky_reproductive_2007]. These examples suggest the identity and influence of key prey species in such an adaptable predator may be specific to each region.
+
+In British Columbia, Canada, the coastal population of northern goshawks is the subject of federal and provincial management which focuses on the protection of breeding habitat to increase nest site availability [@cosewic_cosewic_2013]. Like many raptors, goshawk populations are generally considered to be limited by both nest site availability and prey abundance [@reynolds_review_2006; @rutz_population_2006]. However, current management plans do not include protections for foraging habitat or actions to increase prey populations, in part due to a lack of knowledge regarding goshawk diet and foraging behavior in this region. Goshawk diet in the coastal Pacific Northwest is variable, with hawks on Vancouver Island, British Columbia, consuming primarily red squirrels [@ethier_breeding_1999], whereas hawks in nearby southeast Alaska [@lewis_northern_2006] and western Washington [@bloxton_prey_2002] take mostly medium and large birds. Even within British Columbia, a gradient of forest types from wet coastal to dry interior may produce dietary variation at smaller scales [@northern_goshawk_recovery_team_recovery_2008]. Detailed, local information on goshawk diet and its effect on reproductive success is necessary if limiting factors beyond nest site availability are to be included in management plans.
+
+Here we describe the breeding season diet of northern goshawks in coastal British Columbia over a two-year period. We assess whether goshawk diet differs within this region between the wetter *coastal* zone and the drier *transition* zone. We further evaluate whether dietary variables (composition, diversity) influence goshawk reproductive success.
+
+# Methods
+
+### Study Area and Species
+
+```{r sites, warning=FALSE, message=FALSE}
+# Read in nest data.
+nests <- read_csv('../data/processed/sc_nests.csv')
+
+# Calculate a centroid for each site.
+centroids <- nests %>% group_by(site) %>% 
+  mutate(xcoord=mean(xcoord), ycoord=mean(ycoord)) %>% 
+  distinct(site, name, xcoord, ycoord) %>% ungroup()
+
+# Make it a spatial object for later.
+centroids.sf <- centroids %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord')) %>% 
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs') %>% 
+  st_as_sf()
+
+# Bring in study area shapefile.
+sc.region <- read_sf(dsn='../data/external/SC_land.shp', layer='SC_land')
+tz.region <- read_sf(dsn='../data/processed/new_transition_zone.shp', 
+                     layer='new_transition_zone') %>% 
+  ms_simplify()
+
+# Add zone information to centroids.
+centroids.sf <- centroids.sf %>% mutate(
+  zone=as.integer(st_intersects(geometry, tz.region)),
+  zone=case_when(
+    is.na(zone) ~ 'cs',
+    TRUE ~ 'tz'
+  )
+)
+
+# Bring in some base data.
+n.america <- read_sf(dsn='../data/external/ne_10m_land.shp', layer='ne_10m_land')
+rivers <- read_sf(dsn='../data/external/ne_10m_rivers_lake_centerlines.shp', 
+                  layer='ne_10m_rivers_lake_centerlines')
+
+# Make a reference point for Vancouver.
+vancouver <- data.frame(x=-123.113889, y=49.260833, name='Vancouver')
+
+# Make the map.
+ggplot() +
+  geom_sf(data=n.america, fill='lightgrey') +
+  geom_sf(data=sc.region, aes(fill='darkgrey')) + 
+  geom_sf(data=tz.region, aes(fill='dimgrey'), color=NA) +
+  geom_sf(data=rivers) +
+  coord_sf(xlim=c(st_bbox(sc.region)[1] - 0.5, st_bbox(sc.region)[3] + 0.5), 
+           ylim=c(st_bbox(sc.region)[2] - 0.25, st_bbox(sc.region)[4] + 0.25)) +
+  theme_void() +
+  theme(panel.border=element_rect(color='black', fill=NA),
+        legend.position='bottom') +
+  annotation_scale(location='br') +
+  annotation_north_arrow(location='br', which_north='true', 
+                         pad_y=unit(1, 'cm'), style=north_arrow_minimal) +
+  geom_point(data=vancouver, aes(x=x, y=y)) +
+  geom_label(data=vancouver, aes(x=x, y=y, label=name), nudge_x=0.6, nudge_y=-0.1) +
+  scale_fill_identity(name='Ecological zones', guide='legend', labels=c('Coastal', 'Transition'))
+
+#panel.background=element_rect(fill='black'),
+```
+
+In North America, the northern goshawk ranges from boreal forests of the Yukon south to high-elevation forests of Arizona and New Mexico. Two subspecies are recognized: the widespread *atricapillus* and the limited *laingi* [@squires_northern_2020].<!-- COSEWIC says 3 subssp but never even names A. g. apache --> The *laingi* subspecies was first described on the Haida Gwaii archipelago in British Columbia and is smaller and darker than the *atricapillus* subspecies found elsewhere on the continent [@taverner_variation_1940]. The range of this subspecies is limited to the west coast of North America from southeast Alaska through mainland British Columbia and Vancouver Island, possibly as far south as Washington's Olympic Peninsula [@cosewic_cosewic_2013]. *A. g. laingi* is considered a species at risk in British Columbia by both the federal and provincial governments due to significant habitat loss from industrial timber harvest [@northern_goshawk_recovery_team_recovery_2008; @cosewic_cosewic_2013].
+
+<!--Squires et al. 2020: "Accipiter g. atricapillus (Wilson) 1812, breeds throughout North America, except in areas occupied by other subspecies. Vagrants to the British Isles have been noted Oct-Feb (Cramp and Simmons 1980a). Compared to other subspecies, atricapillus is distinguished by its broad supercilium and deep-red iris. A. g. laingi (Taverner) Taverner 1940, breeds on Queen Charlotte Is. and Vancouver I. and is characterized by its darker coloration overall, black of crown extending to interscapulars, sootier gray ventrally, especially across the breast, and smaller size (wing length [convex distance] adult males: 325.2 mm ± 2.2 SE (n = 24; Johnson 1989b). Distribution of laingi extends from Vancouver I. northward through insular British Columbia, insular (Alexander Archipelago) and coastal mainland Alaska north to Icy Strait and Lynn Canal (Webster 1988, Titus et al. 1994, Iverson et al. 1996a). A. g. apache (van Rossem) Van Rossem 1938a, resident from s. Arizona south locally in mountains of Mexico to Jalisco is darker dorsally, almost blackish, and larger. Recognition of this race has been debated, but it is recognized by Phillips et al. (Phillips et al. 1964a), Wattel (Wattel 1973), Hubbard (Hubbard 1992), and Whaley and White (Whaley and White 1994)." -->
+
+We studied goshawks in southwestern British Columbia, a region characterized by rugged mountains interspersed with coastal fjords and low-lying valleys. The maritime climate supports temperate rainforest dominated by Douglas-fir (*Pseudotsuga menziesii*), western redcedar (*Thuja plicata*), and western hemlock (*Tsuga heterophylla*) [@meidinger_ecosystems_1991]. The goshawk population in southwestern British Columbia is currently classified as *A. g. laingi*, though new genetic evidence may lead to future reclassification [@geraldes_population_2018]. Within this region, goshawk managers have delineated a *transition zone* comprised of low-elevation valleys connecting the wet forests of the *coastal zone* with the dry interior forests east of the Coast Mountains. This narrow transition zone contains forest types intermediate between the western and eastern forests and likely represents an area of overlap between the coastal *laingi* population and the interior *atricapillus* population [@northern_goshawk_recovery_team_recovery_2008]. 
+
+<!-- NGRT 2008: "The precise range boundaries are unclear and there is likely some overlap between A. gentilis laingi and A. gentilis atricapillus where coastal forests transition to interior forests."
+
+"Within this range map the recovery team identified a zone where coastal habitat types transition to interior habitat types, which reflects an area where differences between A. gentilis laingi and A. gentilis atricapillus are likely less clear." -->
+
+### Data Collection
+
+```{r diet-data, warning=FALSE, message=FALSE}
+# Bring in specimen data.
+remains.data <- read_csv('../data/processed/specimens_20210318.csv', guess_max=7000) %>% 
+  ## filter only records with at least size assigned...
+  filter(size != 'U')
+
+# Bring in camera data.
+photos <- read_csv('../data/interim/cameras_20210315.csv', guess_max=7000)
+camera.data <- photos %>% 
+  ## filter only records with at least size assigned...
+  filter(size != 'U')
+
+# Bring in a list of site abbreviations and site names.
+nest.list <- read_csv('../data/processed/site_abbreviations.csv')
+
+# Standardize the specimen data.
+remains.data <- left_join(remains.data, nest.list, by=c('name', 'site')) %>% 
+  select(site, date, class, order, family, genus, species, common, size, age, source)
+
+# Standardize the camera data.
+camera.data <- camera.data %>% 
+  mutate(date=date(datetime), source='C') %>% 
+  select(site, date, class, order, family, genus, species, common, size, age, source)
+
+# Join them together.
+diet.data <- bind_rows(remains.data, camera.data)
+
+# Add a unique site/year identifier.
+diet.data <- diet.data %>% 
+  mutate(year=year(date), nest=paste(site, year, sep=''))
+
+# Do some cleanup.
+diet.data <- diet.data %>% 
+  mutate(size=case_when(
+    size %in% c('S', 'Small') ~ 'small',
+    size %in% c('M', 'Medium') ~ 'medium',
+    size %in% c('L', 'Large') ~ 'large'
+  ))
+```
+
+We assessed goshawk diet during the 2019 and 2020 breeding seasons through a combination of egested pellets, prey remains, and nest camera photos. Active goshawk nests were located as part of long-term population monitoring conducted by the British Columbia Ministry of Forests, Lands, Natural Resource Operations and Rural Development (FLNRO) (for detailed survey methodology see @mcclaren_northern_2005). Some study sites contained active nests in both years of the study.
+
+```{r}
+n.pr.sites <- diet.data %>% filter(source != 'C') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+n.pr.sites.2019 <- diet.data %>% filter(source != 'C' & year(date) == 2019) %>% 
+  distinct(nest) %>% summarize(n()) %>% as.numeric()
+
+n.pr.sites.2020 <- diet.data %>% filter(source != 'C' & year(date) == 2020) %>% 
+  distinct(nest) %>% summarize(n()) %>% as.numeric()
+```
+
+Prey remains and egested pellets were collected from `r n.pr.sites` nests (2019 *n* = `r n.pr.sites.2019`, 2020 *n* = `r n.pr.sites.2020`). Pellets and remains were gathered from beneath active nests, from within nests after juveniles fledged, and from plucking posts located within the site. Pellets and remains were collected once during the breeding season at most sites, but some sites were visited multiple times. All prey remains and all pellets from a collection location (i.e., one nest or one plucking post) were combined into a single sample for each visit to that location. 
+
+```{r}
+# Number of camera sites.
+n.camera.sites <- diet.data %>% filter(source == 'C') %>% 
+  distinct(nest) %>% summarize(n()) %>% as.numeric()
+
+# Number of camera sites in 2019.
+n.camera.sites.2019 <- diet.data %>% filter(source == 'C' & year(date) == 2019) %>% 
+  distinct(nest) %>% summarize(n()) %>% as.numeric()
+
+# Number of camera sites in 2020.
+n.camera.sites.2020 <- diet.data %>% filter(source == 'C' & year(date) == 2020) %>% 
+  distinct(nest) %>% summarize(n()) %>% as.numeric()
+```
+
+At a subset of these nests (2019 *n* = `r n.camera.sites.2019`, 2020 *n* = `r n.camera.sites.2020`), cameras were installed to record prey delivered to goshawk chicks. Nest cameras are an effective and relatively unbiased method of measuring avian diet [@garcia-salgado_evaluation_2015 ;@harrison_using_2019]. However, cameras may overestimate prey deliveries because goshawks cache prey items for redelivery to the nest at a later time, which creates a risk of double-counting items. Due to the discrete nature of our data we were unable to differentiate cached, re-delivered items from new items and did not attempt to account for caching in our analysis. We also did not attempt to differentiate between prey consumed by the female at the nest and prey consumed by the chicks.
+
+```{r}
+# Earliest date of camera install.
+date.install.min <- diet.data %>% filter(source == 'C') %>% group_by(site) %>% 
+  arrange(date) %>% slice(1) %>% ungroup() %>% summarize(date=min(date)) %>% 
+  mutate(day=day(date), month=month(date, label=TRUE, abbr=FALSE), install=paste(day, month)) %>%
+  select(install) %>% as.character()
+
+# Latest date of camera install.
+date.install.max <- diet.data %>% filter(source == 'C') %>% group_by(site) %>% 
+  arrange(date) %>% slice(1) %>% ungroup() %>% summarize(date=max(date)) %>% 
+  mutate(day=day(date), month=month(date, label=TRUE, abbr=FALSE), install=paste(day, month)) %>%
+  select(install) %>% as.character()
+
+# Mean camera install date.
+date.install.mean <- diet.data %>% filter(source == 'C') %>% group_by(site) %>% 
+  arrange(date) %>% slice(1) %>% ungroup() %>%
+  mutate(ordinal=yday(date)) %>% 
+  summarize(mean.ordinal=mean(ordinal)) %>% 
+  mutate(date=ymd(20200101) + mean.ordinal) %>% 
+  mutate(day=day(date), month=month(date, label=TRUE, abbr=FALSE), install=paste(day, month)) %>%
+  select(install) %>% as.character()
+```
+
+Nest cameras were digital trail cameras (Reconyx brand, UltraFire and HyperFire models) mounted 2-5 meters distant from and slightly above the nest, usually in an adjacent tree. Cameras in 2019 were programmed to take three photos one second apart when triggered by motion, and an additional one photo every thirty minutes. In 2020, cameras were programmed to take five photos one second apart when triggered by motion, and an additional one photo every twenty minutes. Installation took place during the early nestling phase (between `r date.install.min` and `r date.install.max`; mean installation date `r date.install.mean`) and cameras were left in place until after juveniles dispersed in the fall. We observed no nest abandonment following camera installation. Camera site selection was not random but constrained by topography, access, and timing of discovery.
+
+```{r productivity, warning=FALSE, message=FALSE}
+productivity <- read_csv('../data/raw/productivity.csv')
+
+# Number of sites with productivity data.
+n.sites.productivity <- filter(productivity, !is.na(n.fledge)) %>% summarize(n()) %>% as.numeric()
+
+# Number of sites with productivity data in 2019.
+n.sites.productivity.2019 <- filter(productivity, !is.na(n.fledge) & year == 2019) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Number of sites with productivity data in 2020.
+n.sites.productivity.2020 <- filter(productivity, !is.na(n.fledge) & year == 2020) %>% 
+  summarize(n()) %>% as.numeric()
+```
+
+Breeding chronology was not available for most sites. At `r n.sites.productivity` of the `r n.camera.sites` nests with cameras (2019 *n* = `r n.sites.productivity.2019`, 2020 *n* = `r n.sites.productivity.2020`), chicks were aged from photos taken shortly after camera installation using a pictorial guide [@boal_photographic_1994]. Productivity was defined as the number of chicks to reach 32 days age [@boal_photographic_1994; @mcclaren_northern_2002]. 
+
+<!-- Steenhof & Kochert 1982 define fledging  success as number of young to reach 80% of the average age when young leave the nest. Boal 1994 states this is 32 days for NOGO, and this is the definition McClaren 2002 uses. -->
+
+### Diet Quantification
+
+We reconstructed prey from pellets and prey remains following a modification of the protocol used by @lewis_comparison_2004. Within each sample, remains were identified to the lowest possible taxonomic category and the minimum number of individuals counted (i.e. 3 hare femurs = 2 *Lepus americanus*). Intact pellets and broken but reassembled pellets were analyzed individually within each sample, while fragmented pellets were combined within each sample. Pellets were dissected and feathers, fur, and hard parts (bones, teeth, claws) were identified to the lowest taxonomic level. We counted the minimum number of individuals represented within the pellet or pellet collection. Prey items from pellets and  remains were additionally categorized by size (small = sparrow- or vole-sized, medium = jay- or squirrel-sized, and large = grouse- or hare-sized).
+
+Prey items identified to species were assigned mass using data from the literature. We assigned mass to mammals from @nagorsen_identification_2002 and to birds from @billerman_birds_2020, using the geographically closest estimates available and averaging the mass of males and females. We treated some relatively homogenous genera (such as *Eutamias* and *Myotis*) as a single species. For these genera, we assigned mass by averaging the masses of all possible species, based on range maps. Red squirrels (*Tamiasciurus hudsonicus*) were present at a single site within our study area; when unable to distinguish between the two members of the genus *Tamiasciurus* we assigned the item to the more common *T. douglasii*. Unidentified grouse were common among remains; these were assigned the mean mass of the two grouse species present in our study area (*Bonasa umbellus* and *Dendragapus fulignosus*). Juveniles were assigned 50% of adult mass. Unidentified items were assigned mass by averaging the masses of the identified species in that size category and taxonomic class. 
+
+Data from prey remains and egested pellets are known to be biased indices of diet. Some authors have found combining data from both sources to produce relatively unbiased results that can serve as a helpful supplement to nest camera data [@lewis_comparison_2004; @simmons_biases_1991]. After testing for differences between pooled pellets-and-remains data and camera data we found significant differences between these two sources. We therefore report results from pellets, pooled pellets-and-remains, and cameras separately. We do not report results from prey remains alone, as diet composition estimates from prey remains are highly biased and infrequently used in raptor diet studies.<!-- citation needed -->
+
+Nest camera photos were reviewed and each new prey item delivered to the nest was recorded and identified to species when possible. When items could not be identified to species, they were identified to the lowest possible taxonomic level. Prey items identified from photos were assigned a size category and biomass by the same method used for remains and pellets. Partial items were assigned the average mass for that size category and taxonomic class. 
+
+```{r mass, warning=FALSE, message=FALSE}
+# Bring in a list of all known prey.
+prey.list <- read_csv('../data/interim/prey_attributes.csv')
+
+# Join the biomass data to the list of diet items.
+diet.items <- prey.list %>% select(genus, species, binomial, common, category, mass) %>% 
+  right_join(diet.data, by=c('genus', 'species', 'common'))
+
+# For unidentified items, classify them by size and class.
+diet.items <- diet.items %>% mutate(category=case_when(
+  is.na(category) & class == 'Mammalia' & size == 'small' ~ 'small mammal',
+  is.na(category) & class == 'Mammalia' & size == 'medium' ~ 'medium mammal',
+  is.na(category) & class == 'Mammalia' & size == 'large' ~ 'large mammal',
+  is.na(category) & class == 'Aves' & size == 'small' ~ 'small bird',
+  is.na(category) & class == 'Aves' & size == 'medium' ~ 'medium bird',
+  is.na(category) & class == 'Aves' & size == 'large' ~ 'large bird',
+  is.na(category) & class == 'Unknown' ~ paste(size, 'item'),
+  TRUE ~ category))
+
+# For unidentified items, fill in the binomial column.
+diet.items <- diet.items %>% replace_na(list(binomial = 'Unidentified item'))
+
+# Calculate average masses for unidentified items, based of known species.
+mean.mass <- diet.items %>% drop_na(mass) %>% 
+  distinct(binomial, mass, category) %>% 
+  group_by(category) %>% 
+  ## averaging the mass for each size & class category...
+  summarize(average=mean(mass)) %>% 
+  pivot_wider(names_from=category, values_from=average) %>% 
+  ## calculating the average mass for complete unknowns...
+  mutate(`large item` = mean(c(`large bird`, `large mammal`)),
+         `medium item` = mean(c(`medium bird`, `medium mammal`)),
+         `small item` = mean(c(`small bird`, `small mammal`))) %>% 
+  ## and reassembling it in a tidy format.
+  pivot_longer(everything(), names_to='category', values_to='average')
+
+# Join average mass to diet items...
+diet.items <- left_join(diet.items, mean.mass, by='category') %>% 
+  ## and fill in missing mass with average values
+  mutate(mass=coalesce(mass, average)) %>% 
+  ## then drop no longer needed average column and rearrange.
+  select(site, year, nest, class, order, family, genus, species, binomial, common, 
+         category, size, mass, age, source)
+
+# Change mass for juvenile items.
+diet.items <- diet.items %>% mutate(mass=case_when(
+  age == 'J' ~ 0.5*mass,
+  TRUE ~ mass
+))
+
+# Add grouping categories.
+diet.items <- diet.items %>% mutate(group=case_when(
+  class == 'Aves' & family == 'Phasianidae' ~ 'grouse',
+  class == 'Aves' & family == 'Corvidae' ~ 'corvid',
+  class == 'Aves' & family == 'Turdidae' ~ 'thrush',
+  class == 'Aves' ~ 'bird',
+  class == 'Mammalia' & genus == 'Tamiasciurus' ~ 'squirrel',
+  class == 'Mammalia' & genus == 'Lepus' ~ 'hare',
+  class == 'Mammalia' ~ 'mammal',
+  TRUE ~ 'unknown'
+))
+```
+
+We quantified goshawk diet across the entire study area in several ways using data from pellets, pooled pellets-and-remains, and nest cameras. For ease of comparison, we simplified prey items into eight broad categories: tree squirrels (genus *Tamiasciurus*), hares (genus *Lepus*), all other mammals, grouse (subfamily Tetraoninae), thrushes (family Turdidae), corvids (family Corvidae), all other birds, and unidentified items. We calculated the relative proportion of avian and mammalian biomass, as well as the relative proportion of biomass composed of tree squirrels (genus *Tamiasciurus*), which are known to be an important source of prey for goshawks in British Columbia [@ethier_breeding_1999]. For nests with cameras, we additionally quantified diet at the level of the individual nest and further calculated diet diversity with Simpson's Diversity Index [@simpson_measurement_1949]<!-- and overlap between nests with Morisita's Index of Similarity [@krebs_ecological_1999],--> using counts of items identified to genus or better. We report all diet quantification as percent of biomass or mean percent biomass $\pm$ the standard deviation except where counts or percents of items are explicitly specified.
+
+```{r study-area, warning=FALSE, message=FALSE}
+# Make a function to calculate class mass.
+class.mass <- function(data) {
+    data %>% mutate(total.mass=sum(.data$mass)) %>%
+    filter(class %in% c('Mammalia', 'Aves')) %>%
+    group_by(class) %>% 
+    mutate(class.mass=sum(.data$mass), per.class=class.mass/total.mass*100) %>% 
+    distinct(class, per.class) %>% 
+    rename(variable=class, percent=per.class)
+}
+
+# And a function to calculate squirrel mass.
+squirrel.mass <- function(data) {
+    data %>% mutate(total.mass=sum(.data$mass)) %>%
+    filter(genus == 'Tamiasciurus') %>%
+    mutate(genus.mass=sum(.data$mass), per.genus=genus.mass/total.mass*100) %>% 
+    distinct(genus, per.genus) %>% 
+    rename(variable=genus, percent=per.genus)
+}
+
+# And a function to calculate mass of each group.
+group.mass <- function(data) {
+  data %>% mutate(total.mass=sum(.data$mass)) %>%
+    group_by(group) %>% 
+    mutate(group.mass=sum(.data$mass), per.group=group.mass/total.mass*100) %>% 
+    distinct(group, per.group) %>% 
+    rename(variable=group, percent=per.group)
+}
+
+# Calculate biomass for study area. 
+study.area.mass <- diet.items %>% group_by(source) %>% nest() %>%  
+  mutate(class=map(data, class.mass), 
+         genus=map(data, squirrel.mass), 
+         group=map(data, group.mass)) %>%
+  pivot_longer(-c(source, data), names_to='var', values_to='per') %>% 
+  unnest(per) %>% 
+  select(source, variable, percent) %>% 
+  pivot_wider(names_from=source, values_from=percent, values_fill=0) %>% 
+  mutate(R.P=R + P)
+```
+
+```{r nest-level, warning=FALSE, message=FALSE}
+# Calculate percent mass for each nest.
+nest.mass <- diet.items %>% filter(source == 'C') %>% 
+  group_by(nest) %>% nest() %>% 
+  mutate(class=map(data, class.mass), 
+         genus=map(data, squirrel.mass), 
+         group=map(data, group.mass)) %>% 
+  pivot_longer(-c(nest, data), names_to='var', values_to='per') %>% 
+  unnest(per) %>% 
+  select(nest, variable, percent) %>% 
+  pivot_wider(id_cols=c(nest), names_from=variable, values_from=percent, values_fill=0)
+
+# Calculate counts of items identified to genus for entire study area.
+study.area.count <- diet.items %>% filter(source == 'C' & binomial != 'Unidentified item') %>% 
+  group_by(binomial) %>% 
+  mutate(count=n()) %>% 
+  select(binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0))
+
+# Calculate counts of items identified to genus for each nest.
+nest.count <- diet.items %>% filter(source == 'C' & binomial != 'Unidentified item') %>% 
+  group_by(nest, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(nest, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0))
+
+# Total study area diversity.
+study.area.diversity <- diversity(study.area.count, index='simpson')
+
+# Diversity per nest.
+nest.diversity <- plyr::ddply(nest.count, ~nest, function(x) {
+  data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+})
+
+# Calculate overlap between nests.
+nest.overlap <- nest.count %>% column_to_rownames(var='nest') %>% 
+  vegdist(., method='morisita') %>% 
+  enframe()
+```
+
+```{r zones, warning=FALSE, message=FALSE}
+# Calculate % biomass for each source and each zone.
+zone.mass <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+    group_by(zone, source) %>% nest() %>%  
+    mutate(class=map(data, class.mass), 
+           genus=map(data, squirrel.mass), 
+           group=map(data, group.mass)) %>% 
+    select(!data) %>% 
+    pivot_longer(-c(source, zone), names_to='var', values_to='per') %>% 
+    unnest(per) %>% 
+    select(source, zone, variable, percent) %>% 
+    pivot_wider(id_cols=c(zone, variable), names_from=source, values_from=percent, values_fill=0) %>%
+    mutate(R.P=R + P) %>% 
+    arrange(zone)
+
+# Calculate counts of items identified to genus for each zone.
+zone.count <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(source == 'C' & binomial != 'Unidentified item') %>% 
+  group_by(zone, binomial) %>% 
+  mutate(count=n()) %>% 
+  select(zone, binomial, count) %>% 
+  distinct() %>% 
+  pivot_wider(names_from=binomial, values_from=count, values_fill=list(count = 0))
+
+# Diversity per zone (pooled).
+zone.diversity <- plyr::ddply(zone.count, ~zone, function(x) {
+  data.frame(diet.diversity=diversity(x[-1], index='simpson'))
+})
+
+# Diversity per zone per nest.
+zone.nest.diversity <- diet.items %>% distinct(site, nest) %>% 
+  right_join(nest.diversity, by=c('nest')) %>% 
+  left_join(centroids.sf, by=c('site')) %>% 
+  select(site, nest, diet.diversity, zone)
+
+# Mean diversity per nest for the transition zone.
+mean.diversity.tz <- zone.nest.diversity %>% filter(zone == 'tz') %>% 
+  summarize(mean(diet.diversity)) %>% peretty()
+
+# Mean diversity per nest for the coastal zone.
+mean.diversity.cs <- zone.nest.diversity %>% filter(zone == 'cs') %>% 
+  summarize(mean(diet.diversity)) %>% peretty()
+
+# Overlap between zones (pooled).
+zone.overlap <- zone.count %>% column_to_rownames(var='zone') %>% 
+  vegdist(., method='morisita') %>% 
+  as.numeric()
+```
+
+### Statistical Analysis
+
+Sites were classified as either coastal or transition based on whether the site was centered within the transition zone defined by @northern_goshawk_recovery_team_recovery_2008. We used counts of items assigned to the eight broad prey categories to assess differences in goshawk diet between the coastal and transition zones. We combined all data within each zone and tested each data source separately using a chi-squared test with simulated Monte Carlo *p*-values (2000 permutations) due to small sample sizes [@hope_simplified_1968]. For nests with cameras, we also calculated the proportion of squirrel biomass and diet diversity at the individual nest level and compared these between the zones using a *t*-test. Finally, we tested for differences in productivity between the two zones using a *t*-test.
+
+<!--Due to small sample sizes, we used a permutation test (2000 permutations) to create a distribution for the test statistic (Hope 1968).-->
+
+```{r chi-zone, warning=FALSE, message=FALSE}
+# Calculate counts per group per zone per source.
+zone.counts <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  group_by(source) %>% nest() %>% 
+  mutate(count=map(data, function(data) {
+    data %>% group_by(zone, group) %>% 
+      mutate(count=n()) %>% 
+      select(zone, group, count) %>% 
+      distinct()
+  })) %>% 
+  unnest(count) %>% select(!data)
+
+# Run a chi-square test for each data source.
+zone.chi <-zone.counts %>% pivot_wider(names_from=source, values_from=count) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% 
+  filter(!is.na(count)) %>% 
+  group_by(source) %>% nest() %>% 
+  mutate(ch=map(data, function(data) {
+    data %>% pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+      column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+        gl=map(ch, glance))
+```
+
+To determine the potential reproductive consequences of dietary variation, we examined how two aspects of diet, diet diversity and the proportion squirrel biomass in the diet, influenced productivity using linear regressions. We included all available nests in this analysis, including one site which contained an active nest in both years of the study. The presented results are not altered if variables for this site are averaged across years or a single year is randomly selected for inclusion. Because productivity data were available only from sites with nest cameras and nest-level diet data from pellets and prey remains were sparse, we performed this analysis using only diet data from nest cameras. All analyses were performed in R [@r_core_team_r_2020]. We used a significance level of *P* =  0.05 for all tests.
+
+```{r models, warning=FALSE, message=FALSE}
+# Make a happy data set for the models to use.
+model.data <- productivity %>% mutate(nest=paste(site, year, sep='')) %>% 
+  left_join(nest.diversity, by=c('nest')) %>% 
+  left_join(nest.mass, by=c('nest')) %>%
+  select(site, year, nest, n.fledge, diet.diversity, squirrel) %>% 
+  filter_all(all_vars(!is.na(.)))
+
+# Make the models.
+diversity.model <- lm(n.fledge ~ diet.diversity, data=model.data)
+squirrel.model <- lm(n.fledge ~ squirrel, data=model.data)
+```
+
+# Results
+
+## Goshawk Diet
+
+```{r}
+# Make the initial data frame.
+biomass.table <- diet.items %>% group_by(class, binomial) %>% mutate(count=n()) %>% ungroup() %>% 
+  group_by(source) %>% mutate(total.source.count=n(), 
+                              total.source.mass=sum(mass)) %>% ungroup() %>% 
+  group_by(source, class, binomial) %>% mutate(source.count=n(), 
+                                               source.mass=sum(mass),
+                                               per.source.count=source.count/total.source.count*100,
+                                               per.source.mass=source.mass/total.source.mass*100) %>% 
+  distinct(source, class, binomial, count, per.source.count, per.source.mass) %>% 
+  mutate(source2=paste0(source, '2')) %>% 
+  pivot_wider(names_from=source, values_from=per.source.count) %>% 
+  pivot_wider(names_from=source2, values_from=per.source.mass) %>% ungroup() %>% 
+  group_by(class, binomial) %>% 
+  fill(everything(), .direction='downup') %>% 
+  distinct() %>% left_join(prey.list, by=c('class', 'binomial')) %>% 
+  select(class, common, binomial, count, C, C2, P, P2, R, R2) %>% 
+  mutate(common=replace_na(common, 'unknown'),
+         binomial=str_replace(binomial, 'Unidentified item', ' '),
+         common=str_to_sentence(common, locale='en')) %>% 
+  arrange(class, binomial) %>% 
+  rownames_to_column(var='order') %>% mutate(order=as.numeric(order)) %>% 
+  mutate(order=case_when(
+  class == 'Mammalia' ~ order + 1,
+  class == 'Unknown' ~ order + 2,
+  TRUE ~ order
+))
+
+# Find where total rows should be inserted.
+table.breaks <- biomass.table %>% group_by(class) %>% 
+  summarize(max=max(order), .groups='drop') %>% ungroup() %>% 
+  select(max) %>% as.vector()
+
+# Calculate total avian items.
+avian.sums <- biomass.table %>% filter(class == 'Aves') %>% 
+  ungroup() %>% 
+  replace(is.na(.), 0) %>%
+  summarise(., across(where(is.numeric), sum)) %>%
+  mutate(order=table.breaks$max[1] + 1, class='Aves', common='TOTAL', binomial=' ') %>%  
+  select(order, class, common, binomial, everything())
+
+# Calculate total mammalian items.
+mammal.sums <- biomass.table %>% filter(class == 'Mammalia') %>% 
+  ungroup() %>% 
+  replace(is.na(.), 0) %>%
+  summarise(., across(where(is.numeric), sum)) %>%
+  mutate(order=table.breaks$max[2] + 1, class='Mammalia', common='TOTAL', binomial=' ') %>%  
+  select(order, class, common, binomial, everything())
+
+# Calculate total items.
+all.sums <- biomass.table %>% ungroup() %>% 
+  replace(is.na(.), 0) %>%
+  summarise(., across(where(is.numeric), sum)) %>%
+  mutate(order=table.breaks$max[3] + 1, class=' ', common='TOTAL', binomial=' ') %>%  
+  select(order, class, common, binomial, everything())
+
+# Make the table (flextable style)
+bind_rows(biomass.table, avian.sums, mammal.sums, all.sums) %>% arrange(order) %>% 
+  mutate(across(C:R2, round, digits=2)) %>% 
+  column_to_rownames(var='order') %>% 
+  flextable() %>% 
+  add_header_row(values=c(' ', 'Camera', 'Pellets', 'Remains'), colwidths=c(4, 2, 2, 2)) %>% 
+  colformat_num(na_str='-', digits=0) %>% 
+  set_header_labels(class='Class', common='Common name', binomial='binomial', count='N',
+                    C='% items', C2='% biomass',
+                    P='% items', P2='% biomass',
+                    R='% items', R2='% biomass')
+```
+
+```{r eval=FALSE}
+# Make table, old-school kable style.
+bind_rows(biomass.table, avian.sums, mammal.sums, all.sums) %>% arrange(order) %>% 
+  column_to_rownames(var='order') %>% 
+  kable(digits=1, col.names=c('Class', 'Species', ' ', 'N',
+                              '% items', '% biomass', 
+                              '% items', '% biomass', 
+                              '% items', '% biomass')) %>% 
+  kable_styling(bootstrap_options=c('striped')) %>% 
+  column_spec(3, italic=TRUE) %>% 
+  row_spec(table.breaks$max[1] + 1, bold=TRUE) %>%
+  row_spec(table.breaks$max[2] + 1, bold=TRUE) %>% 
+  row_spec(table.breaks$max[3] + 1, bold=TRUE) %>% 
+  add_header_above(c(' '=4, 'Camera'=2, 'Pellets'=2, 'Remains'=2))
+```
+
+```{r}
+### Pellet basic stats
+
+# Number of prey items identified from pellets.
+n.pellet.items <- diet.items %>% filter(source == 'P') %>% summarize(n()) %>% as.numeric()
+
+# Number of nests from which pellets were collected.
+n.pellet.sites <- diet.items %>% filter(source == 'P') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Percent of pellet items identified to genus.
+percent.pellets.to.genus <- diet.items %>% filter(source == 'P') %>% mutate(total=n()) %>% 
+  filter(genus != 'Unknown') %>% mutate(genus=n(), to.genus=genus/total*100) %>% 
+  distinct(to.genus) %>% peretty(0)
+
+# Number of species identified from pellets.
+n.species.pellets <- diet.items %>% filter(source == 'P' & binomial != 'Unidentified item') %>%
+  distinct(binomial) %>% summarize(n()) %>% as.numeric()
+
+### Basic remains stats.
+
+# Number of prey items identified from remains.
+n.remains.items <- diet.items %>% filter(source == 'R') %>% summarize(n()) %>% as.numeric()
+
+# Number of species identified from pellets.
+n.species.remains <- diet.items %>% filter(source == 'R' & binomial != 'Unidentified item') %>%
+  distinct(binomial) %>% summarize(n()) %>% as.numeric()
+
+# Number of sites from which remains were collected.
+n.remains.sites <- diet.items %>% filter(source == 'R') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Percent of remains items identified to genus.
+percent.remains.to.genus <- diet.items %>% filter(source == 'R') %>% mutate(total=n()) %>%
+  filter(genus != 'Unknown') %>% mutate(genus=n(), to.genus=genus/total*100) %>% 
+  distinct(to.genus) %>% peretty(0)
+
+### Pooled basic stats.
+
+# Number of species identified from pellets and remains.
+n.species.pooled <- diet.items %>% filter(source != 'C' & binomial != 'Unidentified item') %>%
+  distinct(binomial) %>% summarize(n()) %>% as.numeric()
+```
+
+We identified a total of `r n.species.pellets` unique species from pellets collected at `r n.pellet.sites` nests. Of the `r n.pellet.items` prey items obtained from pellets, `r percent.pellets.to.genus`% could be identified to genus or better and all items were identified at least to class. There were `r n.species.remains` species identified from remains collected at `r n.remains.sites` nests, for a total of `r n.species.pooled` unique prey species from the pooled pellets-and-remains sample. Of the `r n.remains.items` prey items obtained from remains, `r percent.remains.to.genus`% were identified to genus or better and all items were identified at least to class.
+
+```{r}
+### Pellets
+
+# Percent biomass of mammals from pellets.
+percent.mass.mammal.pellets <- filter(diet.items, source == 'P') %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(class=sum(mass), to.m=class/total*100) %>% distinct(to.m) %>% peretty(0)
+
+# Percent counts of mammals from pellets.
+# filter(diet.items, source == 'P') %>% mutate(total=n()) %>% filter(class == 'Mammalia') %>% mutate(class=n(), to.m=class/total*100) %>% distinct(to.m) %>% peretty(0)
+
+# Percent count of squirrels from pellets.
+#filter(diet.items, source == 'P') %>% mutate(total=n()) %>% filter(genus == 'Tamiasciurus') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent count of other birds from pellets.
+#filter(diet.items, source == 'P') %>% mutate(total=n()) %>% filter(group == 'bird') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent count of other mammals from pellets.
+#filter(diet.items, source == 'P') %>% mutate(total=n()) %>% filter(group == 'mammal') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent count of thrushes and corvids.
+#filter(diet.items, source == 'P') %>% mutate(total=n()) %>% filter(group %in% c('corvid', 'thrush')) %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+```
+
+The majority of prey (`r percent.mass.mammal.pellets`% of biomass) identified from pellets was mammalian. Squirrels made up `r filter(diet.items, source == 'P') %>% mutate(total=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% mutate(gen.mass=sum(mass), to.g=gen.mass/total*100) %>% distinct(to.g) %>% peretty(0)`% of biomass, while other birds (neither grouse, corvids, nor thrushes) made up `r filter(diet.items, source == 'P') %>% mutate(total=sum(mass)) %>% filter(group == 'bird') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)`%  and other mammals (neither tree squirrels nor hares) made up another `r filter(diet.items, source == 'P') %>% mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)`%. The remaining `r filter(diet.items, source == 'P') %>% mutate(total=sum(mass)) %>% filter(group %in% c('corvid', 'thrush')) %>% mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)`% of biomass was made up of corvids and thrushes. 
+
+```{r}
+### Pellets and remains
+
+# Percent count grouse from pooled.
+#filter(diet.items, source != 'C') %>% mutate(total=n()) %>% filter(group == 'grouse') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent count other birds from pooled.
+#filter(diet.items, source != 'C') %>% mutate(total=n()) %>% filter(group == 'bird') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent count squirrels from pooled.
+#filter(diet.items, source != 'C') %>% mutate(total=n()) %>% filter(group == 'squirrel') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+# Percent biomass of birds from combined pellets-and-remains.
+percent.mass.avian.pr <- filter(diet.items, source != 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Aves') %>% 
+  mutate(class=sum(mass), to.m=class/total*100) %>% distinct(to.m) %>% peretty(0)
+
+# Percent biomass of grouse from combined pellets-and-remains.
+percent.mass.grouse.pr <- filter(diet.items, source != 'C') %>% mutate(total=sum(mass)) %>%
+  filter(group == 'grouse') %>% mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% 
+  distinct(to.mass) %>% peretty(0)
+
+# Percent biomass of other birds from combined pellets-and-remains.
+percent.mass.birds.pr <- filter(diet.items, source != 'C') %>% mutate(total=sum(mass)) %>%
+  filter(group == 'bird') %>% mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% 
+  distinct(to.mass) %>% peretty(0)
+
+# Percent biomass of hare from combined pellets-and-remains.
+percent.mass.hare.pr <- filter(diet.items, source != 'C') %>% mutate(total=sum(mass)) %>%
+  filter(group == 'hare') %>% mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% 
+  distinct(to.mass) %>% peretty(0)
+
+# Percent biomass of squirrels from combined pellets-and-remains.
+percent.mass.squirrel.pr <- filter(diet.items, source != 'C') %>% mutate(total=sum(mass)) %>%
+  filter(group == 'squirrel') %>% mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% 
+  distinct(to.mass) %>% peretty(0)
+
+# Percent biomass of thrushes and corvids in combined pellets-and-remains.
+percent.mass.remaining.pr <- filter(diet.items, source != 'C') %>% mutate(total=sum(mass)) %>%
+  filter(group %in% c('corvid', 'thrush')) %>% mutate(gmass=sum(mass), to.mass=gmass/total*100) %>%
+  distinct(to.mass) %>% peretty(0)
+```
+
+In contrast, the majority of prey (`r percent.mass.avian.pr`% of biomass) identified from the combined pellets-and-remains sample was avian. The largest prey group was grouse (`r percent.mass.grouse.pr`%), followed by other birds (`r percent.mass.birds.pr`%) and hare (`r percent.mass.hare.pr`%). Squirrels made up only `r percent.mass.squirrel.pr`% of the combined sample. The remaining `r percent.mass.remaining.pr`% of biomass was made up of corvids and thrushes.
+
+```{r}
+# Number of species identified from cameras.
+n.species.cameras <- diet.items %>% filter(source == 'C' & binomial != 'Unidentified item') %>%
+  distinct(binomial) %>% summarize(n()) %>% as.numeric()
+
+# Number of items recorded.
+n.camera.items <- photos %>% filter(!is.na(class)) %>% nrow() %>% as.numeric()
+
+# Number of items excluded from analysis because obscured from camera.
+n.excluded.items <- photos %>% filter(!is.na(class)) %>% filter(size == 'U') %>% 
+  summarize(n()) %>% as.numeric()
+
+# Average number of items recorded on nest cameras.
+mean.items.delivered <- filter(diet.items, source == 'C') %>% group_by(nest) %>% 
+  summarize(n=n(), .groups='drop') %>% summarize(mean(n)) %>% peretty(0)
+
+# Min number of items recorded on nest cameras.
+min.items.delivered <- filter(diet.items, source == 'C') %>% group_by(nest) %>% 
+  summarize(n=n(), .groups='drop') %>% summarize(min(n)) %>% peretty(0)
+
+# Max number of items recorded on nest cameras.
+max.items.delivered <- filter(diet.items, source == 'C') %>% group_by(nest) %>% 
+  summarize(n=n(), .groups='drop') %>% summarize(max(n)) %>% peretty(0)
+
+# Percent of camera items identified to genus.
+percent.camera.to.genus <- filter(diet.items, source == 'C') %>% mutate(total=n()) %>% 
+  filter(genus != 'Unknown') %>% mutate(count=n(), to.count=count/total*100) %>% 
+  distinct(to.count) %>% peretty(0)
+
+# Percent of camera items identified to class
+percent.camera.to.class <- filter(diet.items, source == 'C') %>% mutate(total=n()) %>% 
+  filter(class != 'Unknown') %>% mutate(count=n(), to.count=count/total*100) %>% 
+  distinct(to.count) %>% peretty(0)
+```
+
+We identified a total of `r n.species.cameras` unique species from `r n.camera.items` prey deliveries recorded on `r n.camera.sites` nest cameras. After excluding `r n.excluded.items` deliveries that were completely obscured from the cameras, each nest contributed an average of `r mean.items.delivered` items (range `r min.items.delivered` - `r max.items.delivered`). We were able to identify `r percent.camera.to.genus`% to genus or better, and `r percent.camera.to.class`% at least to class. Small and medium birds were disproportionately represented among items identified only to class, frequently arriving at the nest already plucked and decapitated. Variability in the number of items recorded and the rate of identification was due to differences in camera placement and sensitivity settings.
+
+```{r}
+### Class = Mammalia
+### Level = Study area
+
+# Calculate percent avian biomass for camera data for the entire study area.
+percent.mammal.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of mammalian items for camera data for the entire study area.
+count.mammal.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(class == 'Mammalia') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Class = Mammalia
+### Level = Nest
+
+# Calculate mean percent mammalian biomass per nest.
+percent.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of mammal biomass per nest.
+sd.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Class = Aves
+### Level = Study area
+
+# Calculate percent avian biomass for camera data for the entire study area.
+percent.avian.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Aves') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of avian items for camera data for the entire study area.
+count.avian.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(class == 'Aves') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Class = Aves
+### Level = Nest
+
+# Calculate mean percent avian biomass per nest.
+percent.avian.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Aves') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of avian biomass per nest.
+sd.avian.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Aves') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Class = Unknown
+### Level = Study area
+
+# Calculate percent unidentified biomass for camera data for the entire study area.
+percent.unknown.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of unidentified items for camera data for the entire study area.
+count.unknown.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(class == 'Unknown') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Class = Unknown
+### Level = Nest
+
+# Calculate mean percent unknown biomass per nest.
+percent.unknown.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of unknown biomass per nest.
+sd.unknown.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(class == 'Unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Squirrels
+### Level = Study area
+
+# Calculate percent squirrel biomass for camera data for the entire study area.
+percent.squirrel.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of squirrels for camera data for the entire study area.
+count.squirrel.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'squirrel') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Squirrel
+### Level = Nest
+
+# Calculate mean percent squirrel biomass per nest.
+percent.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of squirrel biomass per nest.
+sd.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Other mammals
+### Level = Study area
+
+# Calculate percent other mammal biomass for camera data for the entire study area.
+percent.other.mammal.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of other mammals for camera data for the entire study area.
+count.other.mammal.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'mammal') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Other mammal
+### Level = Nest
+
+# Calculate mean percent other mammal biomass per nest.
+percent.other.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of other mammal biomass per nest.
+sd.other.mammal.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'mammal') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Unknown
+### Level = Study area
+
+# Calculate percent unknown biomass for camera data for the entire study area.
+percent.unk.gr.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of unknown for camera data for the entire study area.
+count.unk.gr.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'unknown') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Unknown
+### Level = Nest
+
+# Calculate mean percent unknown biomass per nest.
+percent.unk.gr.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of unknown biomass per nest.
+sd.unk.gr.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'unknown') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Hare
+### Level = Study area
+
+# Calculate percent hare biomass for camera data for the entire study area.
+percent.hare.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'hare') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+### Group = Hare
+### Level = Nest
+
+# Calculate mean percent hare biomass per nest.
+percent.hare.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'hare') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of hare biomass per nest.
+sd.hare.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'hare') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Other birds
+### Level = Study area
+
+# Calculate percent other birds biomass for camera data for the entire study area.
+percent.bird.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'bird') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+### Group = Other birds
+### Level = Nest
+
+# Calculate mean percent other birds biomass per nest.
+percent.bird.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'bird') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of other birds biomass per nest.
+sd.bird.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'bird') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Grouse
+### Level = Study area
+
+# Calculate percent grouse biomass for camera data for the entire study area.
+percent.grouse.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'grouse') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+### Group = Grouse
+### Level = Nest
+
+# Calculate mean percent grouse biomass per nest.
+percent.grouse.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'grouse') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of grouse biomass per nest.
+sd.grouse.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'grouse') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Corvids
+### Level = Study area
+
+# Calculate percent corvid biomass for camera data for the entire study area.
+percent.corvid.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'corvid') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+### Group = Corvids
+### Level = Nest
+
+# Calculate mean percent corvid biomass per nest.
+percent.corvid.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'corvid') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of corvid biomass per nest.
+sd.corvid.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'corvid') %>% 
+  mutate(gmass=sum(mass), to.mass=gmass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+
+### Group = Thrushes
+### Level = Study area
+
+# Calculate percent other thrush biomass for camera data for the entire study area.
+percent.thrush.biomass.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(to.mass) %>% peretty(0)
+
+# Calculate percent counts of other thrushes for camera data for the entire study area.
+count.thrush.items.study.area <- filter(diet.items, source == 'C') %>% 
+  mutate(total=n()) %>% filter(group == 'thrush') %>% 
+  mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+
+### Group = Thrush
+### Level = Nest
+
+# Calculate mean percent thrush biomass per nest.
+percent.thrush.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(mean(to.mass)) %>% peretty(0)
+
+# Calculate standard deviation of thrush biomass per nest.
+sd.thrush.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'thrush') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(sd(to.mass)) %>% peretty(0)
+```
+
+```{r}
+# Mean nest diversity.
+mean.nest.diversity <- mean(nest.diversity$diet.diversity) %>% round(2)
+
+# Standard deviation of nest diversity.
+sd.nest.diversity <- sd(nest.diversity$diet.diversity) %>% round(2)
+
+# Min nest diversity.
+min.nest.diversity <- min(nest.diversity$diet.diversity)
+
+# Max nest diversity.
+max.nest.diversity <- max(nest.diversity$diet.diversity) %>% round(2)
+
+# Mean nest overlap.
+mean.nest.overlap <- mean(nest.overlap$value) %>% round(2)
+
+# Standard deviation of nest overlap.
+sd.nest.overlap <- sd(nest.overlap$value) %>% round(2)
+```
+
+The majority of prey (`r percent.mammal.biomass.study.area`% of biomass, mean = `r percent.mammal.biomass.nest` $\pm$ `r sd.mammal.biomass.nest`) identified on nest cameras was mammalian. Birds accounted for only `r percent.avian.biomass.study.area`% (mean  = `r percent.avian.biomass.nest` $\pm$ `r sd.avian.biomass.nest`), and the remaining `r percent.unknown.biomass.study.area`% could not be identified to class (mean = `r percent.unknown.biomass.nest` $\pm$ `r sd.unknown.biomass.nest`). The high proportion of mammalian biomass was driven by the dominance of squirrels (`r percent.squirrel.biomass.study.area`% of biomass, mean = `r percent.squirrel.biomass.nest` $\pm$ `r sd.squirrel.biomass.nest`) and other mammals (`r percent.other.mammal.biomass.study.area`%, mean = `r percent.other.mammal.biomass.nest` $\pm$ `r sd.other.mammal.biomass.nest`). Unidentified items accounted for `r percent.unk.gr.biomass.study.area`% of biomass (mean = `r percent.unk.gr.biomass.nest` $\pm$ `r sd.unk.gr.biomass.nest`). The remaining biomass was composed of hare (`r percent.hare.biomass.study.area`%, mean = `r percent.hare.biomass.nest` $\pm$ `r sd.hare.biomass.nest`), other birds (`r percent.bird.biomass.study.area`%, mean = `r percent.bird.biomass.nest` $\pm$ `r sd.bird.biomass.nest`), grouse (`r percent.grouse.biomass.study.area`%, mean = `r percent.grouse.biomass.nest` $\pm$ `r sd.grouse.biomass.nest`), thrushes (`r percent.thrush.biomass.study.area`% , mean = `r percent.thrush.biomass.nest` $\pm$ `r sd.thrush.biomass.nest`) and corvids (`r percent.corvid.biomass.study.area`%, mean = `r percent.corvid.biomass.nest` $\pm$ `r sd.corvid.biomass.nest`). Overall diet diversity for the study area, based on counts of items identified to genus or better, was moderate (`r round(study.area.diversity, 2)`). Diet diversity of individual nests was highly variable, ranging from `r min.nest.diversity` to `r max.nest.diversity` (mean = `r mean.nest.diversity` $\pm$ `r sd.nest.diversity`.)
+
+```{r}
+### Cameras
+
+# Percent count mammal from cameras.
+#filter(diet.items, source == 'C') %>% mutate(total=n()) %>% filter(class != 'Mammalia') %>% mutate(count=n(), to.count=count/total*100) %>% distinct(to.count) %>% peretty(0)
+```
+
+## Difference between ecological regions
+
+```{r warning=FALSE}
+# Make half the data frame for the graph.
+chi.graph <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  group_by(source, zone) %>% 
+  mutate(total.count=n()) %>% 
+  distinct(source, zone, total.count) %>% 
+  pivot_wider(names_from=source, values_from=total.count) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(!zone, names_to='source', values_to='total.count')
+
+# Make the other half of the data frame, then join.
+chi.graph <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  group_by(source, zone, group) %>% 
+  mutate(group.count=n()) %>% 
+  distinct(source, zone, group, group.count) %>% 
+  pivot_wider(names_from=source, values_from=group.count, values_fill=0) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(-c(group, zone), names_to='source', values_to='group.count') %>% 
+  right_join(chi.graph, by=c('zone', 'source')) %>% 
+  filter(source != 'R') %>% 
+  mutate(prop=group.count/total.count)
+
+# Source names for facet labels.
+source_names <- list(
+  'C'='Cameras',
+  'P'='Pellets',
+  'RP'='Pooled'
+)
+
+# Labeller function.
+labeller <- function(variable, value) {
+  return(source_names[value])
+}
+
+# Graph it.
+chi.graph %>% 
+  ggplot(aes(x=group, y=prop, fill=zone)) +
+  geom_bar(stat='identity', position='dodge') +
+  theme_classic() +
+  facet_grid(source ~., labeller=labeller) +
+  theme(legend.position='bottom',
+        legend.title=element_blank()) +
+  scale_fill_manual(labels=c('Coastal', 'Transition'), values=c('darkgrey', 'dimgrey')) +
+  xlab('Prey category') +
+  ylab('Proportion of items')
+```
+
+```{r}
+# Test statistic for pellet data chi-squared test.
+x.stat.pellet <- zone.chi %>% filter(source == 'P') %>% unnest(gl) %>% ungroup() %>% 
+  select(statistic) %>% peretty()
+
+# P value for pellet data chi-squared test.
+p.value.pellet <- zone.chi %>% filter(source == 'P') %>% unnest(gl) %>% ungroup() %>% 
+  select(p.value) %>% peretty()
+
+# Test statistic for combined pellets-and-remains data chi-squared test.
+x.stat.rp <- zone.chi %>% filter(source == 'RP') %>% unnest(gl) %>% ungroup() %>% 
+  select(statistic) %>% peretty()
+
+# P value for combined pellet-and-remains data chi-squared test.
+p.value.rp <- zone.chi %>% filter(source == 'RP') %>% unnest(gl) %>% ungroup() %>% 
+  select(p.value) %>% peretty(4)
+
+# Test statistic for camera data chi-squared test.
+x.stat.camera <- zone.chi %>% filter(source == 'C') %>% unnest(gl) %>% ungroup() %>% 
+  select(statistic) %>% peretty()
+
+# P value for camera data chi-squared test.
+p.value.camera <- zone.chi %>% filter(source == 'C') %>% unnest(gl) %>% ungroup() %>% 
+  select(p.value) %>% peretty(3)
+```
+
+```{r}
+# Number of transition zone sites.
+n.tz.cam.sites <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'tz' & source == 'C') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+# Number of coastal zone sites.
+n.cs.cam.sites <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'cs' & source == 'C') %>% distinct(nest) %>% 
+  summarize(n()) %>% as.numeric()
+
+### Comparison of mammals between zones.
+
+# Mean proportion mammalian biomass in transition zone.
+percent.mammal.biomass.tz <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'tz' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Mean proportion mammalian biomass in coastal zone.
+percent.mammal.biomass.cs <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'cs' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Percent mammalian biomass per nest, by zone.
+percent.mammal.biomass.zone.nest <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total) %>% 
+  distinct(zone, nest, cmass)
+
+# P-value for unpaired two-sample t-test for mammal biomass between zones.
+p.value.mammal.biomass.zone <- t.test(cmass ~ zone, 
+                                      data=percent.mammal.biomass.zone.nest, var.equal=TRUE) %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+### Comparison of squirrels between zones.
+
+# Mean proportion squirrel biomass in transition zone.
+percent.squirrel.biomass.tz <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'tz' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Mean proportion squirrel biomass in coastal zone.
+percent.squirrel.biomass.cs <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(zone == 'cs' & source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total*100) %>% 
+  distinct(nest, cmass) %>% ungroup() %>% summarize(mean(cmass)) %>% peretty(0)
+
+# Percent squirrel biomass per nest, by zone.
+percent.squirrel.biomass.zone.nest <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  filter(source == 'C') %>% group_by(nest) %>% 
+  mutate(total=sum(mass)) %>% filter(genus == 'Tamiasciurus') %>% 
+  mutate(mmass=sum(mass), cmass=mmass/total) %>% 
+  distinct(zone, nest, cmass)
+
+### t-test for squirrel biomass.
+
+# Unpaired two-sample t-test for squirrel biomass between zones.
+squirrel.test.zone.nest <- t.test(cmass ~ zone, 
+                                      data=percent.squirrel.biomass.zone.nest)
+
+# p-value for unpaired two-sample t-test for squirrel biomass between zones.
+p.value.squirrel.biomass.zone <- squirrel.test.zone.nest %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+# df for t-test of squirrel by zone.
+df.nest.squirrel.test <- squirrel.test.zone.nest %>% tidy() %>% select(parameter) %>% peretty()
+
+# t-statistic for t-test of nest diversity by zone.
+stat.nest.squirrel.test <- squirrel.test.zone.nest %>% tidy() %>% select(statistic) %>% peretty()
+
+### Nest diversity.
+
+# Difference between zone diversity (unpooled).
+diversity.test.zone.nest <- t.test(diet.diversity ~ zone, data=zone.nest.diversity)
+
+# Mean nest diversity for tz.
+mean.nest.diversity.tz <- filter(zone.nest.diversity, zone == 'tz') %>% 
+  summarize(mean(diet.diversity)) %>% peretty()
+
+# Mean nest diversity for cs.
+mean.nest.diversity.cs <- filter(zone.nest.diversity, zone == 'cs') %>% 
+  summarize(mean(diet.diversity)) %>% peretty()
+
+# P-value for t-test of nest diversity by zone.
+p.value.nest.diversity.test <- diversity.test.zone.nest %>% tidy() %>% 
+  select(p.value) %>% peretty()
+
+# Standard deviation of nest diversity for tz.
+sd.nest.diversity.tz <- filter(zone.nest.diversity, zone == 'tz') %>% 
+  summarize(sd(diet.diversity)) %>% peretty()
+
+# Standard deviation of nest diversity for cs.
+sd.nest.diversity.cs <- filter(zone.nest.diversity, zone == 'cs') %>% 
+  summarize(sd(diet.diversity)) %>% peretty()
+
+# df for t-test of nest diversity by zone.
+df.nest.diversity.test <- diversity.test.zone.nest %>% tidy() %>% select(parameter) %>% peretty()
+
+# t-statistic for t-test of nest diversity by zone.
+stat.nest.diversity.test <- diversity.test.zone.nest %>% tidy() %>% select(statistic) %>% peretty()
+```
+
+We observed differences in goshawk diet between the coastal and transition zone, although these differences were more pronounced in the camera data ($\chi$^2^ = `r x.stat.camera`, *P* = `r p.value.camera`) and pooled pellets-and-remains data ($\chi$^2^ = `r x.stat.rp`, *P* << 0.05) than in data from pellets alone ($\chi$^2^ = `r x.stat.pellet`, *P* = `r p.value.pellet`). However, we observed no significant differences in diet diversity (*t* = `r stat.nest.diversity.test`, df = `r df.nest.diversity.test`, *P* = `r p.value.nest.diversity.test`) or the proportion of squirrel biomass (*t* = `r stat.nest.squirrel.test`, df = `r df.nest.squirrel.test`, *P* = `r p.value.squirrel.biomass.zone`) between the zones.
+
+<!-- Nests in the transition zone (*n* = `r n.tz.cam.sites`) had a more diverse diet (mean = `r mean.nest.diversity.tz` $\pm$ `r sd.nest.diversity.tz`) than those in the coastal zone (*n* = `r n.cs.cam.sites`, mean = `r mean.nest.diversity.cs` $\pm$ `r sd.nest.diversity.cs`; *t* = `r stat.nest.diversity.test`, df = `r df.nest.diversity.test`, *P* = `r p.value.nest.diversity.test`). However, there was no significant difference in the proportion of biomass nests received between the two zones (*t* = `r stat.nest.squirrel.test`, df = `r df.nest.squirrel.test`, *P* = `r p.value.squirrel.biomass.zone`). -->
+
+## Productivity
+
+We were able to measure productivity for `r filter(productivity, !is.na(n.fledge)) %>% nrow()` of `r n.camera.sites` [**this will be updated to 14 when GRV data comes in**] nests monitored with nest cameras. Productivity data were not obtained from two nests because the camera memory cards filled prior to fledging.
+
+```{r}
+# Number of nests that successfully fledge chicks.
+n.successful.nests <- filter(productivity, n.fledge > 0) %>% nrow()
+
+# Mean number of chicks fledged from all nests.
+mean.fledge.active <- drop_na(productivity) %>% summarize(mean(n.fledge)) %>% peretty()
+
+# Standard deviation of chicks fledged from all nests.
+sd.fledge.active <- drop_na(productivity) %>% summarize(sd(n.fledge)) %>% peretty()
+
+# Mean number of chicks fledge from successful nests.
+mean.fledge.successful <- filter(productivity, n.fledge > 0) %>% 
+  summarize(mean(n.fledge)) %>% peretty()
+
+# Standard deviation of chicks fledge from successful nests.
+sd.fledge.successful <- filter(productivity, n.fledge > 0) %>% 
+  summarize(sd(n.fledge)) %>% peretty()
+```
+
+Goshawks successfully fledged young from `r n.successful.nests` of `r filter(productivity, !is.na(n.fledge)) %>% nrow()` nests, producing an average of `r mean.fledge.active` $\pm$ `r sd.fledge.active` chicks per active nest (range 0-3) and `r mean.fledge.successful` $\pm$ `r sd.fledge.successful` chicks per successful nest (range 1-3). Siblicide was common, accounting for two of the three deaths in the failed nest and one death in each of four other nests.<!-- MTF & MTC in 2019, MTF & GOW in 2020 -->
+
+```{r}
+# Graph for squirrel model
+squirrel.model %>% augment() %>% 
+  ggplot(aes(x=squirrel, y=n.fledge)) +
+  geom_point() +
+  geom_line(aes(x=squirrel, y=.fitted)) + 
+  geom_ribbon(aes(ymin=.fitted-1.96*.se.fit, ymax=.fitted+1.96*.se.fit), 
+              fill=NA, color='black', linetype='dashed') +
+  labs(x='Percent squirrel biomass', y='N. chicks fledged') +
+  theme_classic()
+
+# Graph for diversity model.
+diversity.model %>% augment() %>% 
+  ggplot(aes(x=diet.diversity, y=n.fledge)) +
+  geom_point() +
+  geom_line(aes(x=diet.diversity, y=.fitted)) + 
+  geom_ribbon(aes(ymin=.fitted-1.96*.se.fit, ymax=.fitted+1.96*.se.fit), 
+              fill=NA, color='black', linetype='dashed') +
+  labs(x='Diet diversity', y='N. chicks fledged') +
+  theme_classic()
+```
+
+
+```{r}
+# Calculate productivity for each nest by zone.
+productivity.zone <- left_join(productivity, centroids.sf, by=c('site', 'name')) %>% 
+  select(site, year, n.fledge, zone) %>% 
+  mutate(nest=paste0(site, year))
+
+productivity.zone.test <- t.test(n.fledge ~ zone, data=productivity.zone)
+
+# df for t-test of productivity by zone.
+df.productivity.zone.test <- productivity.zone.test %>% tidy() %>% select(parameter) %>% peretty()
+
+# t-statistic for t-test of productivity by zone.
+stat.productivity.zone.test <- productivity.zone.test %>% tidy() %>% select(statistic) %>% peretty()
+
+p.value.productivity.zone <- productivity.zone.test %>% glance() %>% 
+  select(p.value) %>% peretty()
+
+### Squirrel biomass model.
+
+# F-statistic for squirrel model.
+stat.squirrel.model <- glance(squirrel.model) %>% select(statistic) %>% peretty()
+
+# P value for squirrel mode.
+p.value.squirrel.model <- glance(squirrel.model) %>% select(p.value) %>% peretty()
+
+### Diet diversity model.
+
+# F-statistic for diet diversity model
+stat.diversity.model <- glance(diversity.model) %>% select(statistic) %>% peretty()
+```
+
+We found little evidence to suggest goshawk productivity was impacted by either the proportion of diet composed of squirrel biomass (*F*~1~ = `r stat.squirrel.model`, df = `r df.residual(squirrel.model)`, *P* = `r p.value.squirrel.model`) or diet diversity (*F*~1~ = `r stat.diversity.model`, df = `r df.residual(diversity.model)`, *P* = `r glance(diversity.model) %>% select(p.value) %>% peretty()`). There was also no significant difference in goshawk productivity between the coastal and transition zones (*t* = `r stat.productivity.zone.test`, df = `r df.productivity.zone.test`, *P* = `r p.value.productivity.zone`).
+
+# Discussion
+
+```{r}
+# Total number of prey species recorded from all methods.
+n.total.species <- diet.items %>% filter(binomial != 'Unidentified item') %>% 
+  distinct(binomial) %>% nrow() %>% as.numeric()
+
+# Calculate min percent squirrel biomass of any nest.
+min.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(min(to.mass)) %>% peretty(0)
+
+# Calculate max squirrel biomass per nest.
+max.squirrel.biomass.nest <- filter(diet.items, source == 'C') %>% group_by(nest) %>%
+  mutate(total=sum(mass)) %>% filter(group == 'squirrel') %>% 
+  mutate(mass=sum(mass), to.mass=mass/total*100) %>% distinct(nest, to.mass) %>% 
+  ungroup() %>% summarize(max(to.mass)) %>% peretty(0)
+```
+
+Northern goshawks are considered generalist predators and consume a wide variety of prey species. However, a single key prey species often contributes disproportionately to goshawk diet, and the identity of this species may be specific to each goshawk population [@doyle_population_1994; @ethier_breeding_1999; @tornberg_delayed_2005]. In coastal British Columbia we found goshawks consumed `r n.total.species` different species during the breeding season. These prey ranged in size from tiny bats (~ 6 grams) to grouse larger than the goshawks themselves (~ 1000 grams). However, the majority of their diet was composed of tree squirrels of the genus *Tamiasciurus*. Across the entire study area this single taxa made up approximately half of the total biomass recorded. Individual nests varied in the degree to to which they specialized on tree squirrels, with some nests consuming as little as `r min.squirrel.biomass.nest`% squirrel biomass and others as much as `r max.squirrel.biomass.nest`%. Despite the clear importance of tree squirrels in the diet, the proportion of squirrel biomass delivered to the nest did not influence its success in fledging chicks.
+
+Goshawk survival, migration, reproductive success, and other demographic parameters are often related to the abundance of a key prey species [@doyle_population_1994; @tornberg_delayed_2005; @rutz_food-limitation_2006]. Although we lacked data on prey abundance within our study area, other authors have found goshawk diet to reflect site-level prey abundance [@lewis_northern_2006; @rogers_diet_2006]. We observed significant variation in the proportion of tree squirrel biomass delivered to each nest, which may reflect differences in squirrel abundance between sites. However, we did not find evidence to support an effect of this variation on goshawk productivity. When key prey abundance is low, high diet diversity may indicate a reliance on alternate prey and associated negative reproductive consequences [@resanomayor_dietdemography_2016], but we likewise found no evidence of an effect of diet diversity on goshawk productivity. However, it is notable that the only nest in our study to experience a complete breeding failure received the smallest proportion of squirrel biomass out of any nest. Given the strength of evidence from other studies and the clear importance of tree squirrels in the diet of this population, information on factors that influence the abundance of tree squirrels and their relationship to goshawk demography seems crucial.
+
+Across much of North America, the key goshawk prey species is usually mammalian, often from the family Leporidae or Sciuridae [@boal_northern_1994; @doyle_population_1994; @destefano_ecology_2006; @rogers_diet_2006; @miller_effects_2014]. However, in the coastal temperate rainforests of the Pacific Northwest, goshawk diet generally contains more birds than mammals and the key prey is usually a species of grouse (subfamily Tetraoninae) [@watson_prey_1998; @thraikill_diet_2000; @bloxton_prey_2002; @lewis_northern_2006]. <!-- Watson uses pooled pellets + remains and finds 47.1:52.6% biomass birds:mammals in western Washington. --> Despite inhabiting coastal rainforests, goshawks on Vancouver Island, British Columbia, consume primarily red squirrels (*T. hudsonicus*), with this single species making up 69% of the diet [@ethier_breeding_1999]. Our results from the coastal mainland of British Columbia are consistent with findings from Vancouver Island and more broadly with results from the interior of North America, but stand in contrast to findings from elsewhere in the Pacific Northwest.
+
+Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region of intermediate habitat types where coastal and interior goshawk populations may overlap [@northern_goshawk_recovery_team_recovery_2008]. At this smaller scale, we found evidence of a difference in diet composition between the coastal and transition zones. However, the identity of the key prey, tree squirrels, was the same in both zones and comprised an equally large proportion of the diet in each. We likewise found no difference in diet diversity between the zones. While the large-scale variation in goshawk diet across North America likely reflects regional abundance and availability of prey species, the small-scale variation within our study area may reflect the fine differences in prey availability between forest types.
+
+Raptor diet is studied through a variety of indirect methods, such as the collection of pellets and prey remains, and direct methods, such as nest cameras and observation from blinds. Nest cameras are considered one of the least biased methods for measuring diet at the nest in raptors [@tornberg_assessing_2007; @garcia-salgado_evaluation_2015; @harrison_using_2019]. Cameras in this study provided significantly more data at a finer resolution than either pellets or prey remains, which could only be collected during the infrequent surveys each site received. However, the cost, effort, and logistical challenges of camera installation restricted the number of sites from which camera data could be collected. Additionally, technical issues relating to camera settings and placement resulted in a loss of data at some sites. Despite these limitations, we believe nest cameras provided the most accurate and complete picture of goshawk diet within out study. Compared to cameras, pellets were relatively unbiased in measuring coarse diet composition, but severely underestimated prey species richness. The pooled pellets-and-remains sample captured a much greater prey richness, including several species not detected on nest cameras, but greatly overestimated the proportion of avian biomass relative to camera data. Measuring diet composition by counts or biomass adds further uncertainty, with measurements of counts overestimating avian prey relative to measurements of biomass. These complex results highlight the importance of clearly reporting the source and measurement of raptor diet data. Because these methods have all been used in past studies we believe there is value in reporting the results of each for ease of comparison. However, we advocate for future diet studies to prioritize the collection of data via cameras, either video or still images, rather than physical specimens. 
+
+Our study addresses a fundamental question regarding the basic ecology of an at-risk population of the northern goshawk. This population is currently considered part of *A. g. laingi*, a subspecies restricted to the coastal Pacific Northwest from southeast Alaska through British Columbia and northwest Washington. In portions of the subspecies' range the diet is dominated by avian prey [@bloxton_prey_2002; @lewis_northern_2006], and in others by mammalian prey, specifically tree squirrels [@ethier_breeding_1999; this study]. This taxa clearly plays a key role in the diet of some *laingi* populations, including the population of Haida Gwaii (Roberts 1997, cited in @cosewic_cosewic_2013), where red squirrel is an introduced species. Genetic evidence indicates goshawks on this isolated archipelago may be distinct from goshawks on the mainland coast and Vancouver Island [@sonsthagen_identification_2012; @geraldes_population_2018]. Regardless of their taxonomic relationship, dietary evidence suggests the goshawk populations of Haida Gwaii, Vancouver Island, and southwestern British Columbia are more similar to each other in foraging habits than to other putative *laingi* populations. Ecological similarity may therefore prove a better guide than genetic similarity when when incorporating foraging habitat or prey populations into management plans.
+
+# Literature Cited

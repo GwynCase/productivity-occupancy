@@ -1,0 +1,7 @@
+"0","```r
+# Drop all 2019 points.
+HAR07 <- filter(HAR07, Year != 2019)
+
+# Add to the main dataframe.
+df <- bind_rows(df, HAR07)
+```"

@@ -1,0 +1,14 @@
+"0","```r
+# Rename the remaining columns in a reasonable, consistent way.
+df <- rename(df, id='Logger ID',
+               lat='Latitude',
+               lon='Longitude',
+               speed='Speed',
+               s.time='Searching time',
+               volt='Voltage',
+               temp='Temperature',
+               no.fix='No GPS - timeout',
+               at.base='In range',
+               year='Year',
+               datetime=datetime)
+```"

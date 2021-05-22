@@ -1,0 +1,8 @@
+"0","n.pr.sites <- diet.data %>% filter(source != 'C') %>% distinct(nest) %>% "
+"0","  summarize(n()) %>% as.numeric()"
+"0",""
+"0","n.pr.sites.2019 <- diet.data %>% filter(source != 'C' & year(date) == 2019) %>% "
+"0","  distinct(nest) %>% summarize(n()) %>% as.numeric()"
+"0",""
+"0","n.pr.sites.2020 <- diet.data %>% filter(source != 'C' & year(date) == 2020) %>% "
+"0","  distinct(nest) %>% summarize(n()) %>% as.numeric()"

@@ -1,0 +1,4 @@
+"0","# Rearrange, do some cleanup."
+"0","jn <- jn %>% group_by(name) %>% arrange(YrFound) %>% "
+"0","  slice(1) %>% drop_na(YrFound) %>% "
+"0","  select(!c(TerrName, NName), year.found=YrFound)"

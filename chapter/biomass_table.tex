@@ -1,0 +1,535 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Untitled},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+
+\title{Untitled}
+\author{}
+\date{\vspace{-2.5em}}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ---------------------------- tidyverse 1.3.0 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.3.2     v purrr   0.3.4
+## v tibble  3.0.1     v dplyr   1.0.0
+## v tidyr   1.1.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:base':
+## 
+##     date, intersect, setdiff, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(knitr)}
+\KeywordTok{library}\NormalTok{(kableExtra)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'kableExtra'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     group_rows
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Bring in specimen data.}
+\NormalTok{remains.data <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'../data/processed/specimens_20210318.csv'}\NormalTok{, }\DataTypeTok{guess_max=}\DecValTok{7000}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## filter only records with at least size assigned...}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(size }\OperatorTok{!=}\StringTok{ 'U'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   id = col_double(),
+##   date = col_date(format = ""),
+##   zone = col_double(),
+##   easting = col_double(),
+##   northing = col_double(),
+##   n.northing = col_double(),
+##   n.easting = col_double(),
+##   help = col_logical()
+## )
+\end{verbatim}
+
+\begin{verbatim}
+## See spec(...) for full column specifications.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Bring in camera data.}
+\NormalTok{photos <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'../data/interim/cameras_20210315.csv'}\NormalTok{, }\DataTypeTok{guess_max=}\DecValTok{7000}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   filename = col_character(),
+##   serial = col_character(),
+##   datetime = col_datetime(format = ""),
+##   site = col_character(),
+##   interest = col_character(),
+##   live.chicks = col_double(),
+##   class = col_character(),
+##   order = col_character(),
+##   family = col_character(),
+##   genus = col_character(),
+##   species = col_character(),
+##   common = col_character(),
+##   size = col_character(),
+##   age = col_character(),
+##   comments = col_character(),
+##   sex = col_logical()
+## )
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: 174 parsing failures.
+##   row col           expected  actual                                   file
+## 64744 sex 1/0/T/F/TRUE/FALSE Unknown '../data/interim/cameras_20210315.csv'
+## 64896 sex 1/0/T/F/TRUE/FALSE female  '../data/interim/cameras_20210315.csv'
+## 65033 sex 1/0/T/F/TRUE/FALSE unknown '../data/interim/cameras_20210315.csv'
+## 65098 sex 1/0/T/F/TRUE/FALSE female  '../data/interim/cameras_20210315.csv'
+## 65268 sex 1/0/T/F/TRUE/FALSE female  '../data/interim/cameras_20210315.csv'
+## ..... ... .................. ....... ......................................
+## See problems(...) for more details.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{camera.data <-}\StringTok{ }\NormalTok{photos }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## filter only records with at least size assigned...}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(size }\OperatorTok{!=}\StringTok{ 'U'}\NormalTok{)}
+
+\CommentTok{# Bring in a list of site abbreviations and site names.}
+\NormalTok{nest.list <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'../data/processed/site_abbreviations.csv'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   site = col_character(),
+##   name = col_character()
+## )
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Standardize the specimen data.}
+\NormalTok{remains.data <-}\StringTok{ }\KeywordTok{left_join}\NormalTok{(remains.data, nest.list, }\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{'name'}\NormalTok{, }\StringTok{'site'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(site, date, class, order, family, genus, species, common, size, age, source)}
+
+\CommentTok{# Standardize the camera data.}
+\NormalTok{camera.data <-}\StringTok{ }\NormalTok{camera.data }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{date=}\KeywordTok{date}\NormalTok{(datetime), }\DataTypeTok{source=}\StringTok{'C'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(site, date, class, order, family, genus, species, common, size, age, source)}
+
+\CommentTok{# Join them together.}
+\NormalTok{diet.data <-}\StringTok{ }\KeywordTok{bind_rows}\NormalTok{(remains.data, camera.data)}
+
+\CommentTok{# Add a unique site/year identifier.}
+\NormalTok{diet.data <-}\StringTok{ }\NormalTok{diet.data }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{year=}\KeywordTok{year}\NormalTok{(date), }\DataTypeTok{nest=}\KeywordTok{paste}\NormalTok{(site, year, }\DataTypeTok{sep=}\StringTok{''}\NormalTok{))}
+
+\CommentTok{# Do some cleanup.}
+\NormalTok{diet.data <-}\StringTok{ }\NormalTok{diet.data }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{size=}\KeywordTok{case_when}\NormalTok{(}
+\NormalTok{    size }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'S'}\NormalTok{, }\StringTok{'Small'}\NormalTok{) }\OperatorTok{~}\StringTok{ 'small'}\NormalTok{,}
+\NormalTok{    size }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'M'}\NormalTok{, }\StringTok{'Medium'}\NormalTok{) }\OperatorTok{~}\StringTok{ 'medium'}\NormalTok{,}
+\NormalTok{    size }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'L'}\NormalTok{, }\StringTok{'Large'}\NormalTok{) }\OperatorTok{~}\StringTok{ 'large'}
+\NormalTok{  ))}
+
+\CommentTok{# Bring in a list of all known prey.}
+\NormalTok{prey.list <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\StringTok{'../data/interim/prey_attributes.csv'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   class = col_character(),
+##   order = col_character(),
+##   family = col_character(),
+##   genus = col_character(),
+##   species = col_character(),
+##   binomial = col_character(),
+##   common = col_character(),
+##   category = col_character(),
+##   mass = col_double(),
+##   source = col_character()
+## )
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Join the biomass data to the list of diet items.}
+\NormalTok{diet.items <-}\StringTok{ }\NormalTok{prey.list }\OperatorTok{%>%}\StringTok{ }\KeywordTok{select}\NormalTok{(genus, species, binomial, common, category, mass) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{right_join}\NormalTok{(diet.data, }\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{'genus'}\NormalTok{, }\StringTok{'species'}\NormalTok{, }\StringTok{'common'}\NormalTok{))}
+
+\CommentTok{# For unidentified items, classify them by size and class.}
+\NormalTok{diet.items <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{category=}\KeywordTok{case_when}\NormalTok{(}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'small'} \OperatorTok{~}\StringTok{ 'small mammal'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'medium'} \OperatorTok{~}\StringTok{ 'medium mammal'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'large'} \OperatorTok{~}\StringTok{ 'large mammal'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'small'} \OperatorTok{~}\StringTok{ 'small bird'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'medium'} \OperatorTok{~}\StringTok{ 'medium bird'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{size }\OperatorTok{==}\StringTok{ 'large'} \OperatorTok{~}\StringTok{ 'large bird'}\NormalTok{,}
+  \KeywordTok{is.na}\NormalTok{(category) }\OperatorTok{&}\StringTok{ }\NormalTok{class }\OperatorTok{==}\StringTok{ 'Unknown'} \OperatorTok{~}\StringTok{ }\KeywordTok{paste}\NormalTok{(size, }\StringTok{'item'}\NormalTok{),}
+  \OtherTok{TRUE} \OperatorTok{~}\StringTok{ }\NormalTok{category))}
+
+\CommentTok{# For unidentified items, fill in the binomial column.}
+\NormalTok{diet.items <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{replace_na}\NormalTok{(}\KeywordTok{list}\NormalTok{(}\DataTypeTok{binomial =} \StringTok{'Unidentified item'}\NormalTok{))}
+
+\CommentTok{# Calculate average masses for unidentified items, based of known species.}
+\NormalTok{mean.mass <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{drop_na}\NormalTok{(mass) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{(binomial, mass, category) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(category) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## averaging the mass for each size & class category...}
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{average=}\KeywordTok{mean}\NormalTok{(mass)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{pivot_wider}\NormalTok{(}\DataTypeTok{names_from=}\NormalTok{category, }\DataTypeTok{values_from=}\NormalTok{average) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## calculating the average mass for complete unknowns...}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\StringTok{`}\DataTypeTok{large item}\StringTok{`}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{`}\DataTypeTok{large bird}\StringTok{`}\NormalTok{, }\StringTok{`}\DataTypeTok{large mammal}\StringTok{`}\NormalTok{)),}
+         \StringTok{`}\DataTypeTok{medium item}\StringTok{`}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{`}\DataTypeTok{medium bird}\StringTok{`}\NormalTok{, }\StringTok{`}\DataTypeTok{medium mammal}\StringTok{`}\NormalTok{)),}
+         \StringTok{`}\DataTypeTok{small item}\StringTok{`}\NormalTok{ =}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{`}\DataTypeTok{small bird}\StringTok{`}\NormalTok{, }\StringTok{`}\DataTypeTok{small mammal}\StringTok{`}\NormalTok{))) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## and reassembling it in a tidy format.}
+\StringTok{  }\KeywordTok{pivot_longer}\NormalTok{(}\KeywordTok{everything}\NormalTok{(), }\DataTypeTok{names_to=}\StringTok{'category'}\NormalTok{, }\DataTypeTok{values_to=}\StringTok{'average'}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `summarise()` ungrouping output (override with `.groups` argument)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Join average mass to diet items...}
+\NormalTok{diet.items <-}\StringTok{ }\KeywordTok{left_join}\NormalTok{(diet.items, mean.mass, }\DataTypeTok{by=}\StringTok{'category'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## and fill in missing mass with average values}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{mass=}\KeywordTok{coalesce}\NormalTok{(mass, average)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\CommentTok{## then drop no longer needed average column and rearrange.}
+\StringTok{  }\KeywordTok{select}\NormalTok{(site, year, nest, class, order, family, genus, species, binomial, common, }
+\NormalTok{         category, size, mass, age, source)}
+
+\CommentTok{# Change mass for juvenile items.}
+\NormalTok{diet.items <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{mass=}\KeywordTok{case_when}\NormalTok{(}
+\NormalTok{  age }\OperatorTok{==}\StringTok{ 'J'} \OperatorTok{~}\StringTok{ }\FloatTok{0.5}\OperatorTok{*}\NormalTok{mass,}
+  \OtherTok{TRUE} \OperatorTok{~}\StringTok{ }\NormalTok{mass}
+\NormalTok{))}
+
+\CommentTok{# Add grouping categories.}
+\NormalTok{diet.items <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{group=}\KeywordTok{case_when}\NormalTok{(}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{family }\OperatorTok{==}\StringTok{ 'Phasianidae'} \OperatorTok{~}\StringTok{ 'grouse'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{family }\OperatorTok{==}\StringTok{ 'Corvidae'} \OperatorTok{~}\StringTok{ 'corvid'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{&}\StringTok{ }\NormalTok{family }\OperatorTok{==}\StringTok{ 'Turdidae'} \OperatorTok{~}\StringTok{ 'thrush'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Aves'} \OperatorTok{~}\StringTok{ 'bird'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{&}\StringTok{ }\NormalTok{genus }\OperatorTok{==}\StringTok{ 'Tamiasciurus'} \OperatorTok{~}\StringTok{ 'squirrel'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{&}\StringTok{ }\NormalTok{genus }\OperatorTok{==}\StringTok{ 'Lepus'} \OperatorTok{~}\StringTok{ 'hare'}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{~}\StringTok{ 'mammal'}\NormalTok{,}
+  \OtherTok{TRUE} \OperatorTok{~}\StringTok{ 'unknown'}
+\NormalTok{))}
+
+\CommentTok{# Make the initial data frame.}
+\NormalTok{biomass.table <-}\StringTok{ }\NormalTok{diet.items }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class, binomial) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{count=}\KeywordTok{n}\NormalTok{()) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(source) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{total.source.count=}\KeywordTok{n}\NormalTok{(), }
+                              \DataTypeTok{total.source.mass=}\KeywordTok{sum}\NormalTok{(mass)) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(source, class, binomial) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{source.count=}\KeywordTok{n}\NormalTok{(), }
+                                               \DataTypeTok{source.mass=}\KeywordTok{sum}\NormalTok{(mass),}
+                                               \DataTypeTok{per.source.count=}\NormalTok{source.count}\OperatorTok{/}\NormalTok{total.source.count}\OperatorTok{*}\DecValTok{100}\NormalTok{,}
+                                               \DataTypeTok{per.source.mass=}\NormalTok{source.mass}\OperatorTok{/}\NormalTok{total.source.mass}\OperatorTok{*}\DecValTok{100}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{(source, class, binomial, count, per.source.count, per.source.mass) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{source2=}\KeywordTok{paste0}\NormalTok{(source, }\StringTok{'2'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{pivot_wider}\NormalTok{(}\DataTypeTok{names_from=}\NormalTok{source, }\DataTypeTok{values_from=}\NormalTok{per.source.count) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{pivot_wider}\NormalTok{(}\DataTypeTok{names_from=}\NormalTok{source2, }\DataTypeTok{values_from=}\NormalTok{per.source.mass) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{group_by}\NormalTok{(class, binomial) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{fill}\NormalTok{(}\KeywordTok{everything}\NormalTok{(), }\DataTypeTok{.direction=}\StringTok{'downup'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{distinct}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }\KeywordTok{left_join}\NormalTok{(prey.list, }\DataTypeTok{by=}\KeywordTok{c}\NormalTok{(}\StringTok{'class'}\NormalTok{, }\StringTok{'binomial'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(class, common, binomial, count, C, C2, P, P2, R, R2) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{common=}\KeywordTok{replace_na}\NormalTok{(common, }\StringTok{'unknown'}\NormalTok{),}
+         \DataTypeTok{binomial=}\KeywordTok{str_replace}\NormalTok{(binomial, }\StringTok{'Unidentified item'}\NormalTok{, }\StringTok{' '}\NormalTok{),}
+         \DataTypeTok{common=}\KeywordTok{str_to_sentence}\NormalTok{(common, }\DataTypeTok{locale=}\StringTok{'en'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{arrange}\NormalTok{(class, binomial) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{rownames_to_column}\NormalTok{(}\DataTypeTok{var=}\StringTok{'order'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{order=}\KeywordTok{as.numeric}\NormalTok{(order)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{order=}\KeywordTok{case_when}\NormalTok{(}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Mammalia'} \OperatorTok{~}\StringTok{ }\NormalTok{order }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{,}
+\NormalTok{  class }\OperatorTok{==}\StringTok{ 'Unknown'} \OperatorTok{~}\StringTok{ }\NormalTok{order }\OperatorTok{+}\StringTok{ }\DecValTok{2}\NormalTok{,}
+  \OtherTok{TRUE} \OperatorTok{~}\StringTok{ }\NormalTok{order}
+\NormalTok{))}
+
+\CommentTok{# Find where total rows should be inserted.}
+\NormalTok{table.breaks <-}\StringTok{ }\NormalTok{biomass.table }\OperatorTok{%>%}\StringTok{ }\KeywordTok{group_by}\NormalTok{(class) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{summarize}\NormalTok{(}\DataTypeTok{max=}\KeywordTok{max}\NormalTok{(order), }\DataTypeTok{.groups=}\StringTok{'drop'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{select}\NormalTok{(max) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{as.vector}\NormalTok{()}
+
+\CommentTok{# Calculate total avian items.}
+\NormalTok{avian.sums <-}\StringTok{ }\NormalTok{biomass.table }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(class }\OperatorTok{==}\StringTok{ 'Aves'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{replace}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(.), }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(., }\KeywordTok{across}\NormalTok{(}\KeywordTok{where}\NormalTok{(is.numeric), sum)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{order=}\NormalTok{table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{class=}\StringTok{'Aves'}\NormalTok{, }\DataTypeTok{common=}\StringTok{'TOTAL'}\NormalTok{, }\DataTypeTok{binomial=}\StringTok{' '}\NormalTok{) }\OperatorTok{%>%}\StringTok{  }
+\StringTok{  }\KeywordTok{select}\NormalTok{(order, class, common, binomial, }\KeywordTok{everything}\NormalTok{())}
+
+\CommentTok{# Calculate total mammalian items.}
+\NormalTok{mammal.sums <-}\StringTok{ }\NormalTok{biomass.table }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(class }\OperatorTok{==}\StringTok{ 'Mammalia'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{replace}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(.), }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(., }\KeywordTok{across}\NormalTok{(}\KeywordTok{where}\NormalTok{(is.numeric), sum)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{order=}\NormalTok{table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{2}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{class=}\StringTok{'Mammalia'}\NormalTok{, }\DataTypeTok{common=}\StringTok{'TOTAL'}\NormalTok{, }\DataTypeTok{binomial=}\StringTok{' '}\NormalTok{) }\OperatorTok{%>%}\StringTok{  }
+\StringTok{  }\KeywordTok{select}\NormalTok{(order, class, common, binomial, }\KeywordTok{everything}\NormalTok{())}
+
+\CommentTok{# Calculate total items.}
+\NormalTok{all.sums <-}\StringTok{ }\NormalTok{biomass.table }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ungroup}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{replace}\NormalTok{(}\KeywordTok{is.na}\NormalTok{(.), }\DecValTok{0}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{summarise}\NormalTok{(., }\KeywordTok{across}\NormalTok{(}\KeywordTok{where}\NormalTok{(is.numeric), sum)) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{order=}\NormalTok{table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{3}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{class=}\StringTok{' '}\NormalTok{, }\DataTypeTok{common=}\StringTok{'TOTAL'}\NormalTok{, }\DataTypeTok{binomial=}\StringTok{' '}\NormalTok{) }\OperatorTok{%>%}\StringTok{  }
+\StringTok{  }\KeywordTok{select}\NormalTok{(order, class, common, binomial, }\KeywordTok{everything}\NormalTok{())}
+
+\KeywordTok{bind_rows}\NormalTok{(biomass.table, avian.sums, mammal.sums, all.sums) }\OperatorTok{%>%}\StringTok{ }\KeywordTok{arrange}\NormalTok{(order) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{column_to_rownames}\NormalTok{(}\DataTypeTok{var=}\StringTok{'order'}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{kable}\NormalTok{(}\DataTypeTok{digits=}\DecValTok{1}\NormalTok{, }\DataTypeTok{col.names=}\KeywordTok{c}\NormalTok{(}\StringTok{'Class'}\NormalTok{, }\StringTok{'Species'}\NormalTok{, }\StringTok{' '}\NormalTok{, }\StringTok{'N'}\NormalTok{,}
+                              \StringTok{'% items'}\NormalTok{, }\StringTok{'% biomass'}\NormalTok{, }
+                              \StringTok{'% items'}\NormalTok{, }\StringTok{'% biomass'}\NormalTok{, }
+                              \StringTok{'% items'}\NormalTok{, }\StringTok{'% biomass'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{kable_styling}\NormalTok{(}\DataTypeTok{bootstrap_options=}\KeywordTok{c}\NormalTok{(}\StringTok{'striped'}\NormalTok{)) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{column_spec}\NormalTok{(}\DecValTok{3}\NormalTok{, }\DataTypeTok{italic=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{row_spec}\NormalTok{(table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{1}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{bold=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{row_spec}\NormalTok{(table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{2}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{bold=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{row_spec}\NormalTok{(table.breaks}\OperatorTok{$}\NormalTok{max[}\DecValTok{3}\NormalTok{] }\OperatorTok{+}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{bold=}\OtherTok{TRUE}\NormalTok{) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{add_header_above}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{' '}\NormalTok{=}\DecValTok{4}\NormalTok{, }\StringTok{'Camera'}\NormalTok{=}\DecValTok{2}\NormalTok{, }\StringTok{'Pellets'}\NormalTok{=}\DecValTok{2}\NormalTok{, }\StringTok{'Remains'}\NormalTok{=}\DecValTok{2}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|>{\em}l|r|r|r|r|r|r|r}
+\hline
+\multicolumn{4}{c|}{ } & \multicolumn{2}{c|}{Camera} & \multicolumn{2}{c|}{Pellets} & \multicolumn{2}{c}{Remains} \\
+\cline{5-6} \cline{7-8} \cline{9-10}
+Class & Species &   & N & \% items & \% biomass & \% items & \% biomass & \% items & \% biomass\\
+\hline
+Aves & Unknown &  & 157 & 14.2 & 4.8 & 25.2 & 11.1 & 48.8 & 54.9\\
+\hline
+Aves & Northern goshawk & Accipiter gentilis & 2 & NA & NA & NA & NA & 1.7 & 1.8\\
+\hline
+Aves & Mallard & Anas platyrhynchos & 1 & NA & NA & NA & NA & 0.8 & 1.6\\
+\hline
+Aves & Ruffed grouse & Bonasa umbellus & 4 & 0.7 & 1.7 & NA & NA & 0.8 & 0.7\\
+\hline
+Aves & Swainson's thrush & Catharus ustulatus & 7 & 1.3 & 0.2 & 0.7 & 0.2 & NA & NA\\
+\hline
+Aves & Northern flicker & Colaptes auratus & 14 & NA & NA & 6.7 & 7.7 & 4.1 & 1.1\\
+\hline
+Aves & Northwestern crow & Corvus caurinus & 1 & NA & NA & NA & NA & 0.8 & 0.5\\
+\hline
+Aves & Steller's jay & Cyanocitta stelleri & 18 & 1.3 & 0.8 & 3.0 & 2.8 & 6.6 & 1.4\\
+\hline
+Aves & Sooty grouse & Dendragapus fulignosus & 8 & 0.7 & 3.3 & NA & NA & 4.1 & 6.7\\
+\hline
+Aves & Downy woodpecker & Dryobates pubescens & 3 & 0.7 & 0.1 & NA & NA & NA & NA\\
+\hline
+Aves & Hairy woodpecker & Dryobates villosus & 4 & 0.4 & 0.2 & 1.5 & 0.9 & NA & NA\\
+\hline
+Aves & Pileated woodpecker & Dryocopus pileatus & 3 & 0.2 & 0.4 & NA & NA & 1.7 & 0.8\\
+\hline
+Aves & Varied thrush & Ixoreus naevius & 19 & 2.0 & 0.9 & 1.5 & 0.9 & 6.6 & 0.8\\
+\hline
+Aves & Mew gull & Larus canus & 1 & NA & NA & NA & NA & 0.8 & 0.5\\
+\hline
+Aves & Band-tailed pigeon & Patagoienas fasciata & 4 & 0.7 & 1.4 & NA & NA & 0.8 & 0.5\\
+\hline
+Aves & Gray jay & Perisoreus canadensis & 5 & 1.1 & 0.4 & NA & NA & NA & NA\\
+\hline
+Aves & Spotted towhee & Pipilo maculatus & 3 & NA & NA & 1.5 & 0.5 & 0.8 & 0.1\\
+\hline
+Aves & Red-breasted sapsucker & Sphyrapicus ruber & 5 & NA & NA & 1.5 & 0.6 & 2.5 & 0.2\\
+\hline
+Aves & Barred owl & Strix varia & 2 & 0.2 & 0.9 & NA & NA & 0.8 & 1.0\\
+\hline
+Aves & American robin & Turdus migratorius & 4 & 0.9 & 0.4 & NA & NA & NA & NA\\
+\hline
+\textbf{Aves} & \textbf{TOTAL} & \textbf{} & \textbf{265} & \textbf{24.4} & \textbf{15.5} & \textbf{41.5} & \textbf{24.7} & \textbf{81.8} & \textbf{72.8}\\
+\hline
+Mammalia & Unknown &  & 38 & 2.9 & 6.7 & 17.0 & 14.3 & 1.7 & 2.0\\
+\hline
+Mammalia & Mountain beaver & Aplodontia rufa & 1 & 0.2 & 1.3 & NA & NA & NA & NA\\
+\hline
+Mammalia & Flying squirrel & Glaucomys sabrinus & 3 & 0.7 & 0.6 & NA & NA & NA & NA\\
+\hline
+Mammalia & Snowshoe hare & Lepus americanus & 17 & 1.1 & 8.5 & NA & NA & 9.9 & 22.7\\
+\hline
+Mammalia & Bat & Myotis sp & 1 & 0.2 & 0.0 & NA & NA & NA & NA\\
+\hline
+Mammalia & Chipmunk & Neotamias sp & 8 & 1.6 & 0.6 & 0.7 & 0.4 & NA & NA\\
+\hline
+Mammalia & Bushy-tailed woodrat & Neotoma cinerea & 2 & 0.2 & 0.5 & NA & NA & 0.8 & 0.5\\
+\hline
+Mammalia & Rat & Rattus sp & 19 & 4.2 & 6.5 & NA & NA & NA & NA\\
+\hline
+Mammalia & Shrew & Sorex sp & 1 & 0.2 & 0.0 & NA & NA & NA & NA\\
+\hline
+Mammalia & Douglas squirrel & Tamiasciurus douglasii & 240 & 39.8 & 46.0 & 40.7 & 60.6 & 5.0 & 1.7\\
+\hline
+Mammalia & Red squirrel & Tamiasciurus hudsonicus & 10 & 2.0 & 2.6 & NA & NA & 0.8 & 0.3\\
+\hline
+\textbf{Mammalia} & \textbf{TOTAL} & \textbf{} & \textbf{340} & \textbf{53.1} & \textbf{73.2} & \textbf{58.5} & \textbf{75.3} & \textbf{18.2} & \textbf{27.2}\\
+\hline
+Unknown & Unknown &  & 101 & 22.4 & 11.3 & NA & NA & NA & NA\\
+\hline
+\textbf{} & \textbf{TOTAL} & \textbf{} & \textbf{706} & \textbf{100.0} & \textbf{100.0} & \textbf{100.0} & \textbf{100.0} & \textbf{100.0} & \textbf{100.0}\\
+\hline
+\end{tabular}
+\end{table}
+
+\end{document}

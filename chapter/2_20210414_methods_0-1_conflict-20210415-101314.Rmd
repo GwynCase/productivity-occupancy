@@ -1,0 +1,83 @@
+---
+title: "Chapter Two: Methods 0.1"
+output: html_notebook
+always_allow_html: true
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+options(knitr.kable.NA = '-')
+```
+
+# Methods
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(flextable)
+```
+
+## Study Area and Species
+
+In North America, the northern goshawk ranges from boreal forests of the Yukon south to high-elevation forests of Arizona and New Mexico. Two subspecies are recognized: the widespread *atricapillus* and the limited *laingi* (Squires et al. 2020). The *laingi* subspecies was first described on the Haida Gwaii archipelago in British Columbia and is smaller and darker than the *atricapillus* subspecies found elsewhere on the continent (Taverner 1940). The range of this subspecies is limited to the west coast of North America from southeast Alaska through mainland British Columbia and Vancouver Island, possibly as far south as Washington’s Olympic Peninsula (COSEWIC 2013). *A. g. laingi* is considered a species at risk in British Columbia by both the federal and provincial governments due to significant habitat loss from industrial timber harvest (Team 2008, COSEWIC 2013).
+
+Several models have been proposed to describe the components of a goshawk territory and capture the hierarchical nature of goshawk habitat selection (reviewed in Squires & Kennedy 2005, Andersen et al. 2006). At the largest scale, the home range or foraging area includes the total area used by the male and female during the breeding season. Within the home range, the breeding area is the core-use area for adults and is used by fledglings across multiple years prior to dispersal. At the smallest scale around each nest, the post-fledging area is used by fledglings within a single year after fledging but prior to dispersal (*sensu* McClaren et al. 2015). Goshawks often build multiple nests within the breeding area, and each nest has an associated post-fledging area.
+
+We studied goshawks in southwestern British Columbia, a region characterized by rugged mountains interspersed with coastal fjords and low-lying valleys. The maritime climate supports temperate rainforest dominated by Douglas-fir (*Pseudotsuga menziesii*), western redcedar (*Thuja plicata*), and western hemlock (*Tsuga heterophylla*) (Meidinger and Pojar 1991). The goshawk population in southwestern British Columbia is currently classified as *A. g. laingi*, though new genetic evidence may lead to future reclassification (Geraldes et al. 2018). Two habitat suitability models (HSIs; USFWS 1981) were developed for the coastal goshawk population to aid in management planning and action (Mahon 2008). These models rate goshawk habitat quality based on its estimated suitability for either nesting or foraging using data from known goshawk territories and expert knowledge.
+
+## Goshawk territories
+
+```{r occupancy-data}
+# Bring in occupancy data.
+occupancy.data <- read_csv('../data/processed/occupancy_sc.csv')
+## In this dataset: 
+# 0 = not visited
+# 1 = visited, no detection
+# 2 = visited, with detection
+# 3 = visited, breeding
+
+# Remove problem child Turbid Creek. This site has a known error with the GIS data.
+occupancy.data <- filter(occupancy.data, site != 'TCR')
+
+# Remove any sites that have never been visited (status in all years = 0).
+occupancy.data <- occupancy.data %>% 
+  filter_at(vars(starts_with('status')), any_vars(. > 0))
+
+# Remove sites that have insufficient GIS coverage.
+
+# Bring in calculated landscape data.
+landscape.data <- read_csv('../data/processed/landscape_metrics_full.csv')
+```
+
+Goshawk territories were located as part of long-term population monitoring conducted by the British Columbia Ministry of Forests, Lands, Natural Resource Operations and Rural Development (FLNRO). Nest locations were collected by from 2013-2020 by FLNRO surveyors, timber industry professionals, and members of the public and compiled in a database of goshawk territories within the study area. From this dataset we removed all territories which had never been visited by a FLRNO surveyor, or which lacked sufficient GIS data coverage (see below), producing a set of `r nrow(occupancy.data)` territories retained for analysis.
+
+## Landscape metrics
+
+```{r nest-centroids}
+# Bring in nest data.
+nests <- read_csv('../data/processed/sc_nests.csv')
+
+# Calculate a centroid for each site.
+centroids <- nests %>% group_by(site) %>% 
+  mutate(mean.x=mean(xcoord), mean.y=mean(ycoord)) %>% 
+  distinct(site, name, mean.x, mean.y)
+```
+
+We calculated habitat composition and configuration at four scales (60 ha, 200 ha, 3800 ha, and 15600 ha) around each nest centroid. Nest centroids were calculated by taking the mean location of all nests within each territory. The three smallest scales were defined using estimates of the post-fledging area (McClaren 2005), breeding area (FLNRO 2013 or whatever, and McClaren 2005 again?), and breeding season home range (McClaren et al. 2015 works but actually McClaren... 2005?), respectively. Because the space-use of goshawks in southwestern British Columbia is largely unknown, these estimates come from Vancouver Island, British Columbia, which is ecologically highly similar to our study area. The largest scale represents an estimate of the maximum distance traveled from the nest by a male goshawk during the breeding season
+
+
+
+
+
+
+
+
+
+
+
+
+

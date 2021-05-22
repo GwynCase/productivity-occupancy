@@ -1,0 +1,38 @@
+---
+title: "Chapter Two: Introduction 0.1"
+output: html_notebook
+always_allow_html: true
+---
+
+How individuals distribute across territories.
+
+  * Ideal free (equalizes fitness).
+  * Ideal despotic (compounds fitness). (Fretwell & Lucas 1970, and...?)<!-- Fretwell & Lucas 1970 Ideal free distribution/ideal dominance distribution: individuals compete for high quality habitat where populations are expected to denser and more successful due to greater suitability --> 
+  * Raptors seem to favor ideal despotic, and so high-quality sites can be identified by denser settlement, higher productivity, and higher survival. (A few examples, citations needed.) 
+  * In particular, territory occupancy rate is a reliable indicator of territory quality. <!-- Sergio & Newton 2003 Occupancy as measure of territory quality --> (Sergio & Newton 2003, and...?)
+
+Resource selection occurs at multiple scales, from the placement of home ranges within the landscape to the placement of nests within territories. (Johnson 1980, and...?)<!--Johnson 1980 1st-4th order selection.--> 
+
+* The cues individuals use to assess quality likewise occur at multiple scales.
+* These choices have important fitness consequences. (A few examples, citations needed) 
+* Different scales may affect different aspects of fitness (ie, occupancy vs productivity).
+<!--For example, a poorly-selected nest site may lead to nest failure due to exposure or predation.--> 
+* Consequences scale up to populations: the interaction of high occupancy and high productivity means a few territories produce most of each generation's offspring.
+
+<!-- Newton 1998 (Pop limit in birds) definition of territory -->
+
+The northern goshawk is a large, forest-dwelling raptor with a Holarctic distribution. 
+
+* Across its range its habitat is variable, but there is a consistent preference for large trees and closed canopies. (Many citations needed.)
+* In North America this has led to conflict with the timber industry, significant habitat loss, and listing as a species of conservation concern. 
+* A conceptual model of goshawk territories describes four nested spatial scales.
+* Selection for big trees and closed canopies appears strongest at the smallest scales.
+* Unclear which scales influence occupancy, productivity.
+
+The coastal population of northern goshawks in British Columbia is the subject of federal and provincial management efforts. 
+
+* Management focuses on forest preservation at the smallest scales around individual nests. 
+* Under this strategy, prioritizing high-quality territories for preservation is crucial.
+* However, does not address how forest management at larger scales affects territory quality.
+
+Here we explore how several habitat variables, measured at four spatial scales, affect an index and a direct measure of territory quality.

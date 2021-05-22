@@ -1,0 +1,4 @@
+"0","```r
+# Pull out the duplicate points to look at them.
+df %>% group_by(id, date, time) %>% summarize(n=n()) %>% filter(n > 1) %>% slice(1)
+```"

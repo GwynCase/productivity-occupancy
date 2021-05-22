@@ -1,0 +1,13 @@
+"0","```r
+# Rename HAR07 points in 2020+ as HAR007.
+df <- df %>% mutate(id=case_when(
+  id == 'HAR07' & year >= 2020 ~ 'HAR007',
+  TRUE ~ id
+))
+
+# The site name for STV also needs to be fixed, since it will have been bound incorrectly.
+df <- df %>% mutate(site=case_when(
+  id == 'HAR007' ~ 'STV',
+  TRUE ~ site
+))
+```"

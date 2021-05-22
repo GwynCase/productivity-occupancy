@@ -1,0 +1,3 @@
+"0","# Difference between zone diversity (unpooled)."
+"0","diversity.test.zone.nest <- t.test(diet.diversity ~ zone, data=zone.nest.diversity, "
+"0","                                       var.equal=TRUE)"

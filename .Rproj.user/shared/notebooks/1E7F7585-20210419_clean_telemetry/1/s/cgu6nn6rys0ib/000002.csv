@@ -1,0 +1,9 @@
+"0","```r
+head(df)
+```"
+"1","Simple feature collection with 6 features and 14 fields
+geometry type:  POINT
+dimension:      XY
+bbox:           xmin: 427296.8 ymin: 5506926 xmax: 427659 ymax: 5507003
+CRS:            +proj=utm +zone=10 +datum=WGS84 +units=m +no_defs
+"
