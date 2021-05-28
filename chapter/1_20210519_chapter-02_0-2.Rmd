@@ -1,6 +1,8 @@
 ---
 title: "Northern goshawk diet in southwestern British Columbia"
-output: html_notebook
+output: 
+  bookdown::word_document2:
+     reference_docx: word_styles_reference_0-3.docx 
 always_allow_html: true
 bibliography: chapter-one.bib
 csl: the-journal-of-wildlife-management.csl
@@ -40,7 +42,7 @@ peretty <- function(x, p=2) {
 
 # Introduction
 
-Effective wildlife conservation often requires understanding diet composition and its consequences for population demographics [@ferrer_near_2004; @stier_ecosystem_2016]. Specialist predators consume a narrow range of prey species, which increases foraging efficiency on preferred prey at the cost of decreased reproductive success for the specialist when that prey is scarce [@newton_population_1998]. Generalist predators consume a greater diversity of prey and readily switch between prey species, so are less sensitive to changes in prey abundance [@steenhof_dietary_1988; @terraube_factors_2011]. However, for a generalist predator a single key prey species may still be a major driver of reproductive success [@elmhagen_arctic_2000; @resanomayor_dietdemography_2016]. For at-risk predators, increasing the abundance of key prey species may be a useful conservation tool [@ferrer_near_2004;  @forsman_diets_2004; @resanomayor_dietdemography_2016].
+Effective wildlife conservation often requires understanding diet composition and its consequences for population demographics [@ferrer_near_2004; @stier_ecosystem_2016]. Specialist predators consume a narrow range of prey species, which increases foraging efficiency on preferred prey at the cost of decreased reproductive success for the specialist when that prey is scarce [@newton_population_1998]. Generalist predators consume a greater diversity of prey and readily switch between prey species, so are less sensitive to changes in prey abundance [@steenhof_dietary_1988; @terraube_factors_2011]. However, for a generalist predator a single key prey species may still be a major driver of reproductive success [@elmhagen_arctic_2000; @resanomayor_dietdemography_2016]. For at-risk predators, increasing the abundance of key prey species may consequentially be a useful conservation tool [@ferrer_near_2004;  @forsman_diets_2004; @resanomayor_dietdemography_2016].
 
 <!-- Newton 1998: "Much depends on how varied the diet is, and whether alternate prey are available when favoured prey are scarce. The more diverse the diet, the less the chance of all prey-species being scarce at the same time. Raptors that have fairly stable food-supplies show some of the most extreme stability in breeding population recorded in birds.... Moreover, the same species may fluctuate numerically in one region, but not another, depending on the stability of the local prey supply." -->
 
@@ -1241,9 +1243,9 @@ df.nest.diversity.test <- diversity.test.zone.nest %>% tidy() %>% select(paramet
 stat.nest.diversity.test <- diversity.test.zone.nest %>% tidy() %>% select(statistic) %>% peretty()
 ```
 
-We observed a difference in the diet of goshawks in the coastal and transition zones, although these differences were more pronounced in the camera data ($\chi$^2^ = `r x.stat.camera`, *P* = `r p.value.camera`) and pooled pellets-and-remains data ($\chi$^2^ = `r x.stat.rp`, *P* << 0.05) than in data from pellets alone ($\chi$^2^ = `r x.stat.pellet`, *P* = `r p.value.pellet`) (Figure \@ref(fig:chi-square-graph)). A post-hoc comparison revealed that the difference between zones was driven entirely by unidentified prey in the camera data, which were significantly higher in the coastal zone than the transition zone. There was no significant difference in the frequency of any other prey category between the two zones, regardless of data source.
+We observed a difference in the diet of goshawks in the coastal and transition zones, although these differences were more pronounced in the camera data ($\chi$^2^ = `r x.stat.camera`, *P* = `r p.value.camera`) and pooled pellets-and-remains data ($\chi$^2^ = `r x.stat.rp`, *P* = 0.0005) than in data from pellets alone ($\chi$^2^ = `r x.stat.pellet`, *P* = `r p.value.pellet`) (Figure \@ref(fig:chi-square-graph)). A post-hoc comparison revealed that the difference between zones present in the camera data was due to a significantly higher number of unidentified prey items in the coastal zone than the transition zone. The difference between zones present in the pooled pellet-and-remains data was driven by the number of other birds, which was significantly higher, and the number of tree squirrels, which was significantly lower, in the coastal zone than the transition zone.
 
-We also observed no significant differences in diet diversity (mean = `r mean.nest.diversity` $\pm$ `r sd.nest.diversity`; coastal zone mean = `r mean.nest.diversity.cs` $\pm$ `r sd.nest.diversity.cs`, *n* = `r n.cs.cam.sites`, transition zone mean = `r mean.nest.diversity.tz` $\pm$ `r sd.nest.diversity.tz`, *n* = `r n.tz.cam.sites `; *t* = `r stat.nest.diversity.test`, df = `r df.nest.diversity.test`, *P* = `r p.value.nest.diversity.test`) or the proportion of squirrel biomass (mean = `r percent.squirrel.biomass.nest` $\pm$ `r sd.squirrel.biomass.nest`; coastal zone mean = `r percent.squirrel.biomass.cs` $\pm$ `r sd.squirrel.biomass.cs`, *n* = `r n.cs.cam.sites`, transition zone mean = `r percent.squirrel.biomass.tz` $\pm$ `r sd.squirrel.biomass.tz`, *n* = `r n.tz.cam.sites `; *t* = `r stat.nest.squirrel.test`, df = `r df.nest.squirrel.test`, *P* = `r p.value.squirrel.biomass.zone`) between the zones.
+However, we observed no significant difference in diet diversity (mean = `r mean.nest.diversity` $\pm$ `r sd.nest.diversity`; coastal zone mean = `r mean.nest.diversity.cs` $\pm$ `r sd.nest.diversity.cs`, *n* = `r n.cs.cam.sites`, transition zone mean = `r mean.nest.diversity.tz` $\pm$ `r sd.nest.diversity.tz`, *n* = `r n.tz.cam.sites `; *t* = `r stat.nest.diversity.test`, df = `r df.nest.diversity.test`, *P* = `r p.value.nest.diversity.test`) or the proportion of squirrel biomass (mean = `r percent.squirrel.biomass.nest` $\pm$ `r sd.squirrel.biomass.nest`; coastal zone mean = `r percent.squirrel.biomass.cs` $\pm$ `r sd.squirrel.biomass.cs`, *n* = `r n.cs.cam.sites`, transition zone mean = `r percent.squirrel.biomass.tz` $\pm$ `r sd.squirrel.biomass.tz`, *n* = `r n.tz.cam.sites `; *t* = `r stat.nest.squirrel.test`, df = `r df.nest.squirrel.test`, *P* = `r p.value.squirrel.biomass.zone`) between the zones when using individual nest-level data from nest cameras.
 
 <!-- Nests in the transition zone (*n* = `r n.tz.cam.sites`) had a more diverse diet (mean = `r mean.nest.diversity.tz` $\pm$ `r sd.nest.diversity.tz`) than those in the coastal zone (*n* = `r n.cs.cam.sites`, mean = `r mean.nest.diversity.cs` $\pm$ `r sd.nest.diversity.cs`; *t* = `r stat.nest.diversity.test`, df = `r df.nest.diversity.test`, *P* = `r p.value.nest.diversity.test`). However, there was no significant difference in the proportion of biomass nests received between the two zones (*t* = `r stat.nest.squirrel.test`, df = `r df.nest.squirrel.test`, *P* = `r p.value.squirrel.biomass.zone`). -->
 
@@ -1359,13 +1361,11 @@ Goshawk survival, migration, reproductive success, and other demographic paramet
 
 Across much of North America the key goshawk prey species is usually mammalian, often from the family Leporidae or Sciuridae [@boal_northern_1994; @doyle_population_1994; @destefano_ecology_2006; @rogers_diet_2006; @miller_effects_2014]. However, in the coastal temperate rainforests of the Pacific Northwest, goshawk diet generally contains more birds than mammals and the key prey is usually a species of grouse (subfamily Tetraoninae) [@watson_prey_1998; @thrailkill_diet_2000; @bloxton_prey_2002; @lewis_northern_2006]. <!-- Watson uses pooled pellets + remains and finds 47.1:52.6% biomass birds:mammals in western Washington. --> Despite inhabiting coastal rainforests, goshawks on Vancouver Island, British Columbia, consume primarily red squirrels (*T. hudsonicus*) [@ethier_breeding_1999]. Our results from the coastal mainland of British Columbia are consistent with findings from Vancouver Island and more broadly with results from the interior of North America, but stand in contrast to findings from elsewhere in the Pacific Northwest. Goshawk diet varies at large scales in response to available prey species and prey abundance (Drennan 2006), suggesting tree squirrel abundance is higher within Vancouver Island and the south coast than other temperate rainforest ecosystems.
 
-Prey availability and abundance may vary at both broad and fine scales due to differences in habitat type (Kenward 1982, Penteriani et al. 2013). Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region of intermediate habitat types [@northern_goshawk_recovery_team_recovery_2008]. Coastal rainforests are believed to contain a lower overall abundance of goshawk prey (Mclaren et al. 2015) and a lower abundance of key mammalian prey, such as snowshoe hare (Nagorsen 2003)<!-- faaaaaaake! -->, than interior forests. Available prey species and prey abundance in the transition zone may be intermediate between the coastal zone and the interior, with associated consequences for goshawk diet and demography. Although we found evidence of a difference in diet composition between the coastal and transition zones, closer examination revealed this to be due to a higher number of unidentified prey items in the coastal zone. The prevalence of unidentified items 
-
-suggesting goshawk diet may reflect local prey abundance across habitat types. However, the identity of the key prey, tree squirrels, was the same in both zones and comprised an equally large proportion of the diet in each. We also found no difference in diet diversity between the zones. The consistent dominance of tree squirrels in the diet indicates prey assemblages are not meaningfully different between the coastal and transition zones. 
+Prey availability and abundance may vary at both broad and fine scales due to differences in habitat type (Kenward 1982, Penteriani et al. 2013). Within our study area, low-elevation mountain valleys bridge the wet forests of the coast and the dry forests of the interior, creating a narrow region of intermediate habitat types [@northern_goshawk_recovery_team_recovery_2008]. Coastal rainforests are believed to contain a lower overall abundance of goshawk prey (McClaren et al. 2015) and a lower abundance of key mammalian prey, such as snowshoe hare [@nagorsen_identification_2002]<!-- faaaaaaake! -->, than interior forests. Available prey species and prey abundance in the transition zone may be intermediate between the coastal zone and the interior, with associated consequences for goshawk diet and demography. We found mixed evidence for a difference in goshawk diet between the two zones. Overall, our analyses show the diet of goshawks in the transition zone is very similar to that of goshawks in the coastal zone. However, data from pooled pellets-and-remains indicate goshawks in the coastal zone consume more small- and medium-sized birds than goshawks in the transition zone, consistent with the hypothesis that the coastal zone is relatively depauperate of mammalian prey. Identifying small and medium birds was more difficult using nest cameras than for other data sources, and the high number of unidentified prey items in the coastal zone may be further evidence goshawk diet there contains relatively more avian prey than in the transition zone. Given our small sample size and the large variation in diet between nests it is difficult to make any strong conclusions, but any dietary difference between the coastal and transition zone appears to be minor and the importance of tree squirrels appears to be universal.
 
 Raptor diet is studied through a variety of indirect methods, such as the collection of pellets and prey remains, and direct methods, such as nest cameras and observation from blinds. Nest cameras are considered one of the least biased methods for measuring diet at the nest in raptors [@tornberg_assessing_2007; @garcia-salgado_evaluation_2015; @harrison_using_2019]. Cameras in this study provided significantly more data at a finer resolution than either pellets or prey remains, which could only be collected during the infrequent surveys each site received. However, the cost, effort, and logistical challenges of camera installation restricted the number of sites from which camera data could be collected. Additionally, technical issues relating to camera settings and placement resulted in a loss of data at some sites. Despite these limitations, we believe nest cameras provided the most accurate and complete picture of goshawk diet. Compared to cameras, pellets were relatively unbiased in measuring coarse diet composition, but severely underestimated prey species richness. The pooled pellets-and-remains sample captured a much greater prey richness, including several species not detected on nest cameras, but greatly overestimated the proportion of avian biomass relative to camera data. Measuring diet composition by counts or biomass adds further uncertainty, with measurements of counts overestimating avian prey relative to measurements of biomass. These complex results highlight the importance of clearly reporting the source and measurement of raptor diet data. Because these methods have all been used in past studies we believe there is value in reporting the results of each for ease of comparison. However, we advocate for future diet studies to prioritize the collection of data via cameras, either video or still images, rather than physical specimens. 
 
-Our study addresses a fundamental question regarding the basic ecology of an at-risk population of the northern goshawk. This population is currently considered part of *A. g. laingi*, a subspecies restricted to the coastal Pacific Northwest. In portions of *laingi*'s range the diet is dominated by mammalian prey, specifically tree squirrels[@ethier_breeding_1999; this study], and in other by avian prey [@bloxton_prey_2002; @lewis_northern_2006]. Tree squirrels clearly play a key role in the diet of some *laingi* populations, including the population of Haida Gwaii (Roberts 1997, cited in @cosewic_cosewic_2013), where red squirrel is an introduced species. Genetic evidence indicates goshawks on this isolated archipelago may be distinct from goshawks on the mainland coast and Vancouver Island [@sonsthagen_identification_2012; @geraldes_population_2018]. Regardless of their taxonomic relationship, dietary evidence suggests the goshawk populations of Haida Gwaii, Vancouver Island, and the mainland coast are more similar to each other in foraging habits and habitats than to other putative *laingi* populations. Ecological similarity, such as diet and habitat characteristics, may therefore prove a better guide than genetic similarity when when incorporating foraging habitat or prey populations into management plans.
+Our study addresses a fundamental question regarding the basic ecology of an at-risk population of the northern goshawk. This population is currently considered part of *A. g. laingi*, a subspecies restricted to the coastal Pacific Northwest. In portions of *laingi*'s range the diet is dominated by mammalian prey, specifically tree squirrels [this study, @ethier_breeding_1999], and in other by avian prey [@bloxton_prey_2002; @lewis_northern_2006]. Tree squirrels clearly play a key role in the diet of some *laingi* populations, including the population of Haida Gwaii [Roberts 1997, cited in @cosewic_cosewic_2013], where red squirrel is an introduced species. Genetic evidence indicates goshawks on this isolated archipelago may be distinct from goshawks on the mainland coast and Vancouver Island [@sonsthagen_identification_2012; @geraldes_population_2018]. Regardless of their taxonomic relationship, dietary evidence suggests the goshawk populations of Haida Gwaii, Vancouver Island, and the mainland coast are more similar to each other in foraging habits and habitats than to other putative *laingi* populations. Ecological similarity, such as diet and habitat characteristics, may therefore prove a better guide than genetic similarity when when incorporating foraging habitat or prey populations into management plans.
 
 # Figures
 
@@ -1440,7 +1440,7 @@ chi.graph %>%
   ylab('Proportion of items')
 ```
 
-```{r squirrel-model-graph, fig.cap='Productivity (number of chicks fledged) at 12 sites with nest cameras in 2019-2020. Percent squirrel biomass is the percent of biomass delivered to the nest composed of tree squirrels.'}
+```{r squirrel-model-graph, fig.cap='Relationship between diet composition and the productivity of northern goshawks at 12 sites in southwestern British Columbia from 2019-2020.'}
 # Graph for squirrel model
 squirrel.model %>% augment() %>% 
   ggplot(aes(x=squirrel, y=n.fledge)) +
@@ -1448,11 +1448,12 @@ squirrel.model %>% augment() %>%
   #geom_line(aes(x=squirrel, y=.fitted)) + 
   #geom_ribbon(aes(ymin=.fitted-1.96*.se.fit, ymax=.fitted+1.96*.se.fit), 
   #            fill=NA, color='black', linetype='dashed') +
-  labs(x='Percent squirrel biomass', y='N. chicks fledged') +
+  labs(x='Diet composition (percent tree squirrel squirrel biomass)', 
+       y='Productivity (number of chicks fledged)') +
   theme_classic()
 ```
 
-```{r diversity-model-graph, fig.cap='Productivity (number of chicks fledged) at 12 sites with nest cameras in 2019-2020. Diet diversity is Simpson\'s Diversity Index for items identified at least to genus.'}
+```{r diversity-model-graph, fig.cap='Relationship between diet diversity and the productivity of northern goshawks at 12 sites in southwestern British Columbia from 2019-2020. Diet diversity measured using counts of items identified to genus or better.'}
 # Graph for diversity model.
 diversity.model %>% augment() %>% 
   ggplot(aes(x=diet.diversity, y=n.fledge)) +
@@ -1460,7 +1461,8 @@ diversity.model %>% augment() %>%
   #geom_line(aes(x=diet.diversity, y=.fitted)) + 
   #geom_ribbon(aes(ymin=.fitted-1.96*.se.fit, ymax=.fitted+1.96*.se.fit), 
   #            fill=NA, color='black', linetype='dashed') +
-  labs(x='Diet diversity', y='N. chicks fledged') +
+  labs(x='Diet diversity (Simpson\'s Diversity Index)',
+  y='Productivitiy (Number of chicks fledged)') +
   theme_classic()
 ```
 
@@ -1519,22 +1521,6 @@ all.sums <- biomass.table %>% ungroup() %>%
   summarise(., across(where(is.numeric), sum)) %>%
   mutate(order=table.breaks$max[3] + 1, class=' ', common='TOTAL', binomial=' ') %>%  
   select(order, class, common, binomial, everything())
-```
-
-```{r eval=FALSE}
-# Make table, old-school kable style.
-bind_rows(biomass.table, avian.sums, mammal.sums, all.sums) %>% arrange(order) %>% 
-  column_to_rownames(var='order') %>% 
-  kable(digits=1, col.names=c('Class', 'Species', ' ', 'N',
-                              '% items', '% biomass', 
-                              '% items', '% biomass', 
-                              '% items', '% biomass')) %>% 
-  kable_styling(bootstrap_options=c('striped')) %>% 
-  column_spec(3, italic=TRUE) %>% 
-  row_spec(table.breaks$max[1] + 1, bold=TRUE) %>%
-  row_spec(table.breaks$max[2] + 1, bold=TRUE) %>% 
-  row_spec(table.breaks$max[3] + 1, bold=TRUE) %>% 
-  add_header_above(c(' '=4, 'Camera'=2, 'Pellets'=2, 'Remains'=2))
 ```
 
 ```{r biomass-table, tab.cap='Summary of prey items recorded at 33 active goshawk nests in the south coast of British Columbia in 2019-2020. Nest camera data from 13 sites, pellet data from 25 sites, and prey remains data from 30 sites'}
