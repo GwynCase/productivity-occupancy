@@ -1,0 +1,537 @@
+---
+title: "Coastal and Transition definitions"
+output: github_document
+---
+# Setup
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+I noticed a concerning pattern with the distribution of hare relative to the assignment of transition zone status for sites, so I want to double-check that sites are being assigned to zones correctly and, if so, what this hare situation says about the zone definitions.
+
+```{r message=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(sf)
+library(rmapshaper)
+library(broom)
+```
+
+Then bring in the diet data and get it ready.
+
+```{r message=FALSE, warning=FALSE}
+# Bring in specimen data.
+remains.data <- read_csv('../data/processed/specimens_20210318.csv', guess_max=7000) %>% 
+  ## filter only records with at least size assigned...
+  filter(size != 'U')
+
+# Bring in camera data.
+photos <- read_csv('../data/interim/cameras_20210623.csv', guess_max=7000)
+camera.data <- photos %>% 
+  ## filter only records with at least size assigned...
+  filter(size != 'U')
+
+# Bring in a list of site abbreviations and site names.
+nest.list <- read_csv('../data/processed/site_abbreviations.csv')
+
+# Standardize the specimen data.
+remains.data <- left_join(remains.data, nest.list, by=c('name', 'site')) %>% 
+  select(site, date, class, order, family, genus, species, common, size, age, source)
+
+# Standardize the camera data.
+camera.data <- camera.data %>% 
+  mutate(date=date(datetime), source='C') %>% 
+  select(site, date, class, order, family, genus, species, common, size, age, source)
+
+# Join them together.
+diet.data <- bind_rows(remains.data, camera.data)
+
+# Add a unique site/year identifier.
+diet.data <- diet.data %>% 
+  mutate(year=year(date), nest=paste(site, year, sep=''))
+
+# Do some cleanup.
+diet.data <- diet.data %>% 
+  mutate(size=case_when(
+    size %in% c('S', 'Small') ~ 'small',
+    size %in% c('M', 'Medium') ~ 'medium',
+    size %in% c('L', 'Large') ~ 'large'
+  ))
+
+# Fix the gray jay.
+diet.data <- diet.data %>% mutate(common=case_when(
+  common == 'gray jay' ~ 'canada jay',
+  TRUE ~ common
+))
+```
+
+Then do the biomass thing.
+
+```{r, message=FALSE}
+# Bring in a list of all known prey.
+prey.list <- read_csv('../data/interim/prey_attributes.csv')
+
+# Fix the gray jay.
+prey.list <- prey.list %>% mutate(common=case_when(
+  common == 'gray jay' ~ 'canada jay',
+  TRUE ~ common
+))
+
+# Join the biomass data to the list of diet items.
+diet.items <- prey.list %>% select(genus, species, binomial, common, category, mass) %>% 
+  right_join(diet.data, by=c('genus', 'species', 'common'))
+
+# For unidentified items, classify them by size and class.
+diet.items <- diet.items %>% mutate(category=case_when(
+  is.na(category) & class == 'Mammalia' & size == 'small' ~ 'small mammal',
+  is.na(category) & class == 'Mammalia' & size == 'medium' ~ 'medium mammal',
+  is.na(category) & class == 'Mammalia' & size == 'large' ~ 'large mammal',
+  is.na(category) & class == 'Aves' & size == 'small' ~ 'small bird',
+  is.na(category) & class == 'Aves' & size == 'medium' ~ 'medium bird',
+  is.na(category) & class == 'Aves' & size == 'large' ~ 'large bird',
+  is.na(category) & class == 'Unknown' ~ paste(size, 'item'),
+  TRUE ~ category))
+
+# For unidentified items, fill in the binomial column.
+diet.items <- diet.items %>% replace_na(list(binomial = 'Unidentified item'))
+
+# Calculate average masses for unidentified items, based of known species.
+mean.mass <- diet.items %>% drop_na(mass) %>% 
+  distinct(binomial, mass, category) %>% 
+  group_by(category) %>% 
+  ## averaging the mass for each size & class category...
+  summarize(average=mean(mass)) %>% 
+  pivot_wider(names_from=category, values_from=average) %>% 
+  ## calculating the average mass for complete unknowns...
+  mutate(`large item` = mean(c(`large bird`, `large mammal`)),
+         `medium item` = mean(c(`medium bird`, `medium mammal`)),
+         `small item` = mean(c(`small bird`, `small mammal`))) %>% 
+  ## and reassembling it in a tidy format.
+  pivot_longer(everything(), names_to='category', values_to='average')
+
+# Join average mass to diet items...
+diet.items <- left_join(diet.items, mean.mass, by='category') %>% 
+  ## and fill in missing mass with average values
+  mutate(mass=coalesce(mass, average)) %>% 
+  ## then drop no longer needed average column and rearrange.
+  select(site, year, nest, class, order, family, genus, species, binomial, common, 
+         category, size, mass, age, source)
+
+# Change mass for juvenile items.
+diet.items <- diet.items %>% mutate(mass=case_when(
+  age == 'J' ~ 0.5*mass,
+  TRUE ~ mass
+))
+
+# Add grouping categories.
+diet.items <- diet.items %>% mutate(group=case_when(
+  class == 'Aves' & family == 'Phasianidae' ~ 'grouse',
+  class == 'Aves' & family == 'Corvidae' ~ 'corvid',
+  class == 'Aves' & family == 'Turdidae' ~ 'thrush',
+  class == 'Aves' ~ 'bird',
+  class == 'Mammalia' & genus == 'Tamiasciurus' ~ 'squirrel',
+  class == 'Mammalia' & genus == 'Lepus' ~ 'hare',
+  class == 'Mammalia' ~ 'mammal',
+  TRUE ~ 'unknown'
+))
+```
+
+# Checking zone accuracy
+
+That's all the diet data brought in and cleaned up. Now to bring in the shapefiles and sites.
+
+FLNRORD provided me with a transtion zone shapefile but I noticed early on that the borders of the transition zone, as defined in that shapefile, do not conform to the borders of the BEC zones which are supposed to make up the zone. For consistency, I created a new shapefile based on the lastest BEC zone data from the province, which makes the borders of the transition zone the same as the BEC zones which comprise it.
+
+```{r sites, warning=FALSE, message=FALSE}
+# Read in nest data.
+nests <- read_csv('../data/processed/sc_nests.csv')
+
+# Calculate a centroid for each site.
+centroids <- nests %>% group_by(site) %>% 
+  mutate(xcoord=mean(xcoord), ycoord=mean(ycoord)) %>% 
+  distinct(site, name, xcoord, ycoord) %>% ungroup()
+
+# Make it a spatial object for later.
+centroids.sf <- centroids %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord')) %>% 
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs') %>% 
+  st_as_sf()
+
+# Bring in study area shapefile.
+tz.region <- read_sf(dsn='../data/processed/new_transition_zone.shp', 
+                     layer='new_transition_zone') %>% 
+  ms_simplify()
+
+# Add zone information to centroids.
+centroids.sf <- centroids.sf %>% mutate(
+  zone=as.integer(st_intersects(geometry, tz.region)),
+  zone=case_when(
+    is.na(zone) ~ 'cs',
+    TRUE ~ 'tz'
+  )
+)
+```
+
+Let's start by looking at that shapefile and make sure it contains the correct BEC zones.
+
+```{r}
+# Look at the actual BEC zones contained here.
+as.data.frame(tz.region) %>% distinct(MAP_LABEL)
+```
+
+Well, this is kind of terrifying because the transition is supposed to made up of more subzones than that: 
+* CWH ds1
+* CWH ds2
+* CWH ms1
+* CWH ms2
+* CWH ws1
+* CWH ws2
+
+Let's check the original transition zone shapefile I got from FLNR.
+
+```{r}
+# Bring in the shapefile.
+tz.original <- read_sf(dsn='../data/external/transition_zone.shp', 
+                     layer='transition_zone')
+```
+
+Well, ok, nevermind. Apparently that shapefile doesn't even have BEC zones listed in its data. When I check my shapefile in QGIS, it has the correct #1 variants, but not the #2 variants.
+
+The other way to look at this is to see if I get a different set of sites depending on whether I use the original tz shapefile or my own.
+
+```{r}
+# What are the current tz sites?
+new.tz.sites <- as.data.frame(centroids.sf) %>% filter(zone == 'tz') %>% distinct(site, name)
+
+new.tz.sites
+```
+
+And now check the original.
+
+```{r}
+# Add zone information to centroids.
+old.tz.sites <- centroids.sf %>% mutate(
+  zone=as.integer(st_intersects(geometry, tz.original)),
+  zone=case_when(
+    is.na(zone) ~ 'cs',
+    TRUE ~ 'tz'
+  )
+) %>% 
+  as.data.frame() %>% filter(zone == 'tz') %>% distinct(site, name)
+
+old.tz.sites
+```
+
+And is there a difference?
+
+```{r}
+anti_join(new.tz.sites, old.tz.sites)
+```
+
+An anti join keeps all the cases x that have no match in y. So this is any sites in the new tz set which would not count as tz using the old tz shapefile. It's just two, and they're sites we don't have any data for.
+
+And the other way around?
+
+```{r}
+anti_join(old.tz.sites, new.tz.sites)
+```
+
+Nothing. So all sites classified as tz using the new shapefile are also classified as tz with the old shapefile.
+
+In other words, my "improved" shapefile classifies sites exactly the same as the old shapefile with the exception of two site which we don't have any data for anyway.
+
+That's a huge relief!
+
+Now, what about these hare sites?
+
+```{r}
+# Looking where different prey are found.
+diet.items %>% distinct(site, common, group) %>%
+  left_join(centroids, by=c('site')) %>%
+  filter(group=='hare'
+         ) %>%
+  ggplot() +
+  #geom_sf(data=cs.region, aes(fill=coastal), color=NA) +
+  geom_sf(data=tz.region, color=NA) +
+  geom_point(aes(x=xcoord, y=ycoord)) +
+  theme_classic()
+```
+
+Ok this is horrifying. All of those points are sites where hare was located, and they are all definitely in the transition zone. How, then, is there no significant difference in amount of hare between coastand transition zone? Did my code misclassify them?
+
+```{r}
+diet.items %>% distinct(site, common, group) %>%
+  left_join(centroids.sf, by=c('site')) %>%
+  filter(group=='hare')
+```
+
+So 8 sites had hare, and all but one are in the transition zone. This means they were correctly classified. But did that classification get lost on the way to the chi-square test, somehow?
+
+# Chi-square
+
+This is the code I used in the thesis:
+
+```{r}
+# Calculate counts per group per zone per source.
+zone.counts <- left_join(diet.items, centroids.sf, by=c('site')) %>% 
+  group_by(source) %>% nest() %>% 
+  mutate(count=map(data, function(data) {
+    data %>% group_by(zone, group) %>% 
+      mutate(count=n()) %>% 
+      select(zone, group, count) %>% 
+      distinct()
+  })) %>% 
+  unnest(count) %>% select(!data)
+```
+
+For pellets:
+
+```{r}
+# Hares in pellets.
+zone.counts %>% pivot_wider(names_from=source, values_from=count) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% 
+  filter(!is.na(count)) %>% filter(source == 'P') %>% 
+  pivot_wider(names_from=group, values_from=count, values_fill=0)
+```
+
+No hare at all, which makes sense.
+
+And for pellets and remains:
+
+```{r}
+# Hares in pellets + remains.
+zone.counts %>% pivot_wider(names_from=source, values_from=count) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% 
+  filter(!is.na(count)) %>% filter(source == 'RP') %>% 
+  pivot_wider(names_from=group, values_from=count, values_fill=0)
+```
+
+Uh here's a big problem. Because there are definitely hare in the remains sample. How did this happen?
+
+```{r}
+zone.counts %>% pivot_wider(names_from=source, values_from=count) %>% 
+  mutate(RP=R + P)
+```
+
+Oh, shit. So the NAs mean that all of my arithmetic failed completely. Ok, so fix the bad code and produce numbers instead of NAs:
+
+```{r}
+zone.counts %>% pivot_wider(names_from=source, values_from=count, values_fill=0) %>% 
+  mutate(RP=R + P)
+```
+
+That looks better. With this code, what happens if I re-run the chi-square?
+
+```{r}
+zone.chi <- zone.counts %>% pivot_wider(names_from=source, values_from=count, values_fill=0) %>% 
+  mutate(RP=R + P) %>% 
+  pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% 
+  filter(!is.na(count)) %>% 
+  group_by(source) %>% nest() %>% 
+  mutate(ch=map(data, function(data) {
+    data %>% pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+      column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+        gl=map(ch, glance))
+```
+
+Well, that throws an error. What's happening? Probably that, especially for the pellets, there are zeroes in both zones for some groups.
+
+Dropping zeroes and then filling zeroes back in as needed after pivoting fixes this.
+
+```{r}
+# Run the chi-squared test.
+zone.chi <- zone.counts %>% pivot_wider(names_from=source, values_from=count, values_fill=0) %>% 
+    mutate(RP=R + P) %>% 
+    pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% 
+    filter(count > 0) %>% 
+    group_by(source) %>% nest() %>% 
+    mutate(ch=map(data, function(data) {
+      data %>% pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+        column_to_rownames(var='zone') %>% 
+        chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+    }),
+    gl=map(ch, glance))
+
+# Look at the results.
+zone.chi %>% unnest(gl)
+```
+
+Again, no difference in pellets--expected, nothing changed here. A difference in cameras, nothing should have changed here, either. A difference in pooled pellets-and-remains, but is it the same difference?
+
+## Post-hoc of pellets and remains.
+
+Start with a post-hoc test of the pooled pellets and remains.
+
+For a post-hoc test with a bonferroni adjustment, we need the number of comparisons being made.
+
+```{r}
+# How many groups are present?
+zone.chi %>% filter(source == 'RP') %>% unnest(data) %>% distinct(group)
+```
+
+That's 7 different comparisons. That means my p-value for this test needs to be less than 0.05 / 7 to be significant.
+
+```{r}
+# Set the bonferroni adjustment.
+bon.rp <- 0.05/7
+
+# What is it?
+bon.rp
+```
+
+And now run each individual chi-square.
+
+```{r}
+# Set up the data.
+post.hoc.rp <- zone.chi %>% filter(source == 'RP') %>% ungroup() %>% 
+    select(data) %>% unnest(data) %>%
+    group_by(group) %>% nest()
+```
+
+At this point I have a bunch of little data frames, and each one looks like this:
+
+```{r}
+# Look at it.
+post.hoc.rp %>% filter(group == 'hare') %>% unnest(data)
+```
+
+This gives me the group-by-group counts I need. Supposedly. But I have run into some sources that suggest this is wrong, that I should be doing group A vs total, group B vs total, and so on. So I actually need, supposedly, 2x2 tables like this:
+
+```{r}
+zone.chi %>% filter(source == 'RP') %>% ungroup() %>% 
+  select(data) %>% unnest(data) %>%
+  pivot_wider(names_from=group, values_from=count) %>% 
+  mutate(everything=bird + corvid + grouse + thrush + hare + mammal + squirrel) %>% 
+  pivot_longer(-c(zone, everything), names_to='group', values_to='count') %>% 
+  group_by(group) %>% nest() %>% 
+  mutate(data=map(data, function(data){
+    data %>% mutate(everything.else = everything - count) %>% 
+      select(zone, count, everything.else)
+  })) %>% 
+  filter(group == 'hare') %>% unnest(data)
+```
+
+Where "everything.else" refers to the total items (less the items which are hare), and "count" refers to the items which are hare.
+
+Now to actually run the tests. I feel more confident about the former approach, but I'm really not sure what I should be doing???
+
+```{r}
+# Run the chi-square test group-by-group.
+post.hoc.rp <- zone.chi %>% filter(source == 'RP') %>% ungroup() %>% 
+    select(data) %>% unnest(data) %>%
+    group_by(group) %>% nest() %>% ungroup() %>% 
+    mutate(ch=map(data, function(data) {
+    data %>% column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+  gl=map(ch, glance))
+
+# Look at them.
+post.hoc.rp %>% unnest(gl) %>% arrange(p.value)
+
+# Reminder what the bonferonni-adjusted p-value is.
+bon.rp
+```
+
+Then yes, hare is marginally significant, and the only thing by a long shot. But what if I do it the other way?
+
+```{r}
+# Run the chi-square test group-vs-everything else.
+zone.chi %>% filter(source == 'RP') %>% ungroup() %>% 
+  select(data) %>% unnest(data) %>%
+  pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+  mutate(everything=bird + corvid + grouse + thrush + hare + mammal + squirrel) %>% 
+  pivot_longer(-c(zone, everything), names_to='group', values_to='count') %>% 
+  group_by(group) %>% nest() %>% 
+  mutate(data=map(data, function(data){
+    data %>% mutate(everything.else = everything - count) %>% 
+      select(zone, count, everything.else)
+  }),
+  ch=map(data, function(data) {
+    data %>% column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+  gl=map(ch, glance)) %>% 
+  unnest(gl) %>% 
+  arrange(p.value)
+
+# Reminder what the bonferonni-adjusted p-value is.
+bon.rp
+```
+
+Then hare is still significant, but "other bird" is also very significant.
+
+**Which method is correct?!???!**
+
+And I suppose I should do this all again for cameras, just to be sure.
+
+The camera data have all 8 categories, so
+
+```{r}
+# Set the bonferroni adjustment.
+bon.c <- 0.05/8
+
+# What is it?
+bon.c
+```
+
+```{r}
+# Run the chi-square test.
+post.hoc.c <- zone.chi %>% filter(source == 'C') %>% ungroup() %>% 
+  select(data) %>% unnest(data) %>% 
+  pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+  pivot_longer(-zone, names_to='group', values_to='count') %>% 
+  group_by(group) %>% nest() %>% 
+  mutate(ch=map(data, function(data) {
+    data %>% column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+  gl=map(ch, glance))
+
+# Look at them.
+post.hoc.c %>% unnest(gl) %>% arrange(p.value)
+
+# Reminder what the bonferonni-adjusted p-value is.
+bon.c
+```
+
+Oh yeah, I fucked up.
+
+But how did this happen in the cameras?? I didn't change the calculations at all...but I don't think I did the post-hoc correctly before, so that could be what this is.
+
+That was the group-by-group method. What if I do this the group-vs-everything else way?
+
+```{r}
+# Run the chi-square test group-vs-everything else.
+zone.chi %>% filter(source == 'C') %>% ungroup() %>% 
+  select(data) %>% unnest(data) %>%
+  pivot_wider(names_from=group, values_from=count, values_fill=0) %>% 
+  mutate(everything=bird + corvid + grouse + thrush + hare + mammal + squirrel + unknown) %>% 
+  pivot_longer(-c(zone, everything), names_to='group', values_to='count') %>% 
+  group_by(group) %>% nest() %>% 
+  mutate(data=map(data, function(data){
+    data %>% mutate(everything.else = everything - count) %>% 
+      select(zone, count, everything.else)
+  }),
+  ch=map(data, function(data) {
+    data %>% column_to_rownames(var='zone') %>% 
+      chisq.test(., correct=FALSE, simulate.p.value=TRUE)
+  }),
+  gl=map(ch, glance)) %>% 
+  unnest(gl) %>% 
+  arrange(p.value)
+
+# Reminder what the bonferonni-adjusted p-value is.
+bon.rp
+```
+
+That, at least, matches my previous findings--only "unknowns" are different between zones. But it's drastically different depending on which method I use!

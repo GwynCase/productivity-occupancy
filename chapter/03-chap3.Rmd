@@ -1,0 +1,735 @@
+
+```{r include=FALSE}
+knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE)
+
+#  bookdown::word_document2:
+#    reference_docx: word_styles_reference_0-2.docx   
+```
+
+
+# General Conclusion
+
+## Overview
+  
+<!-- The diet of a species is a basic aspect of its biology and defines some of its most important ecological relationships. Understanding a species's diet is crucial for successful management (Stier et al. 2016), and may even determine the limitations of recovery (Ferrer & Negro 2004). The diet of individuals can scale up to the population level, with consequences for population growth rates. In this thesis I examined dietary variation and its fitness consequences for northern goshawks in coastal British Columbia. I quantified diet at large (study area) and small (individual nest) scales for breeding goshawks and found that although goshawks consumed a wide variety of prey, consistent with their status as generalist predators, they showed a specialist-like reliance on tree squirrels of the genus *Tamiasciurus*, the extent of which varied from nest to nest. I then examined variation in diet across two ecological zones within my study area, the wetter *coastal zone* and drier *transitional zone* and found that although there were slight differences between the zones, the reliance on tree squirrels remained constant. Finally, I investigated whether two aspects of diet, diversity and specialization on tree squirrels, affected goshawk fitness, but found little evidence to support an affect of diet on productivity. -->
+
+Specialist and generalist predators differ in their degree of dependence on prey species with cascading consequences for many aspects of their life history [@korpimaki_numerical_1991; @resanomayor_dietdemography_2016]. Specialist predators are efficient hunters of their main prey at the cost of poor success when hunting other species, whereas generalist predators hunt many species with equal skill [@terraube_diet_2011]. A specialist predator may struggle to compensate when its main prey becomes scarce, but generalist predators readily switch to alternate prey [@steenhof_dietary_1988; @terraube_factors_2011]. <!--Specialists may even be limited in geographic range or habitat use by the presence and abundance of their main prey (Ferrer & Negro 2004, Peers et al. 2003).--> As a result, specialist predators depend on a single species and their demographic parameters--such as migration, reproductive success, and survival--vary in synchrony with its abundance [@korpimaki_numerical_1991; @terraube_diet_2011]. In contrast, generalist predators make use of many species and their populations are relatively stable [@hanski_specialist_1991; @andersson_influence_1977]. <!-- and are more widespread -->
+
+<!--Korpimaki & Norrdhall 1991: "The ability of nomadic specialists to track population fluctuations of microtines without time lags seems to result from a numerical response based mainly on mobility. In contrast, the numerical responses of resident generalists are based mostly on changes in natality and mortality, causing their response to lag behind the population fluctuations of microtines." -->
+
+<!-- Terraube et al. 2011: "...our study also shows that the specialist had lower foraging success than the closely related generalist species when its main prey was scarce..."
+
+"This helps understand 1) why fewer pallid harriers breed when voles are scarce, and why most fail to breed successfully (Table 1), and 2) the nomadic behaviour of the vole specialist pallid harrier. It might be more efficient to move to a different area rather than to stay in an area where the preferred prey is scarce, even when alternative prey are abundant. -->
+
+The familiar dichotomy between specialist and generalist predators is, of course, an oversimplification. The abundance of a single prey species can be a major driver of demographic parameters, such as reproductive success, for a generalist and specialist predators alike [@elmhagen_arctic_2000; @resanomayor_dietdemography_2016]. Furthermore, within a single species some populations [@salamolard_responses_2000; @roth_geographicgradients_2007], or some individuals within a population [@woo_individual_2008], may be more or less specialized. A single individual may also become more specialized over its lifetime as a result of age and experience [@rutz_home_2006]. Correctly identifying the degree of specialization and understanding its effect on demographic parameters is more than a matter of theory or curiosity: the consequences of specialization can scale up from individuals through populations to entire species, with profound implications for conservation [@ferrer_near_2004; @terraube_diet_2011; @resanomayor_dietdemography_2016].
+
+The complex relationship between dietary specialization and conservation is exemplified by the northern spotted owl (*Strix occidentalis caurina*). Spotted owls depend on old-growth forests, but the cause of this association has been a source of speculation from the earliest years of spotted owl research [@gutierrez_ecology_1985]. The association appears to be driven, in part, by the spotted owl's relatively specialized diet [@carey_northern_1992; @ward_habitat_1998]. More than half the biomass spotted owls consume comes from just two taxa, flying squirrels (*Glaucomys sabrinus*) and woodrats (bushy-tailed woodrat *Neotoma cinerea* and dusky-footed woodrat *N. fuscipes*; reviewed in @carey_northern_1992<!-- but find a newer citation-->). This holds true across the subspecies' range, although the relative contribution of each taxa varies with geographic region and forest type in response to local abundance. In Washington's Olympic Peninsula, where woodrats are absent, spotted owls consume primarily flying squirrels [@carey_northern_1992], whereas in northern California flying squirrels make up a smaller portion of the diet and woodrats, which are more abundant, dominate [@ward_habitat_1998]. Even within a single spotted owl population some individuals specialize on one taxa or the other [@zabel_influence_1995]. Home range sizes in the flying squirrel-dependent Olympic Peninsula are among the largest ever recorded [@carey_northern_1992], and where both taxa are present owls which consume primarily flying squirrels have larger home ranges than those which consume mostly woodrats [@zabel_influence_1995]. Evidently diet and prey abundance affect some demographic parameters, such as breeding density, which has led some authors to recommend increasing prey abundance as a route to increase owl abundance [@forsman_diets_2004]. Yet prey abundance does not appear to affect spotted owl productivity [@rosenberg_influence_2003]. Instead, productivity appears to be the result of complex interactions between climate and prey abundance [@glenn_reproduction_2011].<!-- This needs a concluding sentence --><!-- Also needs something about NSPOW pop dynamics -->
+
+<!-- Carey et al 1992; "Six nonexclusive hypotheses have been proposed to explain the requirement of spotted owls for old growth, but only abundance of prey can explain the requirement of Spotted Owls for large areas of old growth." -->
+
+<!-- Ward et al. 1998: "First, we showed that Northern Spotted Owls occurring in mixed evergreen forests of northwestern California selected the dusky-footed woodrat over other prey species. Second, we found that these owls selected certain foraging sites where dusky-footed woodrats were more abundant. [...] the owls. Collectively, these findings provided only a partial explanation for the owl's affinity for late seral forest." -->
+
+<!-- Ward et al. 1998: "Site selection by owls was most pronounced at the ecotone between late and early seral stages where dusky-footed woodrats were most abundant." -->
+
+In contrast to the spotted owl's dependence on a few prey species, the northern goshawk is considered a generalist predator and consumes an enormous diversity of prey across its wide geographic range [reviewed in @drennan_northern_2006; @rutz_population_2006]. I identified 29 different prey species in the diet of goshawks in coastal British Columbia, which is consistent with a generalist foraging strategy. However, over 60% of goshawk diet in my study area was composed of tree squirrels (*Tamiasciurus* spp.), which indicates a level of specialization even greater than that of the spotted owl. Some goshawk populations appear to be strongly generalist [e.g. Arizona, @salafsky_reproductive_2007], whereas in others a key prey species is a major driver of productivity, survival, and other demographic parameters [e.g. Yukon, @doyle_population_1994; and Finland, @tornberg_delayed_2005]. I found no affect of the degree of dietary specialization on goshawk productivity. There are several explanations for this unexpected finding. First, specialists may not be more productive than generalists. Specialist individuals may preferentially consume tree squirrels but have similar levels of fitness as generalist individuals in this population [@woo_individual_2008]. Alternately, specialization may not be the result of preference. Individuals may lack strong prey preferences and take tree squirrel in proportion to their abundance. Total prey abundance, rather than tree squirrel abundance, may drive productivity [@salafsky_reproductive_2007<!-- I bet you can find another one-->]. Finally, as in the spotted owl, prey abundance and diet during the breeding season may be a lesser driver of productivity than other factors, such as weather or winter prey abundance.
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+library(sf)
+library(adehabitatHR)
+library(recurse)
+library(flextable)
+library(rmapshaper)
+library(ggspatial)
+library(ggrepel)
+library(broom)
+
+# Make a function to round percents nicely.
+peretty <- function(x, p=2) {
+  as.numeric(x) %>% 
+    round(p)
+}
+
+# Copy out results from Bloxton.
+blx <- tribble(
+  ~class, ~family, ~category, ~common, ~prop.count,
+  'Aves', 'Phasianidae', 'large bird', 'grouse', 31,
+  'Aves', 'Columbidae', 'large bird', 'band-tailed pigeon', 22,
+  'Aves', 'Corvidae', 'medium bird', "steller\'s jay", 14,
+  'Aves', 'Picidae', 'medium bird', 'woodpecker', 4,
+  'Aves', 'Turdidae', 'small bird', 'thrush', 4,
+  'Aves', 'Unknown', 'small bird', 'unknown', 2,
+  'Mammalia', 'Leporidae', 'large mammal', 'snowshoe hare', 10,
+  'Mammalia', 'Sciuridae', 'medium mammal', 'douglas squirrel', 6,
+  'Mammalia', 'Sciuridae', 'small mammal', 'flying squirrel', 4,
+  'Mammalia', 'Rodentia', 'small mammal', 'unknown', 3
+)
+
+# This assumes "other birds" and "other mammals" are "small" sized, and splits woodpeckers and thrushes (which he gives as a combine 8%) into 4% each.
+
+# Copy out results from Thraikill.
+thr <- tribble(
+  ~class, ~family, ~category, ~common, ~prop.count,
+  'Aves', 'Phasianidae', 'large bird', 'ruffed grouse', 45,
+  'Aves', 'Corvidae', 'medium bird', "steller\'s jay", 13,
+  'Aves', 'Turdidae', 'medium bird', 'american robin', 13,
+  'Aves', 'Phasianidae', 'large bird', 'ring-necked pheasant', 8,
+  'Aves', 'Odontophoridae', 'large bird', 'mountain quail', 5,
+  'Mammalia', 'Sciuridae', 'medium mammal', 'douglas squirrel', 13,
+  'Mammalia', 'Aplodontiidae', 'large mammal', 'mountain beaver', 3
+)
+
+# Add author information to each data frame.
+blx <- blx %>% mutate(author='bloxton')
+thr <- thr %>% mutate(author='thraikill')
+
+# Join the two frames together.
+rv <- bind_rows(blx, thr)
+
+# Add in new data.
+mn <- tribble(
+  ~author, ~class, ~proportion,
+  'case', 'Aves', 60.55,
+  'case', 'Mammalia', 39.45,
+  'watson', 'Aves', 53,
+  'watson', 'Mammalia', 47,
+  'lewis', 'Aves', 83.65,
+  'lewis', 'Mammalia', 16.35
+)
+
+# This is combined pellets-and-remains, for my own data as well as Watson's.
+
+# Join with Bloxton & Thraikill.
+pnw.class.summary <- rv %>% group_by(author, class) %>% 
+  mutate(proportion=sum(prop.count)) %>% 
+  distinct(author, class, proportion) %>% 
+  bind_rows(mn) %>% 
+  pivot_wider(names_from=class, values_from=proportion) %>% 
+  arrange(Aves)
+
+mn.sq <- tribble(
+  ~author, ~genus, ~prop.count,
+  'case', 'Tamiasciurus', 24.22,
+  'watson', 'Tamiasciurus', 15.1,
+)
+
+pnw.squirrel.summary <- rv %>% filter(common %in% c('douglas squirrel', 'red squirrel')) %>% 
+  select(genus=common, prop.count, author) %>%
+  bind_rows(mn.sq) %>% 
+  arrange(prop.count)
+```
+
+Goshawk diet varies across its range in response to the regional presence and abundance of prey species (Drennan 2006). I found the key prey of goshawks in the south coast region was tree squirrels. This contrasts with studies of goshawk diet elsewhere in the Pacific Northwest where the key prey is generally grouse [@watson_prey_1998; @thrailkill_diet_2000; @bloxton_prey_2002; @lewis_northern_2006], but is similar to work on Vancouver Island where the key prey is also tree squirrels [@ethier_breeding_1999]. My results also contrast with studies from other regions of western North America where the key prey may occasionally be a species of squirrel, but is most often a species of hare or rabbit. The unexpected difference between diet in my study area and the larger Pacific Northwest may in part be due to differences in methodology. When the results from studies across temperate rainforest ecosystems are standardized (data from pooled pellets-and-remains or remains only, measured by counts), the contrast between regions within the Pacific Northwest is much less pronounced. However, the proportion of mammalian prey, particularly tree squirrels, in the diet remains markedly higher within coastal British Columbia than outside it. Tree squirrel abundance is higher in the south coast region than in other temperate rainforest ecosystems [@carey_sciurids_1995; @ransome_population_2003]. No Pacific Northwest study has assessed goshawk diet and and absolute prey abundance simultaneously (but see @ethier_breeding_1999). Nonetheless, regional data hint at a pattern of higher dietary specialization in regions or forest types with higher tree squirrel abundance (see Figure \@ref(fig:squirrel-map)). Across the two ecological zones present in my study area I observed only minor variation in goshawk diet and no variation in the dominance of tree squirrels in the diet. If goshawks are more specialized on tree squirrels where tree squirrels are more abundant, this would indicate a slight difference in the prey community of these two zones but a similar abundance of tree squirrels. Overall, goshawks in my study area appear to be a generalist predator opportunistically exploiting a locally abundant prey species.
+
+```{r}
+# Copy out approximate coordinate for all the study areas.
+squirrel.coords <- tribble(
+  ~lon, ~lat, ~author,
+  #-125.621, 50.023, 'ethier',
+  -122.019, 46.326, 'watson',
+  -122.469, 49.588, 'case',
+  -124.128, 47.999, 'carey95',
+  -123.755, 47.464, 'bloxton',
+  -123.842, 44.483, 'thraikill',
+  -123.798, 42.685, 'carey92',
+  -122.965, 49.335, 'ransome',
+  -121.463, 48.614, 'carey93'
+)
+
+# Copy out squirrel densities (animals/ha)
+squirrel.density <- tribble(
+  ~type, ~value, ~author,
+  'density', 0.2, 'carey92',
+  'density', 0.1, 'carey95',
+  'density', 0.5, 'carey93',
+  'density', 1.1, 'ransome'
+)
+
+# Make the data set.
+squirrel.map <- pnw.squirrel.summary %>% 
+  mutate(genus='diet') %>% 
+  rename(type=genus, value=prop.count) %>% 
+  bind_rows(squirrel.density) %>% 
+  left_join(squirrel.coords, by=c('author'))
+
+# Scale it.
+scale.map <- squirrel.map %>% pivot_wider(names_from=type, values_from=value) %>% 
+  mutate(across(c(diet, density), ~scale(.) %>% as.vector)) %>% 
+  pivot_longer(-c(author, lon, lat), names_to='type', values_to='value') %>% 
+  drop_na() %>% left_join(squirrel.map, by=c('author', 'lon', 'lat', 'type'))
+
+# Split out density and diet separately.
+map.density <- filter(squirrel.map, type == 'density')
+map.diet <- filter(squirrel.map, type == 'diet')
+
+# Make a box for map size.
+squirrel.box <- squirrel.coords %>% 
+  st_as_sf(coords=c('lon', 'lat')) %>% 
+  st_bbox()
+
+# Bring in some base data.
+n.america <- read_sf(dsn='../data/external/ne_10m_land.shp', layer='ne_10m_land')
+rivers <- read_sf(dsn='../data/external/ne_10m_rivers_lake_centerlines.shp', 
+                  layer='ne_10m_rivers_lake_centerlines')
+```
+
+## Directions for future research
+
+<!--
+  * Knowledge gaps
+    * NOGO vs. NSPOW shows clear gaps in NOGO knowledge
+    * Prey abundance - used to determine degree of selectivity, affects of prey abundance on pop dy
+    * Space use - used to determine home range size, habitat selection
+--> 
+
+Comparing the foraging ecology of the northern spotted owl and the northern goshawk highlights significant knowledge gaps regarding goshawk biology. The controversy surrounding spotted owl conservation, combined with its position at the heart of a major management plan, has made it one of the most-studied birds in the world [@gutierrez_spotted_2020]. The northern goshawk, although likewise shrouded in controversy, has not received the same level of study. Where data are available, it is more difficult to generalize research on the widespread, generalist northern goshawk than for the more restricted, relatively specialized spotted owl. As a result, there is a pressing need for detailed, local information on goshawks in the Pacific Northwest, particularly in coastal British Columbia.
+
+One knowledge gap related to the work I present here is how variation in prey abundance affects the degree of dietary specialization, productivity, and survival of individual goshawks. Dietary specialization such as goshawks in my study area exhibit may be the result of a preference for the main prey or simply an absence of other options. Data on prey abundance is necessary to understand the mechanism of goshawk specialization and whether it is the result of high selectivity for tree squirrels, high abundance of tree squirrels, or some combination of both. This information could in turn be used to evaluate how changes in key prey abundance and total prey abundance influence goshawk demographic parameters, particularly productivity. Without this knowledge it is impossible to fully understand the factors limiting goshawk populations in coastal British Columbia.
+
+A second knowledge gap is how the amount and type of habitat goshawks use for foraging varies with diet and prey abundance. Goshawk home range size varies across their geographic range and goshawks have been observed foraging in diverse habitat types, leading to ongoing debate over how and why goshawks select habitat [@greenwald_review_2005; @reynolds_northern_2008]. Research on spotted owls indicates that home range size is inversely related to prey abundance and foraging habitat selection varies with the identity of the main prey [@zabel_influence_1995]. Variation in goshawk home range size and habitat selection may likewise be explained by diet and prey abundance [@kenward_goshawk_1982; @penteriani_hunting_2013]. If so, foraging habitat management could only be conducted with knowledge of goshawk diet and recommendations made for one population could be applied to others only with great caution. Filling this knowledge gap with information specific to coastal British Columbia is vital and has been identified as a priority by goshawk managers [@northern_goshawk_recovery_team_recovery_2008; @parks_canada_agency_recovery_2018].
+
+<!--Parks Canada 2018: "Schedule of studies to identify critical habitat - continue to research critical habitat gaps - Knowledge of relationships between prey abundance, availability and diversity and foraging habitat characteristics will allow the refinement of specific foraging habitat targets for different habitat types." -->
+
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+# Read in table of nest coordinates.
+telemetry.sites <- read_csv('../data/processed/telemetry_sites.csv')
+
+# Twist wide so each id gets its own row.
+captures <- select(telemetry.sites, m_tag, f_tag, year, date, site, nest) %>%
+  pivot_longer(!c(year, date, site, nest), names_to='sex', values_to='id') %>%
+  drop_na(id) %>%
+  mutate(sex=case_when(
+    sex == 'm_tag' ~ 'm',
+    sex == 'f_tag' ~ 'f'
+  )) %>% 
+  distinct(nest, id, .keep_all=TRUE)
+
+# Number of males and females.
+n.males <- filter(captures, sex == 'm') %>% nrow()
+n.females <- filter(captures, sex == 'f') %>% nrow()
+
+# Bring in the clean telemetry data.
+telemetry.data <- read_csv('../data/processed/20210420_clean_telemetry.csv', guess_max=15000)
+
+# Define breeding season.
+breeding.2018 <- interval(ymd(20180420), ymd(20180915))
+breeding.2019 <- interval(ymd(20190420), ymd(20190915))
+breeding.2020 <- interval(ymd(20200420), ymd(20200915))
+
+# Select only points that fall within the breeding season.
+breeding.telemetry <- telemetry.data %>% 
+  filter(date %within% c(breeding.2018, breeding.2019, breeding.2020))
+
+# Summary of days of telemetry data.
+min.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% slice_min(period) %>% 
+  select(period) %>% as.numeric()
+
+max.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% slice_max(period) %>% 
+  select(period) %>% as.numeric()
+
+mean.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% 
+  summarize(mean=mean(period)) %>% as.numeric() %>% round(digits=2)
+
+sd.days <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), period=max-min) %>% 
+  distinct(id, site, period) %>% ungroup() %>% 
+  summarize(sd=sd(period)) %>% as.numeric() %>% round(digits=2)
+
+# Summary of location points.
+mean.points <- breeding.telemetry %>% group_by(id) %>% 
+  summarize(n=n()) %>% ungroup() %>% 
+  summarize(mean=mean(n)) %>% as.numeric() %>% round(digits=2)
+
+sd.points <- breeding.telemetry %>% group_by(id) %>% 
+  summarize(n=n()) %>% ungroup() %>% 
+  summarize(sd=sd(n)) %>% as.numeric() %>% round(digits=2)
+
+min.points <- breeding.telemetry %>% group_by(id) %>% 
+  summarize(n=n(), .groups='drop') %>% 
+  summarize(min=min(n)) %>% as.numeric()
+
+max.points <- breeding.telemetry %>% group_by(id) %>% 
+  summarize(n=n(), .groups='drop') %>% 
+  summarize(max=max(n)) %>% as.numeric()
+
+mean.points.per.day <- breeding.telemetry %>% group_by(id, date) %>% 
+  summarize(n=n()) %>% ungroup() %>% 
+  summarize(mean=mean(n)) %>% as.numeric() %>% round(digits=2)
+
+sd.points.per.day <- breeding.telemetry %>% group_by(id, date) %>% 
+  summarize(n=n()) %>% ungroup() %>% 
+  summarize(sd=sd(n)) %>% as.numeric() %>% round(digits=2)
+```
+
+To address this crucial knowledge gap, the British Columbia Ministry of Forests, Lands, Natural Resource Operations and Rural Development (FLNRORD) and I conducted a pilot study of foraging habitat use in coastal British Columbia. Between 2018-2020 we tagged and tracked `r n.males` male and `r n.females` female goshawks. Captures were conducted during the early breeding season using a dho-gaza trap with a live great-horned owl (*Bubo virginianus*) as a lure [@bloom_capture_2007]. Goshawks were fitted with 14-gram solar-powered GPS-UHF tags (Ecotone Telmetry brand, Harrier model) with an additional VHF tag,  attached via backpack-style harness. Tags were programmed to take a location point every 15 minutes and to download data to a base station when within range (approximately 100 m from the station). Base stations were placed beneath or above nests and tags checked for proximity to the station every 15 minutes. 
+
+```{r echo=FALSE, warning=FALSE, message=FALSE}
+# Make a spatial object.
+telemetry.sf <- breeding.telemetry %>% 
+  st_as_sf(coords=c('xcoord', 'ycoord'), remove=FALSE) %>%
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Calculate MCPs.
+mcp <- telemetry.sf %>%
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp.area(percent=c(50, 95), unin='m', unout='ha', plotit=FALSE) %>% 
+  rownames_to_column(var='percent') %>% 
+  pivot_longer(-percent, names_to='id', values_to='area') %>% 
+  mutate(method='mcp')
+
+# Calculate KDEs.
+kde <- telemetry.sf %>%
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  kernelUD() %>% 
+  kernel.area(percent=c(50, 95), unin='m', unout='ha') %>% 
+  rownames_to_column(var='percent') %>% 
+  pivot_longer(-percent, names_to='id', values_to='area') %>% 
+  mutate(method='kde')
+
+# And in the darkness bind them.
+homerange <- bind_rows(mcp, kde)
+
+# Also calculate maximum distance.
+max.dist <- telemetry.sites %>% select(n.xcoord=x_coord, n.ycoord=y_coord, nest) %>% 
+  right_join(breeding.telemetry, by=c('nest')) %>% 
+  mutate(dist=sqrt((xcoord-n.xcoord)^2 + (ycoord-n.ycoord)^2)) %>% 
+  group_by(id) %>% 
+  arrange(desc(dist)) %>% 
+  slice(1) %>% 
+  select(id, dist, sex)
+
+# Calculate number of points taken at nest.
+nest.points <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(total.points=n(), base.points=sum(at.base), prop.at.base=base.points/total.points*100) %>% 
+  distinct(id, sex, site, prop.at.base)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Calculate sample size.
+n.males <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(sex =='m') %>% distinct(id) %>% 
+  summarize(n=n()) %>% as.numeric()
+
+n.females <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(sex =='f') %>% distinct(id) %>% 
+  filter(id != 'HAR07') %>% 
+  summarize(n=n()) %>% as.numeric()
+# Note that the HAR07 tag was recycled to a female, but she has no data points at this time.
+
+# Mean 95% MCP for all birds.
+mean.95.mcp.hr <- homerange %>% 
+  filter(method == 'mcp' & percent == 95) %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% MCP for males.
+male.95.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='m') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD 95% MCP for males.
+male.95.mcp.sd <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='m') %>% 
+  summarize(sd=sd(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 95% MCP for females.
+female.95.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='f') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD 95% MCP for females.
+female.95.mcp.sd <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95 & sex =='f') %>% 
+  summarize(sd=sd(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 50% MCP for males.
+male.50.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='m') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD 50% MCP for males.
+male.50.mcp.sd <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='m') %>% 
+  summarize(sd=sd(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Mean 50% MCP for females.
+female.50.mcp.hr <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='f') %>% 
+  summarize(mean=mean(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD 50% MCP for females.
+female.50.mcp.sd <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50 & sex =='f') %>% 
+  summarize(sd=sd(area)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance for males.
+male.max.dist <- max.dist %>% ungroup() %>% 
+  filter(sex == 'm') %>% 
+  summarize(mean=mean(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance sd for males.
+male.sd.dist <- filter(max.dist, sex == 'm') %>% ungroup() %>% 
+  summarize(sd=sd(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance for females.
+female.max.dist <- max.dist %>% ungroup() %>% 
+  filter(sex == 'f') %>% 
+  summarize(mean=mean(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Maximum distance sd for females.
+female.sd.dist <- filter(max.dist, sex == 'f') %>% ungroup() %>% 
+  summarize(sd=sd(dist)/1000) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Average points at nest for females.
+female.nest.points <- nest.points %>% 
+  filter(sex == 'f') %>% ungroup() %>% 
+  summarize(mean=mean(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# Average points at nest for males.
+male.nest.points <- nest.points %>% 
+  filter(sex == 'm') %>% ungroup() %>% 
+  summarize(mean=mean(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD points at nest for females.
+female.nest.sd <- nest.points %>% 
+  filter(sex == 'f') %>% ungroup() %>% 
+  summarize(sd=sd(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+
+# SD points at nest for males.
+male.nest.sd <- nest.points %>% 
+  filter(sex == 'm') %>% ungroup() %>% 
+  summarize(sd=sd(prop.at.base)) %>% 
+  as.numeric() %>% round(digits=2)
+```
+
+```{r}
+# t-test for male vs female home ranges.
+home.range.sex.test <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 95) %>% 
+  t.test(area ~ sex, data=.)
+
+# p-value for male vs female home ranges.
+p.value.hr.sex.test <- home.range.sex.test %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+# df for male vs female home ranges.
+df.hr.sex.test <- home.range.sex.test %>% tidy() %>% select(parameter) %>% peretty()
+
+# t stat for male vs female home ranges.
+stat.hr.sex.test <- home.range.sex.test %>% tidy() %>% select(statistic) %>% peretty()
+
+# t-test for male vs female core-use areas.
+core.area.sex.test <- select(captures, id, sex) %>% 
+  right_join(homerange, by=c('id')) %>% 
+  filter(method == 'mcp' & percent == 50) %>% 
+  t.test(area ~ sex, data=.)
+
+# p-value for male vs female core-use areas.
+p.value.ca.sex.test <- core.area.sex.test %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+# df for male vs female core-use areas.
+df.ca.sex.test <- core.area.sex.test %>% tidy() %>% select(parameter) %>% peretty()
+
+# t stat for male vs female core-use areas.
+stat.ca.sex.test <- core.area.sex.test %>% tidy() %>% select(statistic) %>% peretty()
+
+
+# t-test for male vs female maximum distance.
+max.dist.sex.test <- t.test(dist ~ sex, data=max.dist)
+
+# p-value for male vs female maximum distance.
+p.value.dist.sex.test <- max.dist.sex.test %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+# df for male vs female maximum distance.
+df.dist.sex.test <- max.dist.sex.test %>% tidy() %>% select(parameter) %>% peretty()
+
+# t stat for male vs female maximum distance.
+stat.dist.sex.test <- max.dist.sex.test %>% tidy() %>% select(statistic) %>% peretty()
+
+
+# t-test for male vs female time at nest.
+nest.time.sex.test <- t.test(dist ~ sex, data=max.dist)
+
+# p-value for male vs female time at nest.
+p.value.time.sex.test <- nest.time.sex.test %>% 
+  glance() %>% select(p.value) %>% peretty()
+
+# df for male vs female time at nest.
+df.time.sex.test <- nest.time.sex.test %>% tidy() %>% select(parameter) %>% peretty()
+
+# t stat for male vs female time at nest.
+stat.time.sex.test <- nest.time.sex.test %>% tidy() %>% select(statistic) %>% peretty()
+```
+
+We were able to retrieve data from 10 out of 13 birds, collecting location data from `r min.days` to `r max.days` (mean `r mean.days` $\pm$ `r sd.days` standard deviation) days of the breeding season (20 April - 15 September; Table \@ref(tab:telemetry-table)). Tracked birds provided `r min.points` - `r max.points` location points (mean `r mean.points` $\pm$ `r sd.points`) with an average of `r mean.points.per.day` ($\pm$ `r sd.points.per.day`) locations per bird per day. Over the study period we observed only one probable mortality. I estimated breeding season home ranges and core-use areas using 95% minimum convex polygons (MCPs) and 50% MCPs, respectively. The mean breeding season home range was `r mean.95.mcp.hr` ha but male home ranges were far larger than female home ranges (male mean = `r male.95.mcp.hr` $\pm$ `r male.95.mcp.sd`, n = `r n.males`;  female mean = `r female.95.mcp.hr` $\pm$ `r female.95.mcp.sd`, n = `r n.females`; *t* = `r stat.hr.sex.test`, df = `r df.hr.sex.test`, *P* = `r p.value.hr.sex.test`). Male core-use areas were also larger than female core-use areas, but not significantly so (male mean = `r male.50.mcp.hr` $\pm$ `r male.50.mcp.sd`; female mean = `r female.50.mcp.hr` $\pm$ `r female.50.mcp.sd`; *t* = `r stat.ca.sex.test`, df = `r df.ca.sex.test`, *P* = `r p.value.ca.sex.test`). Female home ranges and core-use areas were smaller due to the significantly higher amount of time females spent near the nest (*t* = `r stat.time.sex.test`, df = `r df.time.sex.test`, *P* = `r p.value.time.sex.test`). Males also traveled further from the nest than females. The mean furthest distance from the nest a male traveled was `r male.max.dist` ($\pm$ `r male.sd.dist`) km, while on average females only ventured `r female.max.dist` ($\pm$ `r female.sd.dist`) km from the nest (*t* = `r stat.dist.sex.test`, df = `r df.dist.sex.test`, *P* = `r p.value.dist.sex.test`). As the breeding season progressed, the length of time spent away from the nest increased noticeably for males but less so for females. <!-- needs recurse --> Home ranges were rarely circular, but rather shaped by geographic constraints such as coastlines or mountains peaks (see Figures \@ref(fig:rlk-female) and \@ref(fig:rlk-male)). Within home ranges, kernel density estimates show habitat use is not even across a male's territory. Instead, there are clusters of activity around areas which are likely high-quality foraging habitat.
+
+<!--By the end of the study period, one goshawk was a probable mortality, one's fate was unknown, five were likely resident near their capture sites but had not been conclusively relocated since the season they were tagged, and six were still extant.-->
+
+We encountered several challenges over the course of the three-year pilot. First, the location data we obtained were biased toward females. Females are more aggressive near the nest than males and so are more likely to be captured when using the dho-gaza trapping method. Data from female tags downloaded more frequently onto the base stations than data from male tags because of the large amount of time females spent near the nest, where the base stations were located. Consequently, we collected far more location data on females than males, which offered relatively little insight into foraging habitat use since males provide most of the food during the breeding season. Second, we were unable to retrieve  data from some tagged birds. Several birds were detected via the VHF transmitter but could not be relocated with sufficient precision to download data from the UHF tag. As a result, we could not retrieve data from the winter or subsequent breeding season. Our inability to relocate birds is likely due to a combination of the limited range of the VHF tags and the difficult topography of our study area, compounded by the birds' failure to return to known breeding areas. Finally, technical malfunctions resulted in no data downloads for two birds, too many location points for one birds, and too few location points for many others. Future work should consider more powerful VHF tags for easier relocation and an alternate-days duty cycle to reduce the number of missed locations.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Make a map.
+
+# Calculate 50% and 95% MCPs for female.
+rlk.f.mcp.95 <- telemetry.sf %>%
+  filter(id == 'HAR02') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=95, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# 50% MCP
+rlk.f.mcp.50 <- telemetry.sf %>%
+  filter(id == 'HAR02') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=50, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# Calculate 50% and 95% MCPs for male.
+rlk.m.mcp.95 <- telemetry.sf %>%
+  filter(id == 'HAR04') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=95, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+rlk.m.mcp.50 <- telemetry.sf %>%
+  filter(id == 'HAR04') %>% 
+  select(id, geometry) %>%
+  as_Spatial() %>%
+  mcp(percent=50, unin='m', unout='ha') %>% 
+  st_as_sf()
+
+# Pull out points for each.
+rlk.m.points <- telemetry.sf %>% 
+  filter(id == 'HAR04')
+
+rlk.f.points <- telemetry.sf %>% 
+  filter(id == 'HAR02')
+
+# Pull out points for all.
+rlk.points <- telemetry.sf %>% 
+  filter(site == 'RLK')
+
+# Pull out the nests.
+rlk.nests <- telemetry.sites %>% 
+  filter(site == 'RLK') %>% 
+  st_as_sf(coords=c('x_coord', 'y_coord'), remove=FALSE) %>%
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Calculate a centroid.
+rlk.centroid <- telemetry.sites %>% 
+  filter(site == 'RLK') %>% 
+  summarize(mean.x=mean(x_coord), mean.y=mean(y_coord)) %>% 
+  st_as_sf(coords=c('mean.x', 'mean.y'), remove=FALSE) %>%
+  st_set_crs('+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs')
+
+# Calculate a buffer around each nest.
+area <- 200
+
+radius <- sqrt(area*10000/pi)
+
+rlk.buffer <- st_buffer(rlk.centroid, radius)
+rlk.hr <- st_buffer(rlk.centroid, 3450)
+```
+
+Despite these setbacks, the pilot study provided insight into goshawk movement and habitat use, with relevance to goshawk management. The location data we were able to retrieve, although less than anticipated, was of much higher resolution than VHF data and much higher accuracy than satellite data and may therefore be uniquely well-suited to studies of foraging habitat selection. The high fidelity of females to the nest area confirms the importance of protected buffers around nests to prevent the disturbance of habitat critical for breeding females and fledglings. However, the large distances traveled by males and the irregular shape of their home ranges shows that circular buffers based on estimates of mean home range size are not good approximations of true space use. Areas used extensively by males usually fall outside the nest area and are not be captured by current nesting habitat protections. Preliminary inspection of movement data indicates goshawks readily crossed narrow barriers such as roads, rivers, and powerline cuts, and sometimes appeared to use these features for travel or foraging. On the other hand, goshawks seemed to generally route around larger barriers such as lakes or clearcuts. This suggests managed areas around nests should be tailored to the amount and configuration of suitable foraging habitat present in the surrounding landscape, and that any timber harvest within the foraging area should prioritize the preservation of connectivity between patches of high-quality foraging habitat. However, a great deal of additional research is needed to confirm and refine these suggestions, particularly regarding the characteristics of suitable and high-quality foraging habitat.
+
+<!-- Carey et al. 1992 (re: maximum distance): "The old forest set aside must be within some area the owl can reasonably traverse. Our range lengths suggest that 5 km is a reasonable distance for owls to traverse on an annual basis. A circle of 2.5 km radius is 2000 ha. Such a circle could be used as a template. If > 950 ha of old forest were present within the 2000 ha circle, there is a reasonably high expectation that the area could support a pair of owls for 1 year." -->
+
+## Management implications of goshawk diet
+
+Climate change is one of the largest and most difficult to anticipate threats facing biodiversity (Bellard et al. 2012). The current understanding of how climate change will impact goshawks in coastal British Columbia is largely speculative [@parks_canada_agency_recovery_2018]. Although I found no evidence of a link between the degree of dietary specialization and goshawk productivity, the level of specialization I observed and findings from other studies suggest goshawks in my study area are highly dependent on tree squirrels for successful reproduction. Notably, @ethier_breeding_1999 found goshawk productivity on Vancouver Island to be significantly correlated with red squirrel abundance. Tree squirrels are themselves highly dependent on conifer seeds and their abundance varies with the size of the annual cone crop [@smith_coevolution_1970]<!-- check this and find better/more specific -->. Seed production is cyclical, but may be increased by higher temperatures and inhibited by drought [@boucher_how_2020]. As the climate warms and drought risk rises, climate-driven changes in seed production may cascade upward through prey abundance to impact goshawk populations in coastal British Columbia. Significantly more work is needed to understand the relationship between prey abundance, the buffering ability of alternate prey, and goshawk productivity, but my results provide an important starting point for incorporating climate change into goshawk management.
+
+<!-- Parks Canada 2018: "The threats caused by climate change within coastal forests are unknown and are difficult to mitigate through this recovery strategy. Climate change may affect Northern Goshawk
+populations positively or negatively." -->
+
+<!-- Ethier 1999: "Correlation of goshawk abundance and productivity with red squirrel abundance revealed strong positive correlations." -->
+
+Wildlife management, whether founded on a single-species or ecosystem-based approach, generally centers around species, subspecies, or unique populations at risk of extinction<!-- (cite)-->. My thesis examines a single population of goshawks on the south coast of British Columbia which is currently classified as part of the subspecies *laingi*. The precise range of *laingi* has never been entirely clear, but recent genetic evidence indicates the Haida Gwaii population is highly unique and distinct from other putative *laingi* populations (@geraldes_population_2018). My results suggest a strong ecological similarity between goshawks within my study area, Vancouver Island, and Haida Gwaii, where goshawks are also highly dependent on tree squirrels [@cosewic_cosewic_2013]. The diet of these populations stands in contrast to others in temperate rainforest ecosystems which are currently considered *laingi*, such as the Olympic Peninsula or Southeast Alaska, where goshawks consume mainly birds. Goshawks in coastal British Columbia may therefore be ecologically similar to each other, and ecologically distinct from other populations, regardless of their genetic relationship. The ecological similarity of these populations supports the strategy used by the Northern Goshawk Recovery Team to delineate the boundaries of the *laingi* range, which relies more on ecosystem mapping than genetics [@northern_goshawk_recovery_team_recovery_2008].
+
+Rooting management in ecosystems, rather than individual species, has been a success--albeit a conditional one--for forest conservation in the United States. Ecosystem-based management has also been applied in the temperate rainforests of British Columbia. In the early 2000s an ecosystem-based management plan, which includes the northern goshawk as a focal species, was developed for the Great Bear Rainforest on the northern coast of British Columbia [@price_ecosystem-based_2009]. My work provides some of the habitat-specific ecological information needed to broaden existing single-species goshawk management, or even to incorporate goshawks as a focal species in future ecosystem-based management. While it will be years before the success of Great Bear Rainforest agreement can be assessed, the groundbreaking plan offers a glimpse of the future of forest management in British Columbia--and the role northern goshawks may play in it. 
+
+# Figures
+
+```{r squirrel-map, out.width='100%', fig.cap='Comparison of goshawk dietary specialization and squirrel abundance in the Pacific Northwest. Size of symbol represents relative specialization or abundance. Goshawk diet estimated pellets-and-remains or remains only and measured using counts of items. Tree squirrel abundance estimated from number of individuals/ha. Adapted from Carey et al. (1992), Watson et al. (1998), Thrailkill et al. (2000), Bloxton (2002), Ransome and Sullivan (2003), and this study.'}
+# Make a map.
+ggplot() +
+  geom_sf(data=n.america, fill='lightgrey') +
+  geom_sf(data=rivers) +
+  coord_sf(xlim=c(st_bbox(squirrel.box)[1] - 1.5, st_bbox(squirrel.box)[3] + 1.5), 
+           ylim=c(st_bbox(squirrel.box)[2] - 0.25, st_bbox(squirrel.box)[4] + 0.25)) +
+  geom_point(data=scale.map, aes(x=lon, y=lat, shape=type, size=value.x)) +
+  scale_size(range=c(2, 6)) +
+  geom_label_repel(data=map.density, aes(x=lon, y=lat, label=value),
+                  direction='x',
+                  nudge_x=-5, # distance pushed
+                  hjust=1, #horizontal justification to the left
+                  segment.linetype='dashed',
+                  label.r=0) +
+  geom_label_repel(data=map.diet, aes(x=lon, y=lat, label=round(value, digits=1)),
+                  direction='x', hjust=0,
+                  nudge_x=5,
+                  segment.linetype='dashed',
+                  label.r=0) +
+  scale_shape_manual(values=c(15, 17), 
+                     labels=c('squirrel density (squirrels/ha)', 'squirrel in diet (% items)')) +
+  theme_void() +
+  guides(size=FALSE) +
+  theme(legend.title=element_blank(), legend.position='bottom',
+        panel.border=element_rect(color='black', fill=NA))
+```
+
+```{r rlk-female, fig.cap='Breeding season home range and core-use area of one tagged female goshawk in 2020.'}
+ggplot() +
+  geom_sf(data=rlk.f.points, alpha=0.25) +
+  geom_sf(data=rlk.f.mcp.50, fill='white') +
+  geom_sf(data=rlk.f.mcp.95, fill=NA) +
+  geom_sf(data=rlk.buffer, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.hr, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.centroid, color='red', size=2) +
+  annotation_scale(location='br') +
+  theme_void() +
+  coord_sf(xlim=c(st_bbox(rlk.points)[1] - 0.5, st_bbox(rlk.points)[3] + 0.5), 
+           ylim=c(st_bbox(rlk.points)[2] - 0.25, st_bbox(rlk.points)[4] + 0.25)) +
+  theme(panel.border=element_rect(color='black', fill=NA),
+        legend.position='bottom')
+```
+
+```{r rlk-male, fig.cap='Breeding season home range and core-use area of one tagged male goshawk in 2019'}
+ggplot() +
+  geom_sf(data=rlk.m.mcp.50, fill=NA) +
+  geom_sf(data=rlk.m.mcp.95, fill=NA) +
+  geom_sf(data=rlk.buffer, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.hr, fill=NA, linetype='dashed') +
+  geom_sf(data=rlk.m.points, alpha=0.25) +
+  geom_sf(data=rlk.nests, color='red', size=2) +
+  annotation_scale(location='br') +
+  theme_void() +
+  coord_sf(xlim=c(st_bbox(rlk.points)[1] - 0.5, st_bbox(rlk.points)[3] + 0.5), 
+         ylim=c(st_bbox(rlk.points)[2] - 0.25, st_bbox(rlk.points)[4] + 0.25)) +
+  theme(panel.border=element_rect(color='black', fill=NA),
+        legend.position='bottom')
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Make the summary table.
+summary.table <- breeding.telemetry %>% group_by(id) %>% 
+  mutate(min=min(date), max=max(date), n.points=n(), period=max-min) %>% 
+  distinct(id, site, n.points, min, max, period) %>% 
+  left_join(max.dist, by=c('id')) %>% 
+  left_join(homerange, by=c('id')) %>% 
+  left_join(nest.points, by=c('id', 'site', 'sex')) %>% 
+  pivot_wider(names_from=c(method, percent), names_sep='.', values_from=area) %>% 
+  arrange(sex, site) %>%
+  rownames_to_column(var='order') %>% mutate(order=as.numeric(order)) %>% 
+  mutate(order=case_when(
+    sex == 'f' ~ order - 1,
+    sex == 'm' ~ order,
+    TRUE ~ order
+  ),
+  period=as.numeric(period)) %>% 
+  mutate(., across(where(is.numeric), round, digits=2))
+
+# Find where total rows should be inserted.
+table.breaks <- summary.table %>% group_by(sex) %>% 
+  summarize(max=max(order), .groups='drop') %>% ungroup() %>% 
+  select(max) %>% as.vector()
+
+# Summarize female data.
+female.summary <- summary.table %>% filter(sex == 'f') %>% ungroup() %>%  
+  summarise(., across(where(is.numeric), mean)) %>% 
+  mutate(order=table.breaks$max[1] + 1, id='AVERAGE', site=NA, min=NA, max=NA, n.points=NA, sex='f')
+
+# Summarize male data.
+male.summary <- summary.table %>% filter(sex == 'm') %>% ungroup() %>%  
+  summarise(., across(where(is.numeric), mean)) %>% 
+  mutate(order=table.breaks$max[2] + 1, id='AVERAGE', site=NA, min=NA, max=NA, n.points=NA, sex='m')
+```
+
+```{r eval=FALSE}
+library(knitr)
+
+bind_rows(summary.table, female.summary, male.summary) %>% 
+  arrange(order) %>% column_to_rownames(var='order') %>% 
+  select(-sex) %>% relocate(n.points, .after=period) %>% 
+  kable()
+```
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+bind_rows(summary.table, female.summary, male.summary) %>% 
+  arrange(order) %>% column_to_rownames(var='order') %>% 
+  #select(-sex) %>% 
+  relocate(n.points, .after=period) %>% 
+  relocate(sex, .before=id) %>% 
+  mutate(period=round(period), dist=dist/1000, min=as.character(min), max=as.character(max)) %>% 
+  mutate(across(c(dist, prop.at.base, mcp.50, mcp.95, kde.50, kde.95), round, digits=1)) %>% 
+  mutate(across(everything(), ~replace_na(.x, '-'))) %>% 
+  kable() %>% kable_styling()
+```
+
+```{r telemetry-table, tab.cap='Summary of telemetry data from pilot study', message=FALSE, eval=FALSE}
+bind_rows(summary.table, female.summary, male.summary) %>% 
+  arrange(order) %>% column_to_rownames(var='order') %>% 
+  #select(-sex) %>% 
+  relocate(n.points, .after=period) %>% 
+  relocate(sex, .before=id) %>% 
+  mutate(period=round(period), dist=dist/1000, min=as.character(min), max=as.character(max)) %>% 
+  mutate(across(c(dist, prop.at.base, mcp.50, mcp.95, kde.50, kde.95), round, digits=1)) %>% 
+  mutate(across(everything(), ~replace_na(.x, '-'))) %>% 
+  flextable() %>% 
+  colformat_num(na_str='-', digits=0) %>% 
+  add_header_row(values=c(' ', 'Days of data collected', 'Relation to nest', 'Home range (ha)'), 
+                 colwidths=c(3, 3, 3, 4)) %>% 
+  set_header_labels(sex= 'Sex', id='ID', site='Site', min='first', max='last', n.points='N. points',
+                    period='N. days', dist='Max. distance from nest (m)', 
+                    prop.at.base='% points taken at nest',
+                    mcp.50='50% MCP', mcp.95='95% MCP', kde.50='50% KDE', kde.95='95% KDE') %>% 
+  bg(i=table.breaks$max[1] + 2, bg='lightgrey', part='body') %>% 
+  bg(i=table.breaks$max[2] + 2, bg='lightgrey', part='body')
+```

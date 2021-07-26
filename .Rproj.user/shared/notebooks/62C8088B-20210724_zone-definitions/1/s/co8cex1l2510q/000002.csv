@@ -1,0 +1,3 @@
+"0","diet.items %>% distinct(site, common, group) %>%"
+"0","  left_join(centroids.sf, by=c('site')) %>%"
+"0","  filter(group=='hare')"

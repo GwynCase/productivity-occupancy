@@ -1,0 +1,5 @@
+"0","knitr::opts_chunk$set(echo=FALSE, message=FALSE, warning=FALSE, dev='cairo_pdf')"
+"0","# dev='cairo_pdf' ensures nonstandard fonts are embedded in the pdf, so they will display properly for viewers who don't have those fonts installed on their own computer."
+"0",""
+"0","options(knitr.kable.NA = '-')"
+"0","# This option replaces all NAs in kable tables with a -"

@@ -1,0 +1,2 @@
+"0",""
+"0","ggsave('figure/bw-model-plot.jpg', plot=model.graphs, width=148, units='mm', dpi=1200)"

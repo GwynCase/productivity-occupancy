@@ -1,0 +1,25 @@
+{
+    "id": "85D3316C",
+    "path": "C:/Users/gwync/sfuvault/productivity-occupancy/notebooks/20210707_correlation-revisited.Rmd",
+    "project_path": "notebooks/20210707_correlation-revisited.Rmd",
+    "type": "r_markdown",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1625675903379.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "chunk_output_type": "inline",
+        "cursorPosition": "143,3",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1625677596,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1627146258101,
+    "read_only": false,
+    "read_only_alternatives": []
+}

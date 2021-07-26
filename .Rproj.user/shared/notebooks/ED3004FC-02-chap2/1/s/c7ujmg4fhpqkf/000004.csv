@@ -1,0 +1,2 @@
+"0","# Make a dummy plot so the caption prints."
+"0","knitr::include_graphics(""figure/bw-study-area.jpg"")"

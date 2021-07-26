@@ -1,0 +1,6 @@
+"0","### Pellets"
+"0",""
+"0","# Percent biomass of mammals from pellets."
+"0","percent.mass.mammal.pellets <- filter(diet.items, source == 'P') %>% "
+"0","  mutate(total=sum(mass)) %>% filter(class == 'Mammalia') %>% "
+"0","  mutate(class=sum(mass), to.m=class/total*100) %>% distinct(to.m) %>% peretty(0)"

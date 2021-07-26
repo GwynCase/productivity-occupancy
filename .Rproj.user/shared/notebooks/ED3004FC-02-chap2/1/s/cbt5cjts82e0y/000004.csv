@@ -1,0 +1,5 @@
+"0",""
+"0","prey.table.word %>% flextable() %>% "
+"0","  set_caption('Mass of identified prey species and estimated mean mass of unidentified prey items categorized by size and class used to calculate the percent biomass of each prey in the diet of Northern Goshawks in southwestern British Columbia. Mass estimates of avian prey taken from Billerman et al. 2020 and mass estimates of mammalian prey taken from Nagorsen 2002. Where species are sexually dimorphic, the mean of both sexes was used.') %>% "
+"0","  fontsize(part='all', size=10) %>% "
+"0","  set_table_properties(layout='autofit')"

@@ -1,0 +1,4 @@
+"0",""
+"0",""
+"0","# Save it."
+"0","ggsave('figure/bw-study-area.jpg', plot=bw.map, width=148, units='mm', dpi=1200)"

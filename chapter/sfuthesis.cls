@@ -390,7 +390,7 @@
 }
 
 %   Implementation: Have \@committee store the committee, \committee set it,
-%   and \chair and \member format its contents. 
+%   and \chair and \member format its contents.
 
 \newcommand{\@committee}{\@MissingMetadata{committee}}
 \newcommand{\committee}[1]{\renewcommand{\@committee}{\mdseries#1}}

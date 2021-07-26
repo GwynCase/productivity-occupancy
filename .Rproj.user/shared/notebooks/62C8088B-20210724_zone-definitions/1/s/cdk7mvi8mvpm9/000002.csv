@@ -1,0 +1,6 @@
+"0","# Hares in pellets + remains."
+"0","zone.counts %>% pivot_wider(names_from=source, values_from=count) %>% "
+"0","  mutate(RP=R + P) %>% "
+"0","  pivot_longer(cols=c('R', 'C', 'P', 'RP'), names_to='source', values_to='count') %>% "
+"0","  filter(!is.na(count)) %>% filter(source == 'RP') %>% "
+"0","  pivot_wider(names_from=group, values_from=count, values_fill=0)"

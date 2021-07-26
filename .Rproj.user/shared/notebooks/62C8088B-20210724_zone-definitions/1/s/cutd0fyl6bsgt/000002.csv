@@ -1,0 +1,4 @@
+"0","# Set up the data."
+"0","post.hoc.rp <- zone.chi %>% filter(source == 'RP') %>% ungroup() %>% "
+"0","    select(data) %>% unnest(data) %>%"
+"0","    group_by(group) %>% nest()"

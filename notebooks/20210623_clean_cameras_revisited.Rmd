@@ -1,0 +1,420 @@
+---
+title: "Clean Cameras"
+output: html_notebook
+---
+
+```{r options, include=FALSE}
+knitr::opts_chunk$set(echo=TRUE, message=FALSE, warning=FALSE)
+```
+
+This is the process used to take the raw camera data produced by my amazing minion and prep it for further analysis.
+
+```{r message=FALSE, warning=FALSE}
+# Import conflict settings.
+source('../src/conflicted.R')
+
+# Load some libraries.
+library(tidyverse)
+library(lubridate)
+```
+
+All files, and *only* files, containing camera data contain the word "photo," which makes things much, much easier.
+
+```{r message=FALSE}
+# Get a list of all the camera data files.
+file.list <- list.files(path='../data/raw', pattern='photos', full.names=TRUE)
+
+# Open all the files in the list and add to a data frame.
+df <- file.list %>% map(read_csv, col_types = cols(.default = "c")) %>% 
+  bind_rows()
+```
+
+There are some horrible, horrible problems with time and date formats, and sadly I think the only real way to fix them is to go through the sheets one by one and standardize them. That is definitely a thing I will have to do at some point, but thankfully for this analysis I only need year and the date of the first photo.
+
+```{r}
+# Try to fix all of the different datetime formats.
+df$datetime <- parse_date_time(df$datetime, c('ymd HMS', 'mdy HMS', 'dmy HMS', 'mdy HM'))
+```
+
+Now on to hunting down and fixing typos, etc.
+
+```{r}
+# Typos in the "interest" column.
+df %>% distinct(interest)
+```
+
+Yes, some.
+
+```{r}
+# Fix the two typos in 'interest'.
+df <- df %>% mutate(interest=case_when(
+  interest == 'Delivery' ~ 'delivery',
+  interest == 'preu' ~ 'prey',
+  TRUE ~ interest
+))
+
+# Typos in 'class'?
+df %>% distinct(class)
+```
+
+No, that looks fine, but I would like to replace the Us with Unknowns.
+
+```{r}
+# Replace Us with Unknown.
+df <- df %>% mutate(class=case_when(
+  class == 'U' ~ 'Unknown',
+  TRUE ~ class
+)) 
+
+# Typos in 'order'?
+df %>% distinct(order)
+```
+
+A few. Fix them, and again turn Us to Unknowns
+
+```{r}
+df <- df %>% mutate(order=case_when(
+  order == 'Passerofprmes' ~ 'Passeriformes',
+  order == 'Passiformes' ~ 'Passeriformes',
+  order == 'U' ~ 'Unknown',
+  TRUE ~ order
+))
+```
+
+On to family.
+
+
+```{r}
+df %>% distinct(family)
+```
+
+Yes, a number of them genera mistakenly entered into the family column.
+
+```{r}
+# Fix the typos in 'family.'
+df <- df %>% mutate(family=case_when(
+  family == 'Sciruidae' ~ 'Sciuridae',
+  family == 'Lepus' ~ 'Leporidae',
+  family == 'Dendragapus' ~ 'Phasianidae',
+  family == 'Neotoma' ~ 'Cricetidae',
+  family == 'U' ~ 'Unknown',
+  TRUE ~ family
+))
+
+# Typos in 'genus'?
+df %>% distinct(genus)
+```
+
+Several. I'm using *Dryobates* instead of *Leuconotopicus* for the genus of HAWO and DOWO. 
+
+There's two tricky ones here, *Tamias* which might be *Neotamias* or *Tamiasciurus*, and *Phasianidae*, which might be *Bonasa* or *Dendragapus*.
+
+There's also some new genera since I last ran this. One looks to be mispelled, a couple I'm just curious about.
+
+```{r}
+# What's the squirrel?
+df %>% filter(genus == 'Tamias') %>% select(genus, species)
+
+# What's the grouse?
+df %>% filter(genus == 'Phasianidae') %>% select(genus, species)
+
+# What's the weird typo-looking one?
+df %>% filter(genus == 'Oxpreus') %>% select(class, family, genus, species)
+# Oh, a varied thrush.
+
+# And what are the new ones?
+df %>% filter(genus %in% c('Bubo', 'Mustela', 'Marmota'))
+
+# What's up with the accipiters?
+df %>% filter(order == 'Accipitriformes')
+```
+Hot damn! Great-horned owl and a weasel and a marmot!! How cool!
+
+Ok, looking closer at the marmot I have to say I'm unconvinced. It's definitely a big mammal, but it just looks so black-and-white and stripey, and a marmot is just so... huge. It's about 3 times the weight of a hare, and a hare is already a pretty big mouthful for a NOGO! So I think I'll just make this an unknown large mammal.
+
+```{r}
+# Fix the typos.
+df <- df %>% mutate(genus=case_when(
+  genus == 'Tamasciurus' ~ 'Tamiasciurus',
+  genus == 'Tamasciuris' ~ 'Tamiasciurus',
+  genus == 'Leuconotopicus' ~ 'Dryobates',
+  genus == 'Turdidae' ~ 'Turdus',
+  genus == 'Patagoienas' ~ 'Patagioenas',
+  genus == 'Leporidae' ~ 'Lepus',
+  genus == 'Tamias' ~ 'Neotamias',
+  genus == 'Phasianidae' ~ 'Dendragapus',
+  genus == 'Cricetidae' ~ 'Neotoma',
+  genus == 'Drycopus' ~ 'Dryocopus',
+  genus == 'U' ~ 'Unknown',
+  genus == 'Oxpreus' ~ 'Ixoreus',
+  TRUE ~ genus
+))
+
+# Change the marmot.
+df <- df %>% mutate(order=case_when(
+  species == 'caligata' ~ 'Unknown',
+  TRUE ~ order
+),
+                    family=case_when(
+  species == 'caligata' ~ 'Unknown',
+  TRUE ~ family
+                    ),
+                    genus=case_when(
+  species == 'caligata' ~ 'Unknown',
+  TRUE ~ genus
+                    ),
+                    common=case_when(
+  species == 'caligata' ~ 'unknown',
+  TRUE ~ common
+                    ),
+                    species=case_when(
+  species == 'caligata' ~ 'unknown',
+  TRUE ~ species
+                    ))
+
+# Typos in species?
+df %>% distinct(species)
+```
+
+Remarkably free of typos, just a few things to fix up.
+
+```{r}
+# Fix the typos in 'species'.
+df <- df %>% mutate(species=case_when(
+  species == 'fulignosus' ~ 'fuliginosus',
+  genus == 'Sorex' ~ 'sp',
+  genus == 'Myotis' ~ 'sp',
+  species == 'spp' ~ 'sp',
+  species == 'U' ~ 'unknown',
+  TRUE ~ species
+))
+
+# How about common names?
+df %>% distinct(common)
+```
+
+Kind of a hot mess. Exactly what you'd expect from common names, really. Let's do this in stages.
+
+The tricky one is the one that's just 'm'.
+
+```{r}
+# Make everything lowercase.
+df$common <- df$common <- str_to_lower(df$common)
+
+# Split on the periods to make separate words.
+df$common <- gsub('\\.', ' ', df$common)
+
+# Find the problem children.
+df %>% filter(common == 'm') %>% select(genus, species, common)
+
+# Fix the typos.
+df <- df %>% mutate(common=case_when(
+  common == 'bad-tailed pigeon' ~ 'band-tailed pigeon',    # HAHAHAHA I love this one!
+  common == 'chimpunk' ~ 'chipmunk',
+  common == 'northern flying squirrel' ~ 'flying squirrel',
+  common == 'stellers jay' ~ 'steller\'s jay',
+  common == 'swainsons thrush' ~ 'swainson\'s thrush',
+  common == 'townsends chipmunk' ~ 'townsend\'s chipmunk',
+  common == 'm' & species == 'douglasii' ~ 'douglas squirrel',
+  common == 'm' & genus == 'Rattus' ~ 'rat',
+  genus == 'Sorex' ~ 'shrew',
+  genus == 'Myotis' ~ 'bat',
+  common == 'stoat' ~ 'short-tailed weasel',
+  common == 'u' ~ 'unknown',
+  TRUE ~ common
+))
+
+# Lastly, see if anything is wonky in 'size'.
+df %>% distinct(size)
+```
+
+Looks perfect.
+
+In the earliest data sheets I forgot to include a column for 'order' because I'm an idiot. Now that things are cleaned up I can fill in those missing data.
+
+```{r message=FALSE}
+# Bring in a list of all known prey.
+prey.list <- read_csv('../data/interim/prey_attributes.csv')
+
+# Join the camera data to the list of diet items.
+df <- prey.list %>% select(order.list=order, genus, species, common) %>% 
+  right_join(df, by=c('genus', 'species', 'common')) %>% 
+  arrange(site, datetime) %>%  
+  mutate(order=case_when(
+    is.na(order) ~ order.list,
+    TRUE ~ order
+  ))
+```
+
+A final check.
+
+```{r}
+df %>% select(class, order, family, genus, species, common) %>% distinct() %>% 
+  arrange(class, order, family, genus, species, common)
+```
+
+This turns up a few last typos: a known genus (Turdus) with an unknown family, and hare is marked as a rodent. Also there's an unknown Accipitridae that could be a red-tailed hawk, so I'll just call it a RTHA. Otherwise, I can fill all the NAs with 'Unknown'--except, of course, for those rows that are nothing at all.
+
+```{r warning=FALSE}
+# Fill in the last typos.
+df <- df %>% mutate(family=case_when(
+  genus == 'Turdus' & is.na(family) ~ 'Turdidae',
+  TRUE ~ family
+),
+order=case_when(
+  genus == 'Lepus' ~ 'Lagomorpha',
+  TRUE ~ order
+))
+
+# Change the unknown accipiter to RTHA.
+df <- df %>% 
+  mutate(species=case_when(family == 'Accipitridae' & genus == 'Unknown' ~ 'jamaicensis',
+                               TRUE ~ species),
+              common=case_when(family == 'Accipitridae' & genus == 'Unknown' ~ 'red-tailed hawk',
+                              TRUE ~ common),
+              genus=case_when(family == 'Accipitridae' & genus == 'Unknown' ~ 'Buteo',
+                                TRUE ~ genus))
+
+# Fill in the NAs.
+df <- df %>% mutate_at(c('order', 'family', 'genus'), funs(case_when(
+  is.na(.) & class != 'Unknown' ~ 'Unknown',
+  TRUE ~ .
+)))
+```
+
+And that leads me to the final, but question: what to do with half-identified things??
+
+Problems include unidentified:
+
+* grouse
+* chipmunks
+* tree squirrels
+* thrushes
+
+The chipmunk is actually the inverse problem, only one has been IDed down to species. I can easily make the *Neotamias townsendii* a *N. sp.* Likewise I can change all the *Tamiasciurus sp* to *Tamiasciurus douglasii*. The unknown *Turdus* is actually another typo, because *T. americanus* is the only species present. 
+
+So that just leaves the grouse. When looking at the combined camera and physical data, *Dendragapus* appears more common. So I guess I can assign my unknown grouse to that, since there's only one of them.
+
+```{r}
+df <- df %>% mutate(species=case_when(
+  genus == 'Tamiasciurus' & species == 'unknown' ~ 'douglasii',
+  genus == 'Neotamias' & species == 'townsendii' ~ 'sp',
+  genus == 'Turdus' & species == 'unknown' ~ 'migratorius',
+  family == 'Phasianidae' & species == 'unknown' ~ 'fuliginosus',
+  TRUE ~ species
+              ),
+              genus=case_when(
+  family == 'Phasianidae' & species == 'fuliginosus' ~ 'Dendragapus',
+  TRUE ~ genus
+              ),
+              common=case_when(
+  genus == 'Tamiasciurus' & species == 'douglasii' ~ 'douglas squirrel',
+  genus == 'Neotamias' ~ 'chipmunk',
+  genus == 'Turdus' ~ 'american robin',
+  genus == 'Dendragapus' ~ 'sooty grouse',
+  TRUE ~ common
+              ))
+```
+
+Finally, make sure all of the species and sizes match up.
+
+```{r}
+df %>% select(class, order, family, genus, species, common, size) %>% distinct() %>% 
+  arrange(class, order, family, genus, species, common, size)
+```
+
+Ah, yes, a few errors here. Are any of them actually correct?
+
+```{r}
+# Are the small grouse chicks?
+df %>% filter(family == 'Phasianidae' & size == 'S')
+# Yes. Leave them alone.
+
+# And the steller's jays?
+df %>% filter(genus == 'Cyanocitta' & size == 'S')
+# Yes, also juveniles.
+
+# Robins?
+df %>% filter(genus == 'Turdus' & size == 'S')
+# Yes, also juveniles.
+
+# Woodrats?
+df %>% filter(genus == 'Neotoma' & size == 'S')
+# No, that's a typo, should be M.
+
+# Rats?
+df %>% filter(genus == 'Rattus' & species == 'sp')
+```
+
+That turns up an interesting one. *Rattus sp.* should be medium, since all the possible rat species are about that size. But there's something here marked as *R. sp* that might be a mountain beaver?? I think I'll just call that one a mountain beaver!
+
+```{r}
+# Change from unknown rat to mountain beaver.
+df <- df %>% 
+  mutate(family=case_when(genus == 'Rattus' & !is.na(comments) & size == 'L' ~ 'Aplodontiidae',
+                               TRUE ~ family),
+              genus=case_when(genus == 'Rattus' & !is.na(comments) & size == 'L' ~ 'Aplodontia',
+                              TRUE ~ genus),
+              species=case_when(genus == 'Aplodontia' & !is.na(comments) & size == 'L' ~ 'rufa',
+                                TRUE ~ species),
+              common=case_when(genus == 'Aplodontia' & !is.na(comments) & size == 'L' ~ 'mountain beaver',
+                               TRUE ~ common))
+
+# Let's keep going.
+
+# What's up with the unsized squirrel?
+df %>% filter(genus == 'Tamiasciurus' & is.na(size))
+# Just a typo.
+
+# And the new great-horned owl.
+df %>% filter(genus == 'Bubo')
+# Yes, it's a juvenile.
+
+# Ok, let's fix all of these.
+df <- df %>% mutate(size=case_when(
+  genus == 'Catharus' ~ 'S',
+  species == 'pubescens' ~ 'S',
+  species == 'villosus' ~ 'M',
+  genus == 'Lepus' & is.na(size) ~ 'L',
+  genus == 'Neotoma' ~ 'M',
+  genus == 'Rattus' ~ 'M',
+  genus == 'Neotamias' ~ 'S',
+  genus == 'Tamiasciurus' & is.na(size) ~ 'M',
+  TRUE ~ size
+))
+```
+
+I haven't been using age in my analyses, but on further consideration I probably should... there's more juveniles here than I realized. That means I need some way to mark which items are juveniles or not.
+
+```{r}
+# Mark things with 'juvenile' in the comments as J, otherwise U for unknown.
+df <- df %>% mutate(age=case_when(
+  str_detect(comments, 'juv|Juv') ~ 'J',
+  str_detect(comments, 'baby|Baby') & !is.na(class) ~ 'J',
+  TRUE ~ 'U'
+  
+))
+```
+
+Okay, and...
+
+```{r}
+# And one last check.
+df %>% select(class, order, family, genus, species, common, size) %>% distinct() %>% 
+  arrange(class, order, family, genus, species, common, size)
+```
+
+I think that's... done! Now let's make it pretty and save it.
+
+```{r}
+# Tidy up the data set.
+df <- df %>% select(filename, serial, datetime, 
+              site, interest, live.chicks, 
+              class, order, family, genus, species, common,
+              size, age, comments, sex) %>% 
+  arrange(site, datetime)
+
+# Save as a csv.
+write_csv(df, '../data/interim/cameras_20210623.csv')
+```
+

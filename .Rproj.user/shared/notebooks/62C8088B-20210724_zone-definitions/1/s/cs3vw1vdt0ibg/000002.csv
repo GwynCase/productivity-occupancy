@@ -1,0 +1,4 @@
+"0","# What are the current tz sites?"
+"0","new.tz.sites <- as.data.frame(centroids.sf) %>% filter(zone == 'tz') %>% distinct(site, name)"
+"0",""
+"0","new.tz.sites"

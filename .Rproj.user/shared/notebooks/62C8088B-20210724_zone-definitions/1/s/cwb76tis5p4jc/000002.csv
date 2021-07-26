@@ -1,0 +1,3 @@
+"0","# Bring in the shapefile."
+"0","tz.original <- read_sf(dsn='../data/external/transition_zone.shp', "
+"0","                     layer='transition_zone')"
